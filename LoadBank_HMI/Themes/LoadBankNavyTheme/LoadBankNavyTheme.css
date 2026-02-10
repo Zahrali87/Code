@@ -1,0 +1,433 @@
+//LOAD BANK navy THEME
+// .css file
+
+/* ============================================
+   LOAD BANK NAVY-DARK THEME
+   All colors handled via CSS
+   ============================================ */
+
+/* ============================================
+   GLOBAL BACKGROUND
+   ============================================ */
+
+html, body {
+    background-color: rgb(10, 20, 32) !important;
+}
+
+.TcHmi_Controls_System_TcHmiView {
+    background-color: rgb(10, 20, 32) !important;
+}
+
+#LoadBankMain {
+    background-color: rgb(10, 20, 32) !important;
+}
+
+/* ============================================
+   HEADER BAR
+   ============================================ */
+
+#HeaderBar {
+    background-color: rgb(15, 28, 46) !important;
+}
+
+    #HeaderBar .tchmi-rectangle-background,
+    #HeaderBar svg rect {
+        fill: rgb(15, 28, 46) !important;
+    }
+
+#HeaderIcon {
+    color: rgb(255, 193, 7) !important;
+}
+
+#HeaderTitle {
+    color: rgb(232, 240, 247) !important;
+}
+
+#HeaderTime {
+    color: rgb(232, 240, 247) !important;
+}
+
+#ModeDisplay {
+    color: rgb(77, 212, 255) !important;
+}
+
+/* ============================================
+   STATUS INDICATORS
+   ============================================ */
+
+#StatusRunningDot .tchmi-ellipse-background,
+#StatusRunningDot svg ellipse {
+    fill: rgb(76, 175, 80) !important;
+}
+
+#StatusRunningText {
+    color: rgb(76, 175, 80) !important;
+}
+
+#StatusFanDot .tchmi-ellipse-background,
+#StatusFanDot svg ellipse {
+    fill: rgb(76, 175, 80) !important;
+}
+
+#StatusFanText {
+    color: rgb(76, 175, 80) !important;
+}
+
+#StatusTempDot .tchmi-ellipse-background,
+#StatusTempDot svg ellipse {
+    fill: rgb(76, 175, 80) !important;
+}
+
+#StatusTempText {
+    color: rgb(76, 175, 80) !important;
+}
+
+/* ============================================
+   EMERGENCY INDICATOR
+   ============================================ */
+
+#EmergencyIndicator .tchmi-rectangle-background,
+#EmergencyIndicator svg rect {
+    fill: rgb(26, 41, 66) !important;
+    stroke: rgb(45, 70, 99) !important;
+}
+
+#EmergencyText {
+    color: rgb(102, 102, 102) !important;
+}
+
+/* ============================================
+   PANELS - Background and Border
+   ============================================ */
+
+#PowerPanel .tchmi-rectangle-background,
+#PowerPanel svg rect,
+#StepsPanel .tchmi-rectangle-background,
+#StepsPanel svg rect,
+#TempPanel .tchmi-rectangle-background,
+#TempPanel svg rect,
+#ElecPanel .tchmi-rectangle-background,
+#ElecPanel svg rect,
+#ControlPanel .tchmi-rectangle-background,
+#ControlPanel svg rect,
+#RecipePanel .tchmi-rectangle-background,
+#RecipePanel svg rect {
+    fill: rgb(26, 41, 66) !important;
+    stroke: rgb(45, 70, 99) !important;
+}
+
+#NavBar .tchmi-rectangle-background,
+#NavBar svg rect {
+    fill: rgb(15, 28, 46) !important;
+}
+
+/* ============================================
+   PANEL TITLES
+   ============================================ */
+
+#PowerTitle,
+#StepsTitle,
+#TempTitle,
+#ElecTitle,
+#ControlTitle,
+#RecipeTitle {
+    color: rgb(77, 212, 255) !important;
+}
+
+/* ============================================
+   POWER PANEL
+   ============================================ */
+
+#ReleasedLabel,
+#AvailableLabel,
+#ReleasedUnit,
+#AvailableUnit,
+#RatedLabel {
+    color: rgb(148, 163, 184) !important;
+}
+
+#ReleasedValue {
+    color: rgb(77, 212, 255) !important;
+}
+
+#AvailableValue {
+    color: rgb(76, 175, 80) !important;
+}
+
+#ErrorLabel {
+    color: rgb(255, 193, 7) !important;
+}
+
+#PowerBarBg .tchmi-rectangle-background,
+#PowerBarBg svg rect,
+#StepsBarBg .tchmi-rectangle-background,
+#StepsBarBg svg rect,
+#RecipeProgressBg .tchmi-rectangle-background,
+#RecipeProgressBg svg rect {
+    fill: rgb(60, 60, 60) !important;
+}
+
+#PowerBarFill .tchmi-rectangle-background,
+#PowerBarFill svg rect {
+    fill: rgb(77, 212, 255) !important;
+}
+
+#PowerBarText,
+#RecipeProgressText {
+    color: rgb(255, 255, 255) !important;
+}
+
+/* ============================================
+   STEPS PANEL
+   ============================================ */
+
+#StepsBarActive .tchmi-rectangle-background,
+#StepsBarActive svg rect,
+#RecipeProgressBar .tchmi-rectangle-background,
+#RecipeProgressBar svg rect {
+    fill: rgb(76, 175, 80) !important;
+}
+
+#ActiveCount,
+#ActiveLabel {
+    color: rgb(76, 175, 80) !important;
+}
+
+#InactiveCount,
+#InactiveLabel {
+    color: rgb(148, 163, 184) !important;
+}
+
+#FaultCount,
+#FaultLabel {
+    color: rgb(244, 67, 54) !important;
+}
+
+/* ============================================
+   TEMPERATURE PANEL
+   ============================================ */
+
+#TempAvgLabel,
+#InletLabel {
+    color: rgb(148, 163, 184) !important;
+}
+
+#TempAvgValue {
+    color: rgb(76, 175, 80) !important;
+}
+
+#TC1Label,
+#TC2Label,
+#TC3Label,
+#TC4Label,
+#TC5Label {
+    color: rgb(232, 240, 247) !important;
+}
+
+#DeltaTLabel {
+    color: rgb(76, 175, 80) !important;
+}
+
+/* ============================================
+   ELECTRICAL PANEL
+   ============================================ */
+
+#VL1L2,
+#VL2L3,
+#VL3L1 {
+    color: rgb(77, 212, 255) !important;
+}
+
+#IL1,
+#IL2,
+#IL3 {
+    color: rgb(232, 240, 247) !important;
+}
+
+#TotalPower,
+#VImbalance,
+#IImbalance {
+    color: rgb(76, 175, 80) !important;
+}
+
+/* ============================================
+   CONTROL PANEL
+   ============================================ */
+
+#TargetLabel,
+#TargetUnit {
+    color: rgb(148, 163, 184) !important;
+}
+
+#FanStatus {
+    color: rgb(76, 175, 80) !important;
+}
+
+/* ============================================
+   RECIPE PANEL
+   ============================================ */
+
+#RecipeStep {
+    color: rgb(232, 240, 247) !important;
+}
+
+#RecipeTarget {
+    color: rgb(77, 212, 255) !important;
+}
+
+/* ============================================
+   BUTTONS - Navy Dark Style
+   ============================================ */
+
+.TcHmi_Controls_Beckhoff_TcHmiButton {
+    background-color: rgb(36, 58, 86) !important;
+    border-radius: 8px !important;
+}
+
+    .TcHmi_Controls_Beckhoff_TcHmiButton .tchmi-button-background {
+        background: rgb(36, 58, 86) !important;
+        background-color: rgb(36, 58, 86) !important;
+        background-image: none !important;
+        border: none !important;
+        border-radius: 8px !important;
+    }
+
+    .TcHmi_Controls_Beckhoff_TcHmiButton .tchmi-button-text {
+        color: rgb(232, 240, 247) !important;
+    }
+
+/* E-STOP Button - Red */
+#EStopBtn .tchmi-button-background {
+    background: rgb(244, 67, 54) !important;
+    background-color: rgb(244, 67, 54) !important;
+}
+
+#EStopBtn .tchmi-button-text {
+    color: rgb(255, 255, 255) !important;
+}
+
+/* Master Enable - Green when active */
+#MasterEnableBtn .tchmi-button-background {
+    background: rgb(76, 175, 80) !important;
+    background-color: rgb(76, 175, 80) !important;
+}
+
+#MasterEnableBtn .tchmi-button-text {
+    color: rgb(255, 255, 255) !important;
+}
+
+/* Recipe Start Button - Green */
+#RecipeStartBtn .tchmi-button-background {
+    background: rgb(76, 175, 80) !important;
+    background-color: rgb(76, 175, 80) !important;
+}
+
+#RecipeStartBtn .tchmi-button-text {
+    color: rgb(255, 255, 255) !important;
+}
+
+/* Recipe Pause Button - Yellow */
+#RecipePauseBtn .tchmi-button-background {
+    background: rgb(255, 193, 7) !important;
+    background-color: rgb(255, 193, 7) !important;
+}
+
+#RecipePauseBtn .tchmi-button-text {
+    color: rgb(33, 33, 33) !important;
+}
+
+/* Recipe Abort Button - Red */
+#RecipeAbortBtn .tchmi-button-background {
+    background: rgb(244, 67, 54) !important;
+    background-color: rgb(244, 67, 54) !important;
+}
+
+#RecipeAbortBtn .tchmi-button-text {
+    color: rgb(255, 255, 255) !important;
+}
+
+/* ============================================
+   NUMERIC INPUT
+   ============================================ */
+
+.TcHmi_Controls_Beckhoff_TcHmiNumericInput {
+    background-color: rgb(15, 28, 46) !important;
+    border: 2px solid rgb(45, 70, 99) !important;
+    border-radius: 8px !important;
+}
+
+    .TcHmi_Controls_Beckhoff_TcHmiNumericInput .tchmi-numeric-input-background {
+        background: rgb(15, 28, 46) !important;
+        background-image: none !important;
+    }
+
+    .TcHmi_Controls_Beckhoff_TcHmiNumericInput input,
+    .TcHmi_Controls_Beckhoff_TcHmiNumericInput .tchmi-numeric-input-value {
+        color: rgb(77, 212, 255) !important;
+        background: transparent !important;
+    }
+
+/* ============================================
+   ALL TEXTBLOCKS - Default Light Color
+   ============================================ */
+
+.TcHmi_Controls_Beckhoff_TcHmiTextblock {
+    color: rgb(232, 240, 247) !important;
+}
+
+/* ============================================
+   REMOVE GRADIENTS GLOBALLY
+   ============================================ */
+
+[class*="tchmi"][class*="background"] {
+    background-image: none !important;
+}
+
+/* ============================================
+   SCROLLBARS
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+    background: rgb(15, 28, 46);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(45, 70, 99);
+    border-radius: 6px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgb(77, 212, 255);
+    }
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+// .theme
+
+{
+    "$schema": "../../Packages/Beckhoff.TwinCAT.HMI.Framework/Server/Schema/theme.schema.json",
+    "name": "LoadBankNavyTheme",
+    "customResourceFiles": [],
+    "resources": {
+        "Colors": {
+            "Navy-Dark": { "color": "rgba(10, 20, 32, 1)" },
+            "Navy-Medium": { "color": "rgba(15, 28, 46, 1)" },
+            "Navy-Panel": { "color": "rgba(26, 41, 66, 1)" },
+            "Navy-Border": { "color": "rgba(45, 70, 99, 1)" },
+            "Navy-Button": { "color": "rgba(36, 58, 86, 1)" },
+            "Navy-Input": { "color": "rgba(15, 28, 46, 1)" },
+            "Accent-Cyan": { "color": "rgba(77, 212, 255, 1)" },
+            "Accent-Blue": { "color": "rgba(100, 181, 246, 1)" },
+            "Success-Green": { "color": "rgba(76, 175, 80, 1)" },
+            "Warning-Yellow": { "color": "rgba(255, 193, 7, 1)" },
+            "Warning-Orange": { "color": "rgba(255, 152, 0, 1)" },
+            "Danger-Red": { "color": "rgba(244, 67, 54, 1)" },
+            "Text-Primary": { "color": "rgba(232, 240, 247, 1)" },
+            "Text-Secondary": { "color": "rgba(148, 163, 184, 1)" },
+            "Text-Dark": { "color": "rgba(10, 20, 32, 1)" }
+        }
+    }
+}

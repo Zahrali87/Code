@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <GVL Name="GVL_LoadBank_IO" Id="{f4e606e7-7c28-4a85-806b-14b9ceadedc8}">
+    <Declaration><![CDATA[VAR_GLOBAL
+
+    // ============================================
+    // EMERGENCY INPUTS (NC contacts)
+    // TRUE = OK, FALSE = E-STOP PRESSED
+    // ============================================
+    IO_Emergency_Immediate      : BOOL;
+    IO_Emergency_Controlled     : BOOL;
+
+    // ============================================
+    // MASTER ENABLE INPUT (Optional physical switch)
+    // Only used when LB_ENABLE_PHYSICAL_MASTER = TRUE
+    // ============================================
+    IO_Physical_Master_Enable   : BOOL;
+
+    // ============================================
+    // FAN INPUTS
+    // ============================================
+    IO_Fan_Contactor_FB         : BOOL;             // NO: TRUE = contactor closed
+    IO_Fan_Motor_Overload_OK    : BOOL;             // NC: TRUE = healthy, FALSE = FAULT
+    IO_Fan_Pressure_OK          : BOOL;             // NO: TRUE = pressure OK
+
+    // ============================================
+    // MAIN CONTACTOR INPUT
+    // ============================================
+    IO_Main_Contactor_FB        : BOOL;             // NO: TRUE = contactor closed, load contactor
+
+    // ============================================
+    // LOAD STEP INPUTS
+    // ============================================
+    IO_Load_Contactor_FB        : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;     // NO: TRUE = closed
+    IO_Step_Power               : ARRAY[1..LB_NUMBER_OF_STEPS] OF REAL;     // kW per step
+
+    // ============================================
+    // TEMPERATURE INPUTS
+    // ============================================
+    IO_Temperature_TC           : ARRAY[1..LB_NUMBER_OF_TCS] OF REAL;
+    IO_Temperature_Inlet        : REAL;
+
+    // ============================================
+    // POWER METER INPUTS - VOLTAGE
+    // ============================================
+    IO_Voltage_L1_L2            : REAL;
+    IO_Voltage_L2_L3            : REAL;
+    IO_Voltage_L3_L1            : REAL;
+    IO_Voltage_Average          : REAL;
+    
+    IO_Voltage_L1_LN            : REAL;
+    IO_Voltage_L2_LN            : REAL;
+    IO_Voltage_L3_LN            : REAL;
+
+    // ============================================
+    // POWER METER INPUTS - CURRENT
+    // ============================================
+    IO_Current_L1               : REAL;
+    IO_Current_L2               : REAL;
+    IO_Current_L3               : REAL;
+
+    // ============================================
+    // POWER METER INPUTS - SYSTEM
+    // ============================================
+    IO_Frequency                : REAL;
+    IO_Power_Factor             : REAL;
+    IO_Total_Power_kW           : REAL;
+    IO_Total_Power_kVAR         : REAL;
+    IO_Total_Power_kVA          : REAL;
+
+    // ============================================
+    // EXTERNAL POWER INPUT (Auto/Reverse modes)
+    // ============================================
+    IO_External_Power_kW        : REAL;
+
+    // ============================================
+    // DIGITAL OUTPUTS - CONTACTORS
+    // ============================================
+    IO_Fan_Contactor_Coil       : BOOL;
+    IO_Main_Contactor_Coil      : BOOL;
+    IO_Load_Contactor_Coil      : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+
+    // ============================================
+    // DIGITAL OUTPUTS - LED INDICATORS
+    // ============================================
+    IO_LED_General_Alarm        : BOOL;             // Red LED
+    IO_LED_Warning              : BOOL;             // Yellow LED
+    IO_LED_System_Normal        : BOOL;             // Green LED
+	
+	// ============================================
+    // FAN PHYSICAL CONTROL (Optional)
+    // Only used when LB_ENABLE_PHYSICAL_FAN = TRUE
+    // ============================================
+    IO_Physical_Fan_Start       : BOOL;             // Physical start button
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

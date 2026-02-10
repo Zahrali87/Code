@@ -1,0 +1,529 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Load_Controller" Id="{0a1ef54d-e86b-4926-97c5-904a2ba9eb9f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Load_Controller
+// ============================================
+// LOAD CONTROLLER
+// - Power grouping (steps grouped by kW rating)
+// - Step feedback monitoring
+// - Total power monitoring
+// - Step quarantine management
+// - Wear leveling by cycle count
+// ============================================
+
+VAR_INPUT
+    // Target from mode or dump
+    Target_Power_kW         : REAL;
+    
+    // Main contactor status
+    Main_Contactor_Closed   : BOOL;
+    
+    // Step configuration
+    Step_Power_Rating       : ARRAY[1..LB_NUMBER_OF_STEPS] OF REAL;
+    Number_Of_Steps         : UINT := 10;
+    
+    // Step feedback from IO
+    Step_Feedback           : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    
+    // Total power from power meter
+    Measured_Total_Power    : REAL;
+    
+    // Manual quarantine from HMI
+    Step_Quarantine_Manual  : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    Step_Unquarantine_Cmd   : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    
+    // Maintenance mode
+    Maintenance_Mode        : BOOL;
+    Manual_Step_Cmd         : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    
+    // Configuration (from ENG page)
+    Deadband_kW             : REAL := 5.0;
+    Step_Up_Delay           : TIME := T#500ms;
+    Step_Down_Delay         : TIME := T#500ms;
+    Feedback_Timeout        : TIME := T#3s;
+    Enable_Feedback_Monitoring : BOOL := TRUE;
+    
+    // Total power monitoring config
+    Power_Tolerance_Percent : REAL := 5.0;
+    Power_Monitor_Delay     : TIME := T#10s;
+    Enable_Power_Monitoring : BOOL := TRUE;
+    
+    Enable                  : BOOL;
+    Reset                   : BOOL;
+END_VAR
+
+VAR_OUTPUT
+    // Coil outputs
+    Step_Coil_Cmd           : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    
+    // Power calculations
+    Released_Power_kW       : REAL;
+    Available_Power_kW      : REAL;
+    Rated_Total_kW          : REAL;
+    Power_Error_kW          : REAL;
+    At_Target               : BOOL;
+    
+    // Step counts
+    Active_Step_Count       : UINT;
+    Quarantined_Step_Count  : UINT;
+    Available_Step_Count    : UINT;
+    
+    // Quarantine status (combined)
+    Step_Quarantined        : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    Step_Quarantine_Feedback: ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    
+    // Faults
+    Any_Feedback_Fault      : BOOL;
+    Total_Power_Warning     : BOOL;
+    Power_Mismatch_Percent  : REAL;
+    
+    // Cycle counts (for wear leveling)
+    Step_Cycle_Count        : ARRAY[1..LB_NUMBER_OF_STEPS] OF UDINT;
+    
+    Status_Text             : STRING(100);
+END_VAR
+
+VAR
+    i                       : UINT;
+    j                       : UINT;
+    g                       : UINT;
+    
+    // Internal coil states
+    Coil_Internal           : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    Coil_Prev               : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    
+    // Feedback monitoring
+    FB_Timer                : ARRAY[1..LB_NUMBER_OF_STEPS] OF TON;
+    FB_Fault_Latched        : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    
+    // Total power monitoring
+    Power_Monitor_Timer     : TON;
+    Power_Diff              : REAL;
+    Expected_Power          : REAL;
+    
+    // Step change timing
+    Step_Up_Timer           : TON;
+    Step_Down_Timer         : TON;
+    
+    // Power grouping - store unique power values (max 20 different sizes)
+    Unique_Powers           : ARRAY[1..10] OF REAL;
+    Num_Unique_Powers       : UINT;
+    Power_Exists            : BOOL;
+    Temp_Power              : REAL;
+    
+    // Distribution calculation
+    Current_Power           : REAL;
+    Power_Needed            : REAL;
+    Best_Step               : UINT;
+    Min_Cycles              : UDINT;
+    Max_Cycles              : UDINT;
+    Step_Available          : BOOL;
+    Target_Power_Value      : REAL;
+    
+    First_Scan              : BOOL := TRUE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// RESET
+// ============================================
+IF Reset THEN
+    FOR i := 1 TO LB_NUMBER_OF_STEPS DO
+        FB_Fault_Latched[i] := FALSE;
+        Step_Quarantine_Feedback[i] := FALSE;
+    END_FOR;
+    Any_Feedback_Fault := FALSE;
+    Total_Power_Warning := FALSE;
+    Power_Monitor_Timer(IN := FALSE);
+END_IF;
+
+// ============================================
+// FIRST SCAN - INITIALIZE
+// ============================================
+IF First_Scan THEN
+    FOR i := 1 TO LB_NUMBER_OF_STEPS DO
+        Coil_Internal[i] := FALSE;
+        Coil_Prev[i] := FALSE;
+        FB_Fault_Latched[i] := FALSE;
+        Step_Cycle_Count[i] := 0;
+    END_FOR;
+    First_Scan := FALSE;
+END_IF;
+
+// ============================================
+// BUILD UNIQUE POWER LIST (sorted largest first)
+// ============================================
+FOR i := 1 TO 10 DO
+    Unique_Powers[i] := 0.0;
+END_FOR;
+Num_Unique_Powers := 0;
+
+FOR i := 1 TO Number_Of_Steps DO
+    IF Step_Power_Rating[i] > 0.0 THEN
+        Power_Exists := FALSE;
+        
+        // Check if this power already in list
+        FOR j := 1 TO Num_Unique_Powers DO
+            IF Unique_Powers[j] = Step_Power_Rating[i] THEN
+                Power_Exists := TRUE;
+                EXIT;
+            END_IF;
+        END_FOR;
+        
+        // Add new unique power
+        IF NOT Power_Exists AND Num_Unique_Powers < 10 THEN
+            Num_Unique_Powers := Num_Unique_Powers + 1;
+            Unique_Powers[Num_Unique_Powers] := Step_Power_Rating[i];
+        END_IF;
+    END_IF;
+END_FOR;
+
+// Sort unique powers (largest first) - bubble sort
+FOR i := 1 TO Num_Unique_Powers - 1 DO
+    FOR j := i + 1 TO Num_Unique_Powers DO
+        IF Unique_Powers[j] > Unique_Powers[i] THEN
+            Temp_Power := Unique_Powers[i];
+            Unique_Powers[i] := Unique_Powers[j];
+            Unique_Powers[j] := Temp_Power;
+        END_IF;
+    END_FOR;
+END_FOR;
+
+// ============================================
+// CALCULATE RATED TOTAL POWER
+// ============================================
+Rated_Total_kW := 0.0;
+FOR i := 1 TO Number_Of_Steps DO
+    Rated_Total_kW := Rated_Total_kW + Step_Power_Rating[i];
+END_FOR;
+
+// ============================================
+// COMBINE QUARANTINE SOURCES
+// ============================================
+Quarantined_Step_Count := 0;
+FOR i := 1 TO Number_Of_Steps DO
+    Step_Quarantined[i] := Step_Quarantine_Manual[i] OR Step_Quarantine_Feedback[i];
+    
+    // Unquarantine command clears feedback quarantine
+    IF Step_Unquarantine_Cmd[i] THEN
+        Step_Quarantine_Feedback[i] := FALSE;
+        FB_Fault_Latched[i] := FALSE;
+    END_IF;
+    
+    IF Step_Quarantined[i] THEN
+        Quarantined_Step_Count := Quarantined_Step_Count + 1;
+    END_IF;
+END_FOR;
+
+// ============================================
+// CALCULATE AVAILABLE POWER
+// ============================================
+Available_Power_kW := 0.0;
+Available_Step_Count := 0;
+FOR i := 1 TO Number_Of_Steps DO
+    IF NOT Step_Quarantined[i] THEN
+        Available_Power_kW := Available_Power_kW + Step_Power_Rating[i];
+        Available_Step_Count := Available_Step_Count + 1;
+    END_IF;
+END_FOR;
+
+// ============================================
+// NOT ENABLED OR MAIN CONTACTOR OPEN - ALL OFF
+// ============================================
+IF NOT Enable OR NOT Main_Contactor_Closed THEN
+    FOR i := 1 TO LB_NUMBER_OF_STEPS DO
+        Coil_Internal[i] := FALSE;
+        Step_Coil_Cmd[i] := FALSE;
+    END_FOR;
+    Released_Power_kW := 0.0;
+    Active_Step_Count := 0;
+    Power_Error_kW := Target_Power_kW;
+    At_Target := (Target_Power_kW <= Deadband_kW);
+    
+    IF NOT Enable THEN
+        Status_Text := 'Disabled';
+    ELSE
+        Status_Text := 'Main contactor open';
+    END_IF;
+    RETURN;
+END_IF;
+
+// ============================================
+// MAINTENANCE MODE - DIRECT CONTROL
+// ============================================
+IF Maintenance_Mode THEN
+    FOR i := 1 TO Number_Of_Steps DO
+        Coil_Internal[i] := Manual_Step_Cmd[i] AND NOT Step_Quarantined[i];
+    END_FOR;
+    Status_Text := 'Maintenance mode';
+ELSE
+
+// ============================================
+// STEP DISTRIBUTION - POWER GROUP ALGORITHM
+// ============================================
+
+// Calculate current released power
+Current_Power := 0.0;
+Active_Step_Count := 0;
+FOR i := 1 TO Number_Of_Steps DO
+    IF Coil_Internal[i] THEN
+        Current_Power := Current_Power + Step_Power_Rating[i];
+        Active_Step_Count := Active_Step_Count + 1;
+    END_IF;
+END_FOR;
+
+Power_Needed := Target_Power_kW - Current_Power;
+Power_Error_kW := Power_Needed;
+At_Target := (ABS(Power_Needed) <= Deadband_kW);
+
+// ============================================
+// NEED TO ADD POWER?
+// ============================================
+IF Power_Needed > Deadband_kW THEN
+    Step_Up_Timer(IN := TRUE, PT := Step_Up_Delay);
+    Step_Down_Timer(IN := FALSE);
+    
+    IF Step_Up_Timer.Q THEN
+        Best_Step := 0;
+        Min_Cycles := 16#FFFFFFFF;
+        
+        // Search power groups from LARGEST to SMALLEST
+        FOR g := 1 TO Num_Unique_Powers DO
+            Target_Power_Value := Unique_Powers[g];
+            
+            // Does this power fit?
+            IF Target_Power_Value <= Power_Needed THEN
+                // Find available step with this power, lowest cycles
+                FOR i := 1 TO Number_Of_Steps DO
+                    IF Step_Power_Rating[i] = Target_Power_Value THEN
+                        Step_Available := NOT Coil_Internal[i] AND NOT Step_Quarantined[i];
+                        
+                        IF Step_Available AND Step_Cycle_Count[i] < Min_Cycles THEN
+                            Best_Step := i;
+                            Min_Cycles := Step_Cycle_Count[i];
+                        END_IF;
+                    END_IF;
+                END_FOR;
+                
+                // Found a step? Use it
+                IF Best_Step > 0 THEN
+                    EXIT;
+                END_IF;
+            END_IF;
+        END_FOR;
+        
+        // If no large step fits, find smallest available step
+        IF Best_Step = 0 THEN
+            FOR g := Num_Unique_Powers TO 1 BY -1 DO
+                Target_Power_Value := Unique_Powers[g];
+                
+                FOR i := 1 TO Number_Of_Steps DO
+                    IF Step_Power_Rating[i] = Target_Power_Value THEN
+                        Step_Available := NOT Coil_Internal[i] AND NOT Step_Quarantined[i];
+                        
+                        IF Step_Available THEN
+                            IF Best_Step = 0 OR Step_Cycle_Count[i] < Min_Cycles THEN
+                                Best_Step := i;
+                                Min_Cycles := Step_Cycle_Count[i];
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                END_FOR;
+                
+                IF Best_Step > 0 THEN
+                    EXIT;
+                END_IF;
+            END_FOR;
+        END_IF;
+        
+        // Turn ON selected step
+        IF Best_Step > 0 THEN
+            Coil_Internal[Best_Step] := TRUE;
+            Step_Cycle_Count[Best_Step] := Step_Cycle_Count[Best_Step] + 1;
+        END_IF;
+        
+        Step_Up_Timer(IN := FALSE);
+    END_IF;
+
+// ============================================
+// NEED TO REMOVE POWER?
+// ============================================
+ELSIF Power_Needed < -Deadband_kW THEN
+    Step_Down_Timer(IN := TRUE, PT := Step_Down_Delay);
+    Step_Up_Timer(IN := FALSE);
+    
+    IF Step_Down_Timer.Q THEN
+        Best_Step := 0;
+        Max_Cycles := 0;
+        
+        // Search power groups from SMALLEST to LARGEST
+        FOR g := Num_Unique_Powers TO 1 BY -1 DO
+            Target_Power_Value := Unique_Powers[g];
+            
+            // Does this power fit?
+            IF Target_Power_Value <= ABS(Power_Needed) THEN
+                // Find ON step with this power, highest cycles
+                FOR i := 1 TO Number_Of_Steps DO
+                    IF Step_Power_Rating[i] = Target_Power_Value AND Coil_Internal[i] THEN
+                        IF Step_Cycle_Count[i] >= Max_Cycles THEN
+                            Best_Step := i;
+                            Max_Cycles := Step_Cycle_Count[i];
+                        END_IF;
+                    END_IF;
+                END_FOR;
+                
+                IF Best_Step > 0 THEN
+                    EXIT;
+                END_IF;
+            END_IF;
+        END_FOR;
+        
+        // If no step fits, find smallest ON step
+        IF Best_Step = 0 THEN
+            FOR g := Num_Unique_Powers TO 1 BY -1 DO
+                Target_Power_Value := Unique_Powers[g];
+                
+                FOR i := 1 TO Number_Of_Steps DO
+                    IF Step_Power_Rating[i] = Target_Power_Value AND Coil_Internal[i] THEN
+                        Best_Step := i;
+                        EXIT;
+                    END_IF;
+                END_FOR;
+                
+                IF Best_Step > 0 THEN
+                    EXIT;
+                END_IF;
+            END_FOR;
+        END_IF;
+        
+        // Turn OFF selected step
+        IF Best_Step > 0 THEN
+            Coil_Internal[Best_Step] := FALSE;
+        END_IF;
+        
+        Step_Down_Timer(IN := FALSE);
+    END_IF;
+
+ELSE
+    // At target - reset timers
+    Step_Up_Timer(IN := FALSE);
+    Step_Down_Timer(IN := FALSE);
+END_IF;
+
+END_IF; // End of non-maintenance mode
+
+// ============================================
+// FEEDBACK MONITORING
+// ============================================
+Any_Feedback_Fault := FALSE;
+
+IF Enable_Feedback_Monitoring THEN
+    FOR i := 1 TO Number_Of_Steps DO
+        // Reset timer on rising edge (coil just turned ON)
+        IF Coil_Internal[i] AND NOT Coil_Prev[i] THEN
+            FB_Timer[i](IN := FALSE);
+        END_IF;
+        
+        // Monitor: Coil ON but no feedback
+        FB_Timer[i](
+            IN := Coil_Internal[i] AND NOT Step_Feedback[i] AND NOT FB_Fault_Latched[i],
+            PT := Feedback_Timeout
+        );
+        
+        // Timeout = fault, quarantine step
+        IF FB_Timer[i].Q THEN
+            FB_Fault_Latched[i] := TRUE;
+            Step_Quarantine_Feedback[i] := TRUE;
+            Coil_Internal[i] := FALSE;
+        END_IF;
+        
+        IF FB_Fault_Latched[i] THEN
+            Any_Feedback_Fault := TRUE;
+        END_IF;
+        
+        Coil_Prev[i] := Coil_Internal[i];
+    END_FOR;
+END_IF;
+
+// ============================================
+// TOTAL POWER MONITORING
+// ============================================
+IF Enable_Power_Monitoring AND Active_Step_Count > 0 THEN
+    // Calculate expected power from ON steps
+    Expected_Power := 0.0;
+    FOR i := 1 TO Number_Of_Steps DO
+        IF Coil_Internal[i] THEN
+            Expected_Power := Expected_Power + Step_Power_Rating[i];
+        END_IF;
+    END_FOR;
+    
+    // Calculate difference
+    Power_Diff := ABS(Measured_Total_Power - Expected_Power);
+    
+    // Calculate percentage
+    IF Expected_Power > 0.0 THEN
+        Power_Mismatch_Percent := (Power_Diff / Expected_Power) * 100.0;
+    ELSE
+        Power_Mismatch_Percent := 0.0;
+    END_IF;
+    
+    // Check if outside tolerance
+    Power_Monitor_Timer(
+        IN := Power_Mismatch_Percent > Power_Tolerance_Percent,
+        PT := Power_Monitor_Delay
+    );
+    
+    IF Power_Monitor_Timer.Q THEN
+        Total_Power_Warning := TRUE;
+    ELSIF Power_Mismatch_Percent <= Power_Tolerance_Percent THEN
+        Total_Power_Warning := FALSE;
+        Power_Monitor_Timer(IN := FALSE);
+    END_IF;
+ELSE
+    Power_Monitor_Timer(IN := FALSE);
+    Power_Mismatch_Percent := 0.0;
+END_IF;
+
+// ============================================
+// COPY TO OUTPUT
+// ============================================
+FOR i := 1 TO LB_NUMBER_OF_STEPS DO
+    Step_Coil_Cmd[i] := Coil_Internal[i];
+END_FOR;
+
+// ============================================
+// CALCULATE RELEASED POWER (final)
+// ============================================
+Released_Power_kW := 0.0;
+Active_Step_Count := 0;
+FOR i := 1 TO Number_Of_Steps DO
+    IF Coil_Internal[i] THEN
+        Released_Power_kW := Released_Power_kW + Step_Power_Rating[i];
+        Active_Step_Count := Active_Step_Count + 1;
+    END_IF;
+END_FOR;
+
+// ============================================
+// STATUS MESSAGE
+// ============================================
+IF Total_Power_Warning THEN
+    Status_Text := 'POWER MISMATCH WARNING';
+ELSIF Any_Feedback_Fault THEN
+    Status_Text := 'FEEDBACK FAULT';
+ELSIF Maintenance_Mode THEN
+    Status_Text := 'Maintenance mode';
+ELSIF At_Target THEN
+    Status_Text := 'At target';
+ELSIF Power_Needed > 0.0 THEN
+    Status_Text := 'Increasing load';
+ELSIF Power_Needed < 0.0 THEN
+    Status_Text := 'Decreasing load';
+ELSE
+    Status_Text := 'Ready';
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Load_Controller">
+      <LineId Id="397" Count="395" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

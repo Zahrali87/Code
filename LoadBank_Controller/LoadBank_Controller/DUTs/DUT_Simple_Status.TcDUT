@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="DUT_Simple_Status" Id="{e1bf17c0-e183-4c54-982a-6dca4d2727ba}">
+    <Declaration><![CDATA[TYPE DUT_Simple_Status :
+STRUCT
+    Released_Power_kW       : REAL;
+    Available_Power_kW      : REAL;
+    Rated_Total_kW          : REAL;
+    Power_Error_kW          : REAL;
+    Active_Steps            : UINT;
+    Quarantined_Steps       : UINT;
+    Fan_Running             : BOOL;
+    Fan_Fault               : BOOL;
+    Fan_Cycle_Count         : UDINT;
+    Temperature_Outlet_Avg  : REAL;
+    Temperature_Outlet_Max  : REAL;
+    Temperature_Inlet       : REAL;
+    Temperature_DeltaT      : REAL;
+    Hottest_TC_Number       : UINT;
+    Voltage_L1_L2           : REAL;
+    Voltage_L2_L3           : REAL;
+    Voltage_L3_L1           : REAL;
+    Voltage_Average         : REAL;
+    Voltage_Imbalance       : REAL;
+    Voltage_OK              : BOOL;
+    Current_L1              : REAL;
+    Current_L2              : REAL;
+    Current_L3              : REAL;
+    Current_Total           : REAL;
+    Current_Imbalance       : REAL;
+    System_Running          : BOOL;
+    System_Ready            : BOOL;
+    System_Fault            : BOOL;
+    System_Warning          : BOOL;
+    Emergency_Active        : BOOL;
+    Temperature_Dump        : BOOL;
+    Active_Mode             : UINT;
+    Mode_Name               : STRING(30);
+    Mode_Ready              : BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="DUT_Recipe_Step" Id="{3b9a94e1-f58d-444d-8a89-06b5f403bd51}">
+    <Declaration><![CDATA[TYPE DUT_Recipe_Step :
+STRUCT
+    Step_Name               : STRING(40);
+    Target_Power_kW         : REAL;
+    Duration                : TIME;
+    Enabled                 : BOOL := TRUE;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

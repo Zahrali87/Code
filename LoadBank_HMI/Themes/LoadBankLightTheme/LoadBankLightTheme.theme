@@ -1,0 +1,24 @@
+{
+    "$schema": "../../Packages/Beckhoff.TwinCAT.HMI.Framework/Server/Schema/theme.schema.json",
+    "name": "LoadBankLightTheme",
+    "customResourceFiles": [],
+    "resources": {
+        "Colors": {
+            "Light-Background": { "color": "rgba(245, 247, 250, 1)" },
+            "Light-Header": { "color": "rgba(232, 236, 241, 1)" },
+            "Light-Panel": { "color": "rgba(255, 255, 255, 1)" },
+            "Light-Border": { "color": "rgba(209, 217, 230, 1)" },
+            "Light-Button": { "color": "rgba(227, 232, 239, 1)" },
+            "Light-Input": { "color": "rgba(240, 243, 247, 1)" },
+            "Accent-Cyan": { "color": "rgba(2, 136, 209, 1)" },
+            "Accent-Blue": { "color": "rgba(21, 101, 192, 1)" },
+            "Success-Green": { "color": "rgba(46, 125, 50, 1)" },
+            "Warning-Yellow": { "color": "rgba(245, 124, 0, 1)" },
+            "Warning-Orange": { "color": "rgba(230, 81, 0, 1)" },
+            "Danger-Red": { "color": "rgba(198, 40, 40, 1)" },
+            "Text-Primary": { "color": "rgba(26, 43, 60, 1)" },
+            "Text-Secondary": { "color": "rgba(90, 107, 124, 1)" },
+            "Text-Light": { "color": "rgba(255, 255, 255, 1)" }
+        }
+    }
+}

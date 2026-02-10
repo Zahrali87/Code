@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <GVL Name="GVL_LoadBank_Constants" Id="{586c21f8-8c57-4dd5-b2bb-e6ad91d9b3b5}">
+    <Declaration><![CDATA[VAR_GLOBAL CONSTANT
+
+    // ============================================
+    // OPERATING MODES (ID numbers only)
+    // ============================================
+    LB_MODE_OFF             : UINT := 0;
+    LB_MODE_AUTO_LEVELING   : UINT := 1;
+    LB_MODE_NUMERIC    		: UINT := 2;
+    LB_MODE_REVERSE_POWER   : UINT := 3;
+    LB_MODE_MANUAL			: UINT := 4;
+    LB_MODE_RECIPE          : UINT := 5;
+    LB_MODE_MAINTENANCE     : UINT := 6;
+
+    // ============================================
+    // HARDWARE CONFIGURATION (Change per job)
+    // ============================================
+    LB_NUMBER_OF_STEPS      : UINT := 10;
+    LB_NUMBER_OF_TCS        : UINT := 2;
+    
+    // ============================================
+    // VOLTAGE CONFIGURATION
+    // ============================================
+    LB_VOLTAGE              : REAL := 480.0;
+    LB_VOLTAGE_NAME         : STRING(20) := '480V 3-Phase';
+
+    // ============================================
+    // STEP POWER RATINGS (kW per step)
+    // When you change LB_NUMBER_OF_STEPS, update this array to match
+    // ============================================
+    LB_STEP_POWER           : ARRAY[1..LB_NUMBER_OF_STEPS] OF REAL := [
+        40.0, 40.0, 80.0, 80.0, 160.0, 160.0, 320.0, 320.0, 640.0, 640.0
+    ];
+
+    // ============================================
+    // ARRAY LIMITS
+    // ============================================
+    LB_MAX_RECIPE_STEPS     : UINT := 20;
+    LB_TREND_BUFFER_MAX     : UINT := 3600;
+	
+	// Manual Mode Switch Configuration
+    LB_MANUAL_SWITCH_POWER      : ARRAY[1..8] OF REAL := [50.0, 100.0, 150.0, 200.0, 250.0, 300.0, 350.0, 400.0];
+    LB_NUMBER_OF_SWITCHES       : USINT := 8;
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

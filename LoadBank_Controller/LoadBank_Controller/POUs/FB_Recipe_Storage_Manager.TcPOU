@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Recipe_Storage_Manager" Id="{635e5a95-6768-4421-a548-7e28f95c070c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Recipe_Storage_Manager
+VAR_INPUT
+    // Commands from HMI
+    Save_Recipe             : BOOL;
+    Load_Recipe             : BOOL;
+    Delete_Recipe           : BOOL;
+    
+    // Which slot to operate on
+    Selected_Slot           : UINT;             // 1-4
+    
+    // Current recipe data to save
+    Current_Recipe_Name     : STRING(40);
+    Current_Steps           : ARRAY[1..20] OF DUT_Recipe_Step;
+    Current_Number_Of_Steps : UINT;
+END_VAR
+
+VAR_OUTPUT
+    // Loaded recipe data
+    Loaded_Recipe_Name      : STRING(40);
+    Loaded_Steps            : ARRAY[1..20] OF DUT_Recipe_Step;
+    Loaded_Number_Of_Steps  : UINT;
+    
+    // Status
+    Operation_Complete      : BOOL;
+    Operation_Status        : STRING(50);
+    
+    // Recipe slot info for HMI display
+    Slot_1_Name             : STRING(40);
+    Slot_1_Valid            : BOOL;
+    Slot_2_Name             : STRING(40);
+    Slot_2_Valid            : BOOL;
+    Slot_3_Name             : STRING(40);
+    Slot_3_Valid            : BOOL;
+    Slot_4_Name             : STRING(40);
+    Slot_4_Valid            : BOOL;
+END_VAR
+
+VAR
+    Save_Prev               : BOOL;
+    Load_Prev               : BOOL;
+    Delete_Prev             : BOOL;
+    
+    i                       : UINT;
+    TotalTime               : TIME;
+    MaxPower                : REAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Update slot info for HMI display
+Slot_1_Name := GVL_Recipe_Storage.Saved_Recipes[1].Recipe_Name;
+Slot_1_Valid := GVL_Recipe_Storage.Saved_Recipes[1].Is_Valid;
+Slot_2_Name := GVL_Recipe_Storage.Saved_Recipes[2].Recipe_Name;
+Slot_2_Valid := GVL_Recipe_Storage.Saved_Recipes[2].Is_Valid;
+Slot_3_Name := GVL_Recipe_Storage.Saved_Recipes[3].Recipe_Name;
+Slot_3_Valid := GVL_Recipe_Storage.Saved_Recipes[3].Is_Valid;
+Slot_4_Name := GVL_Recipe_Storage.Saved_Recipes[4].Recipe_Name;
+Slot_4_Valid := GVL_Recipe_Storage.Saved_Recipes[4].Is_Valid;
+
+// Reset operation complete flag
+Operation_Complete := FALSE;
+
+// Validate slot selection
+IF Selected_Slot < 1 OR Selected_Slot > 4 THEN
+    Selected_Slot := 1;
+END_IF;
+
+
+// ==========================================
+// SAVE RECIPE
+// ==========================================
+IF Save_Recipe AND NOT Save_Prev THEN
+    
+    // Validate we have data to save
+    IF Current_Number_Of_Steps > 0 AND Current_Recipe_Name <> '' THEN
+        
+        // Save recipe name and step count
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Recipe_Name := Current_Recipe_Name;
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Number_Of_Steps := Current_Number_Of_Steps;
+        
+        // Calculate total duration and peak power
+        TotalTime := T#0s;
+        MaxPower := 0.0;
+        
+        FOR i := 1 TO Current_Number_Of_Steps DO
+            // Copy step data
+            GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i] := Current_Steps[i];
+            
+            // Accumulate time
+            IF Current_Steps[i].Enabled THEN
+                TotalTime := TotalTime + Current_Steps[i].Duration;
+                IF Current_Steps[i].Target_Power_kW > MaxPower THEN
+                    MaxPower := Current_Steps[i].Target_Power_kW;
+                END_IF;
+            END_IF;
+        END_FOR;
+        
+        // Clear remaining steps
+        FOR i := Current_Number_Of_Steps + 1 TO 20 DO
+            GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i].Step_Name := '';
+            GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i].Target_Power_kW := 0.0;
+            GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i].Duration := T#0s;
+            GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i].Enabled := FALSE;
+        END_FOR;
+        
+        // Save calculated values
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Total_Duration := TotalTime;
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Peak_Power_kW := MaxPower;
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Is_Valid := TRUE;
+        
+        Operation_Status := 'Recipe saved successfully';
+        Operation_Complete := TRUE;
+        
+    ELSE
+        Operation_Status := 'Error: No recipe data to save';
+        Operation_Complete := TRUE;
+    END_IF;
+    
+END_IF;
+Save_Prev := Save_Recipe;
+
+
+// ==========================================
+// LOAD RECIPE
+// ==========================================
+IF Load_Recipe AND NOT Load_Prev THEN
+    
+    // Check if slot has valid data
+    IF GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Is_Valid THEN
+        
+        // Load recipe data
+        Loaded_Recipe_Name := GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Recipe_Name;
+        Loaded_Number_Of_Steps := GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Number_Of_Steps;
+        
+        // Copy steps
+        FOR i := 1 TO 20 DO
+            Loaded_Steps[i] := GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i];
+        END_FOR;
+        
+        Operation_Status := 'Recipe loaded successfully';
+        Operation_Complete := TRUE;
+        
+    ELSE
+        Operation_Status := 'Error: No recipe in selected slot';
+        Operation_Complete := TRUE;
+    END_IF;
+    
+END_IF;
+Load_Prev := Load_Recipe;
+
+
+// ==========================================
+// DELETE RECIPE
+// ==========================================
+IF Delete_Recipe AND NOT Delete_Prev THEN
+    
+    // Clear the selected slot
+    GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Recipe_Name := '';
+    GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Number_Of_Steps := 0;
+    GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Total_Duration := T#0s;
+    GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Peak_Power_kW := 0.0;
+    GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Is_Valid := FALSE;
+    
+    // Clear all steps
+    FOR i := 1 TO 20 DO
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i].Step_Name := '';
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i].Target_Power_kW := 0.0;
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i].Duration := T#0s;
+        GVL_Recipe_Storage.Saved_Recipes[Selected_Slot].Steps[i].Enabled := FALSE;
+    END_FOR;
+    
+    Operation_Status := 'Recipe deleted';
+    Operation_Complete := TRUE;
+    
+END_IF;
+Delete_Prev := Delete_Recipe;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Recipe_Storage_Manager">
+      <LineId Id="91" Count="126" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

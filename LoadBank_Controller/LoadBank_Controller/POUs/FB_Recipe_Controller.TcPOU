@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Recipe_Controller" Id="{6476d75f-56d0-4b42-8163-d178f05efa0a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Recipe_Controller
+VAR_INPUT
+    Recipe_Enable           : BOOL;
+    Recipe_Start            : BOOL;
+    Recipe_Pause            : BOOL;
+    Recipe_Abort            : BOOL;
+    
+    Recipe_Steps            : ARRAY[1..20] OF DUT_Recipe_Step;
+    Number_Of_Steps         : UINT := 5;
+    
+    Current_Power_kW        : REAL;
+END_VAR
+VAR_OUTPUT
+    Recipe_Running          : BOOL;
+    Recipe_Paused           : BOOL;
+    Recipe_Complete         : BOOL;
+    Recipe_Aborted          : BOOL;
+    
+    Current_Step_Number     : UINT;
+    Current_Step_Name       : STRING(40);
+    Target_Power_kW         : REAL;
+    
+    Step_Elapsed_Time       : TIME;
+    Step_Remaining_Time     : TIME;
+    
+    Total_Recipe_Time       : TIME;
+    Total_Elapsed_Time      : TIME;
+    Total_Remaining_Time    : TIME;
+    
+    Recipe_Progress_Percent : UINT;
+    
+    Status_Message          : STRING(100);
+END_VAR
+VAR
+    State                   : UINT;
+    Step_Timer              : TON;
+    Elapsed_Total           : TIME;
+    
+    Recipe_Start_Prev       : BOOL;
+    Recipe_Pause_Prev       : BOOL;
+    Recipe_Abort_Prev       : BOOL;
+    
+    i                       : UINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+IF NOT Recipe_Enable THEN
+    State := 0;
+    Recipe_Running := FALSE;
+    Recipe_Paused := FALSE;
+    Target_Power_kW := 0.0;
+    RETURN;
+END_IF;
+
+// Calculate total recipe time
+Total_Recipe_Time := T#0s;
+FOR i := 1 TO Number_Of_Steps DO
+    IF Recipe_Steps[i].Enabled THEN
+        Total_Recipe_Time := Total_Recipe_Time + Recipe_Steps[i].Duration;
+    END_IF;
+END_FOR;
+
+CASE State OF
+    0: // IDLE
+        Recipe_Running := FALSE;
+        Recipe_Paused := FALSE;
+        Recipe_Complete := FALSE;
+        Recipe_Aborted := FALSE;
+        
+        Current_Step_Number := 0;
+        Current_Step_Name := '';
+        Target_Power_kW := 0.0;
+        
+        Step_Elapsed_Time := T#0s;
+        Total_Elapsed_Time := T#0s;
+        Elapsed_Total := T#0s;
+        
+        Status_Message := 'Recipe idle - press START';
+        
+        Step_Timer(IN := FALSE);
+        
+        IF Recipe_Start AND NOT Recipe_Start_Prev THEN
+            Current_Step_Number := 1;
+            State := 10;
+        END_IF;
+    
+    10: // RUNNING
+        Recipe_Running := TRUE;
+        Recipe_Paused := FALSE;
+        Recipe_Complete := FALSE;
+        Recipe_Aborted := FALSE;
+        
+        IF Current_Step_Number > Number_Of_Steps OR Current_Step_Number = 0 THEN
+            State := 90;
+            RETURN;
+        END_IF;
+        
+        IF NOT Recipe_Steps[Current_Step_Number].Enabled THEN
+            Current_Step_Number := Current_Step_Number + 1;
+            RETURN;
+        END_IF;
+        
+        Current_Step_Name := Recipe_Steps[Current_Step_Number].Step_Name;
+        Target_Power_kW := Recipe_Steps[Current_Step_Number].Target_Power_kW;
+        
+        Step_Timer(IN := TRUE, PT := Recipe_Steps[Current_Step_Number].Duration);
+        
+        Step_Elapsed_Time := Step_Timer.ET;
+        Step_Remaining_Time := Recipe_Steps[Current_Step_Number].Duration - Step_Timer.ET;
+        
+        Elapsed_Total := Elapsed_Total + T#100ms;
+        Total_Elapsed_Time := Elapsed_Total;
+        Total_Remaining_Time := Total_Recipe_Time - Elapsed_Total;
+        
+        IF Total_Recipe_Time > T#0s THEN
+            Recipe_Progress_Percent := DINT_TO_UINT((TIME_TO_DINT(Elapsed_Total) * 100) / TIME_TO_DINT(Total_Recipe_Time));
+        ELSE
+            Recipe_Progress_Percent := 0;
+        END_IF;
+        
+        Status_Message := CONCAT('Running step ', UINT_TO_STRING(Current_Step_Number));
+        Status_Message := CONCAT(Status_Message, ': ');
+        Status_Message := CONCAT(Status_Message, Current_Step_Name);
+        
+        IF Recipe_Pause AND NOT Recipe_Pause_Prev THEN
+            State := 20;
+        END_IF;
+        
+        IF Recipe_Abort AND NOT Recipe_Abort_Prev THEN
+            State := 99;
+        END_IF;
+        
+        IF Step_Timer.Q THEN
+            Current_Step_Number := Current_Step_Number + 1;
+            Step_Timer(IN := FALSE);
+            
+            IF Current_Step_Number > Number_Of_Steps THEN
+                State := 90;
+            END_IF;
+        END_IF;
+    
+    20: // PAUSED
+        Recipe_Running := FALSE;
+        Recipe_Paused := TRUE;
+        
+        Step_Timer(IN := FALSE);
+        
+        Status_Message := 'Recipe PAUSED';
+        
+        IF Recipe_Start AND NOT Recipe_Start_Prev THEN
+            State := 10;
+        END_IF;
+        
+        IF Recipe_Abort AND NOT Recipe_Abort_Prev THEN
+            State := 99;
+        END_IF;
+    
+    90: // COMPLETE
+        Recipe_Running := FALSE;
+        Recipe_Paused := FALSE;
+        Recipe_Complete := TRUE;
+        Recipe_Aborted := FALSE;
+        
+        Target_Power_kW := 0.0;
+        
+        Status_Message := 'Recipe COMPLETE';
+        
+        Step_Timer(IN := FALSE);
+        
+        IF Recipe_Start AND NOT Recipe_Start_Prev THEN
+            State := 0;
+        END_IF;
+    
+    99: // ABORTED
+        Recipe_Running := FALSE;
+        Recipe_Paused := FALSE;
+        Recipe_Complete := FALSE;
+        Recipe_Aborted := TRUE;
+        
+        Target_Power_kW := 0.0;
+        
+        Status_Message := 'Recipe ABORTED by operator';
+        
+        Step_Timer(IN := FALSE);
+        
+        IF Recipe_Start AND NOT Recipe_Start_Prev THEN
+            State := 0;
+        END_IF;
+        
+END_CASE;
+
+Recipe_Start_Prev := Recipe_Start;
+Recipe_Pause_Prev := Recipe_Pause;
+Recipe_Abort_Prev := Recipe_Abort;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Recipe_Controller">
+      <LineId Id="767" Count="148" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

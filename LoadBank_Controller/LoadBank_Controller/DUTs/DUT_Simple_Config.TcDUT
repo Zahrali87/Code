@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="DUT_Simple_Config" Id="{dcb9dfe3-750c-4707-abbe-dc8e2c725b85}">
+    <Declaration><![CDATA[TYPE DUT_Simple_Config :
+STRUCT
+    Number_Of_Steps         : UINT := 10;
+    Number_Of_TCs           : UINT := 5;
+    Rated_Voltage           : REAL := 480.0;
+    Voltage_Name            : STRING(20) := '480V 3-Phase';
+    Voltage_Tolerance       : REAL := 5.0;
+    Step_Power              : ARRAY[1..100] OF REAL;
+    Temp_Warning            : REAL := 80.0;
+    Temp_Maximum            : REAL := 100.0;
+    Temp_Critical           : REAL := 120.0;
+    Temp_Dump_Rate          : REAL := 10.0;
+    Fan_Pressurize_Time     : TIME := T#5s;
+    Fan_Cooldown_Time       : TIME := T#30s;
+    EStop_Controlled_Percent: REAL := 10.0;
+    EStop_Controlled_Time   : TIME := T#1s;
+    Auto_Level_Deadband     : REAL := 5.0;
+    Step_Change_Delay       : TIME := T#500ms;
+    Feedback_Timeout        : TIME := T#3s;
+    Enable_Power_Monitoring : BOOL := TRUE;
+    Power_Tolerance_Percent : REAL := 5.0;
+    Power_Monitor_Delay     : TIME := T#10s;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

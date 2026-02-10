@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Auto_Mode" Id="{926273ab-ae88-4926-ac97-d5426c714bae}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Auto_Mode
+VAR_INPUT
+    Mode_Active             : BOOL;
+    External_Power_kW       : REAL;             // From external power meter
+    Min_Load_kW             : REAL;             // Minimum load to maintain on generator
+    Available_Power_kW      : REAL;             // Max available from Load_Controller
+    Deadband_kW             : REAL := 5.0;      // Default 5 kW deadband
+    System_Ready            : BOOL;
+END_VAR
+
+VAR_OUTPUT
+    Target_Power_kW         : REAL;             // Target for Load_Controller
+    Power_Error             : REAL;             // For HMI display
+    Status_Text             : STRING(100);      // Status for HMI
+END_VAR
+
+VAR
+    Internal_Target         : REAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// NOT ACTIVE - IDLE
+// ============================================
+IF NOT Mode_Active THEN
+    Target_Power_kW := 0.0;
+    Power_Error := 0.0;
+    Status_Text := 'Mode not active';
+    RETURN;
+END_IF;
+
+// ============================================
+// SYSTEM NOT READY
+// ============================================
+IF NOT System_Ready THEN
+    Target_Power_kW := 0.0;
+    Power_Error := 0.0;
+    Status_Text := 'System not ready';
+    RETURN;
+END_IF;
+
+// ============================================
+// AUTO LEVELING ALGORITHM
+// ============================================
+// Power_Error = How far external power is from target (Min_Load_kW)
+// Positive error = too much power flowing out, need to remove load
+// Negative error = reverse power or under target, need to add load
+Power_Error := External_Power_kW - Min_Load_kW;
+
+// Calculate new target
+Internal_Target := Target_Power_kW - Power_Error;
+
+// Clamp to valid range
+IF Internal_Target < 0.0 THEN
+    Internal_Target := 0.0;
+ELSIF Internal_Target > Available_Power_kW THEN
+    Internal_Target := Available_Power_kW;
+END_IF;
+
+Target_Power_kW := Internal_Target;
+
+// ============================================
+// STATUS TEXT
+// ============================================
+IF ABS(Power_Error) <= Deadband_kW THEN
+    Status_Text := 'At target';
+ELSIF Power_Error < -Deadband_kW THEN
+    // Need to add load
+    IF Target_Power_kW >= Available_Power_kW THEN
+        Status_Text := 'LB FULL - Cannot add more';
+    ELSE
+        Status_Text := 'Adding load';
+    END_IF;
+ELSE
+    // Need to remove load
+    IF Target_Power_kW <= 0.0 THEN
+        Status_Text := 'LB Empty - Cannot remove more';
+    ELSE
+        Status_Text := 'Removing load';
+    END_IF;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Auto_Mode">
+      <LineId Id="988" Count="58" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

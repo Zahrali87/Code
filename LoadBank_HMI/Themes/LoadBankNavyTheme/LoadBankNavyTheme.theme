@@ -1,0 +1,24 @@
+{
+    "$schema": "../../Packages/Beckhoff.TwinCAT.HMI.Framework/Server/Schema/theme.schema.json",
+    "name": "LoadBankNavyTheme",
+    "customResourceFiles": [],
+    "resources": {
+        "Colors": {
+            "Navy-Dark": { "color": "rgba(10, 20, 32, 1)" },
+            "Navy-Medium": { "color": "rgba(15, 28, 46, 1)" },
+            "Navy-Panel": { "color": "rgba(26, 41, 66, 1)" },
+            "Navy-Border": { "color": "rgba(45, 70, 99, 1)" },
+            "Navy-Button": { "color": "rgba(36, 58, 86, 1)" },
+            "Navy-Input": { "color": "rgba(15, 28, 46, 1)" },
+            "Accent-Cyan": { "color": "rgba(77, 212, 255, 1)" },
+            "Accent-Blue": { "color": "rgba(100, 181, 246, 1)" },
+            "Success-Green": { "color": "rgba(76, 175, 80, 1)" },
+            "Warning-Yellow": { "color": "rgba(255, 193, 7, 1)" },
+            "Warning-Orange": { "color": "rgba(255, 152, 0, 1)" },
+            "Danger-Red": { "color": "rgba(244, 67, 54, 1)" },
+            "Text-Primary": { "color": "rgba(232, 240, 247, 1)" },
+            "Text-Secondary": { "color": "rgba(148, 163, 184, 1)" },
+            "Text-Dark": { "color": "rgba(10, 20, 32, 1)" }
+        }
+    }
+}

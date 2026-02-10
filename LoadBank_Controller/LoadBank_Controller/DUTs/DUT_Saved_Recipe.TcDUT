@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="DUT_Saved_Recipe" Id="{8969f0a1-5527-4cd3-aa58-dabdaf39b593}">
+    <Declaration><![CDATA[// ============================================
+// DATA TYPE: DUT_Saved_Recipe
+// Add to your DUTs folder
+// ============================================
+TYPE DUT_Saved_Recipe :
+STRUCT
+    Recipe_Name             : STRING(40);       // Recipe display name
+    Number_Of_Steps         : UINT;             // How many steps in this recipe
+    Steps                   : ARRAY[1..20] OF DUT_Recipe_Step;  // The recipe steps
+    Total_Duration          : TIME;             // Calculated total time
+    Peak_Power_kW           : REAL;             // Calculated peak power
+    Is_Valid                : BOOL;             // TRUE if recipe slot contains valid data
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Manual_Mode" Id="{dccf7914-1417-4283-ac53-e4dbde30632b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Manual_Mode
+VAR_INPUT
+    Number_Of_Switches      : USINT;
+    Switch_Status           : ARRAY[1..8] OF BOOL;
+    Switch_Power            : ARRAY[1..8] OF REAL;
+END_VAR
+VAR_OUTPUT
+    Target_Power_kW         : REAL;
+END_VAR
+VAR
+    i                       : USINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Target_Power_kW := 0.0;
+
+FOR i := 1 TO Number_Of_Switches DO
+    IF Switch_Status[i] THEN
+        Target_Power_kW := Target_Power_kW + Switch_Power[i];
+    END_IF;
+END_FOR;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Manual_Mode">
+      <LineId Id="304" Count="5" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

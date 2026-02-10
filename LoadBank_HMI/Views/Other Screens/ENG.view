@@ -1,0 +1,905 @@
+<!-- ENG.view - TwinCAT HMI Engineer Settings Screen -->
+<!-- Load Bank Control System - Professional Grid Layout -->
+<!-- GVL Variables: GVL_LoadBank_Persistent (30 settings) -->
+
+<div id="ENG" data-tchmi-type="TcHmi.Controls.System.TcHmiView" 
+     data-tchmi-top="0" data-tchmi-left="0" 
+     data-tchmi-width="1024" data-tchmi-height="600" 
+     data-tchmi-width-mode="Value"
+     data-tchmi-height-mode="Value"
+     data-tchmi-scale-mode="ScaleToFit"
+     data-tchmi-creator-viewport-width="1024" 
+     data-tchmi-creator-viewport-height="600">
+
+<script type="text/javascript" data-tchmi-target-attribute="data-tchmi-trigger">
+[{
+    "event": "onLoaded",
+    "actions": [{
+        "objectType": "Function",
+        "active": true,
+        "fn": function() {
+            // Initialize LoadBank module
+            if (typeof LoadBank !== 'undefined') {
+                LoadBank.init('ENG', {});
+            }
+            // Initialize Settings module
+            if (typeof Settings !== 'undefined') {
+                Settings.init('ENG');
+            }
+        }
+    }]
+}]
+</script>
+
+<!-- ================================================================== -->
+<!-- HEADER BAR -->
+<!-- ================================================================== -->
+<div id="ENGHeaderBar" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="0" data-tchmi-top="0" 
+     data-tchmi-width="1024" data-tchmi-height="40" 
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'>
+</div>
+
+<div id="ENGBackBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="8" data-tchmi-top="4" 
+     data-tchmi-width="70" data-tchmi-height="32" 
+     data-tchmi-text="← BACK" 
+     data-tchmi-text-font-size="11" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<div id="ENGTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="90" data-tchmi-top="8" 
+     data-tchmi-width="250" data-tchmi-height="24" 
+     data-tchmi-text="🔧 ENGINEER SETTINGS" 
+     data-tchmi-text-font-size="16" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<div id="ENGSessionTimer" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="800" data-tchmi-top="10" 
+     data-tchmi-width="100" data-tchmi-height="20" 
+     data-tchmi-text="Session: 10:00" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<div id="ENGLogoutBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="920" data-tchmi-top="4" 
+     data-tchmi-width="96" data-tchmi-height="32" 
+     data-tchmi-text="⚠️ LOGOUT" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(255, 152, 0, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(0, 0, 0, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 1: TEMPERATURE LIMITS (Left Top) -->
+<!-- ================================================================== -->
+<div id="TempPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="8" data-tchmi-top="44" 
+     data-tchmi-width="336" data-tchmi-height="145" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="TempTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="48" 
+     data-tchmi-width="150" data-tchmi-height="16" 
+     data-tchmi-text="TEMPERATURE LIMITS" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- Headers -->
+<div id="TempWarnHdr" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="180" data-tchmi-top="48" 
+     data-tchmi-width="70" data-tchmi-height="14" 
+     data-tchmi-text="Warn (°C)" 
+     data-tchmi-text-font-size="9" 
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'>
+</div>
+<div id="TempMaxHdr" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="260" data-tchmi-top="48" 
+     data-tchmi-width="70" data-tchmi-height="14" 
+     data-tchmi-text="Max (°C)" 
+     data-tchmi-text-font-size="9" 
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Row 1: Outlet -->
+<div id="OutletLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="68" 
+     data-tchmi-width="160" data-tchmi-height="20" 
+     data-tchmi-text="Outlet (exhaust):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="OutletWarnInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="180" data-tchmi-top="66" 
+     data-tchmi-width="70" data-tchmi-height="24" 
+     data-tchmi-value="350"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'>
+</div>
+<div id="OutletMaxInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="260" data-tchmi-top="66" 
+     data-tchmi-width="70" data-tchmi-height="24" 
+     data-tchmi-value="400"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Row 2: Inlet -->
+<div id="InletLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="96" 
+     data-tchmi-width="120" data-tchmi-height="20" 
+     data-tchmi-text="Inlet (intake):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="InletWarnInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="180" data-tchmi-top="94" 
+     data-tchmi-width="70" data-tchmi-height="24" 
+     data-tchmi-value="50"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'>
+</div>
+<div id="InletMaxInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="260" data-tchmi-top="94" 
+     data-tchmi-width="70" data-tchmi-height="24" 
+     data-tchmi-value="75"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Row 3: TC Fault + Inlet Enable -->
+<div id="TCFaultLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="124" 
+     data-tchmi-width="80" data-tchmi-height="20" 
+     data-tchmi-text="TC Fault:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="TCOpenLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="80" data-tchmi-top="124" 
+     data-tchmi-width="35" data-tchmi-height="20" 
+     data-tchmi-text="Open>" 
+     data-tchmi-text-font-size="9"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+<div id="TCOpenInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="115" data-tchmi-top="122" 
+     data-tchmi-width="50" data-tchmi-height="22" 
+     data-tchmi-value="700"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="TCShortLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="170" data-tchmi-top="124" 
+     data-tchmi-width="40" data-tchmi-height="20" 
+     data-tchmi-text="Short<" 
+     data-tchmi-text-font-size="9"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+<div id="TCShortInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="210" data-tchmi-top="122" 
+     data-tchmi-width="50" data-tchmi-height="22" 
+     data-tchmi-value="-50"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="InletEnLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="270" data-tchmi-top="124" 
+     data-tchmi-width="40" data-tchmi-height="20" 
+     data-tchmi-text="Inlet:" 
+     data-tchmi-text-font-size="9"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+<div id="InletEnTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="300" data-tchmi-top="120" 
+     data-tchmi-width="40" data-tchmi-height="22" 
+     data-tchmi-toggle-state="Active">
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 2: FAN CONTROL (Center Top) -->
+<!-- ================================================================== -->
+<div id="FanPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="352" data-tchmi-top="44" 
+     data-tchmi-width="320" data-tchmi-height="145" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="FanTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="48" 
+     data-tchmi-width="200" data-tchmi-height="16" 
+     data-tchmi-text="FAN CONTROL" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- Row 1 -->
+<div id="FanPressLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="68" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Pressurize (sec):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="FanPressInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="510" data-tchmi-top="66" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="5"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="FanPressDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="575" data-tchmi-top="70" 
+     data-tchmi-width="90" data-tchmi-height="16" 
+     data-tchmi-text="before load" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Row 2 -->
+<div id="FanCoolLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="96" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Cooldown (sec):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="FanCoolInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="510" data-tchmi-top="94" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="30"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="FanCoolDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="575" data-tchmi-top="98" 
+     data-tchmi-width="90" data-tchmi-height="16" 
+     data-tchmi-text="after unload" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Row 3 -->
+<div id="FanPostDumpLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="124" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Post-Dump (sec):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="FanPostDumpInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="510" data-tchmi-top="122" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="3"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="FanPostDumpDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="575" data-tchmi-top="126" 
+     data-tchmi-width="90" data-tchmi-height="16" 
+     data-tchmi-text="after E-Stop" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 3: FEEDBACK TIMEOUTS (Right Top) -->
+<!-- ================================================================== -->
+<div id="TimeoutPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="680" data-tchmi-top="44" 
+     data-tchmi-width="336" data-tchmi-height="145" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="TimeoutTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="48" 
+     data-tchmi-width="200" data-tchmi-height="16" 
+     data-tchmi-text="FEEDBACK TIMEOUTS" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+<div id="TimeoutDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="850" data-tchmi-top="48" 
+     data-tchmi-width="160" data-tchmi-height="14" 
+     data-tchmi-text="Max wait for signal" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Row 1 -->
+<div id="MainContLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="68" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Main Contactor (sec):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="MainContInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="880" data-tchmi-top="66" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="3"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Row 2 -->
+<div id="FanFBLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="96" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Fan Contactor (sec):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="FanFBInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="880" data-tchmi-top="94" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="3"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Row 3 -->
+<div id="StepFBLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="124" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Step Contactor (sec):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="StepFBInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="880" data-tchmi-top="122" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="3"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="StepFBEnLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="950" data-tchmi-top="124" 
+     data-tchmi-width="30" data-tchmi-height="20" 
+     data-tchmi-text="En:" 
+     data-tchmi-text-font-size="9"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+<div id="StepFBEnTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="975" data-tchmi-top="120" 
+     data-tchmi-width="35" data-tchmi-height="22" 
+     data-tchmi-toggle-state="Normal">
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 4: POWER MONITORING (Left Middle) -->
+<!-- ================================================================== -->
+<div id="PowerPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="8" data-tchmi-top="193" 
+     data-tchmi-width="336" data-tchmi-height="115" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="PowerTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="197" 
+     data-tchmi-width="150" data-tchmi-height="16" 
+     data-tchmi-text="POWER MONITORING" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+<div id="PowerDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="180" data-tchmi-top="197" 
+     data-tchmi-width="160" data-tchmi-height="14" 
+     data-tchmi-text="Verify actual vs expected" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Row 1 -->
+<div id="PwrMonEnLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="218" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Enable Monitoring:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="PwrMonEnTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="160" data-tchmi-top="214" 
+     data-tchmi-width="50" data-tchmi-height="24" 
+     data-tchmi-toggle-state="Normal">
+</div>
+
+<!-- Row 2 -->
+<div id="PwrTolLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="248" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Tolerance (%):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="PwrTolInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="160" data-tchmi-top="246" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="5"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Row 3 -->
+<div id="PwrDelayLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="278" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Stab. Delay (sec):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="PwrDelayInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="160" data-tchmi-top="276" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="10"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="PwrDelayDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="225" data-tchmi-top="280" 
+     data-tchmi-width="110" data-tchmi-height="14" 
+     data-tchmi-text="wait before check" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 5: VOLTAGE IMBALANCE (Center Middle) -->
+<!-- ================================================================== -->
+<div id="VoltPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="352" data-tchmi-top="193" 
+     data-tchmi-width="320" data-tchmi-height="115" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="VoltTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="197" 
+     data-tchmi-width="200" data-tchmi-height="16" 
+     data-tchmi-text="VOLTAGE MONITORING" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- Headers -->
+<div id="VoltWarnHdr" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="520" data-tchmi-top="197" 
+     data-tchmi-width="70" data-tchmi-height="14" 
+     data-tchmi-text="Warn (%)" 
+     data-tchmi-text-font-size="9" 
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'>
+</div>
+<div id="VoltCritHdr" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="595" data-tchmi-top="197" 
+     data-tchmi-width="70" data-tchmi-height="14" 
+     data-tchmi-text="Crit (%)" 
+     data-tchmi-text-font-size="9" 
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Row 1 -->
+<div id="VoltTolLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="218" 
+     data-tchmi-width="150" data-tchmi-height="20" 
+     data-tchmi-text="Nominal ±(%):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="VoltTolInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="520" data-tchmi-top="216" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="5"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="VoltTolDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="585" data-tchmi-top="220" 
+     data-tchmi-width="80" data-tchmi-height="14" 
+     data-tchmi-text="from 480V" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Row 2 -->
+<div id="VoltImbalLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="248" 
+     data-tchmi-width="150" data-tchmi-height="20" 
+     data-tchmi-text="Phase Imbalance:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="VoltImbalWarnInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="520" data-tchmi-top="246" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="1"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'>
+</div>
+<div id="VoltImbalCritInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="595" data-tchmi-top="246" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="2"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Row 3: Description -->
+<div id="VoltDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="278" 
+     data-tchmi-width="300" data-tchmi-height="14" 
+     data-tchmi-text="L1-L2 vs L2-L3 vs L3-L1 difference" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 6: CURRENT IMBALANCE (Right Middle) -->
+<!-- ================================================================== -->
+<div id="CurrPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="680" data-tchmi-top="193" 
+     data-tchmi-width="336" data-tchmi-height="115" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="CurrTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="197" 
+     data-tchmi-width="200" data-tchmi-height="16" 
+     data-tchmi-text="CURRENT MONITORING" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- Headers -->
+<div id="CurrWarnHdr" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="870" data-tchmi-top="197" 
+     data-tchmi-width="60" data-tchmi-height="14" 
+     data-tchmi-text="Warn (%)" 
+     data-tchmi-text-font-size="9" 
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'>
+</div>
+<div id="CurrCritHdr" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="940" data-tchmi-top="197" 
+     data-tchmi-width="60" data-tchmi-height="14" 
+     data-tchmi-text="Crit (%)" 
+     data-tchmi-text-font-size="9" 
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Row 1 -->
+<div id="CurrImbalLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="225" 
+     data-tchmi-width="170" data-tchmi-height="20" 
+     data-tchmi-text="Phase Imbalance:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="CurrImbalWarnInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="870" data-tchmi-top="223" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="1"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'>
+</div>
+<div id="CurrImbalCritInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="940" data-tchmi-top="223" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="2"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Row 2: Description -->
+<div id="CurrDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="258" 
+     data-tchmi-width="300" data-tchmi-height="14" 
+     data-tchmi-text="L1 vs L2 vs L3 current difference" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 7: DATA LOGGER (Left Bottom) -->
+<!-- ================================================================== -->
+<div id="LogPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="8" data-tchmi-top="312" 
+     data-tchmi-width="336" data-tchmi-height="105" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="LogTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="316" 
+     data-tchmi-width="150" data-tchmi-height="16" 
+     data-tchmi-text="DATA LOGGER" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- Row 1 -->
+<div id="LogEnLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="338" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Enable CSV Log:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="LogEnTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="160" data-tchmi-top="334" 
+     data-tchmi-width="50" data-tchmi-height="24" 
+     data-tchmi-toggle-state="Active">
+</div>
+
+<!-- Row 2 -->
+<div id="LogIntLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="368" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Sample Interval (sec):" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="LogIntInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="180" data-tchmi-top="366" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="10"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Row 3 -->
+<div id="LogBufLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="398" 
+     data-tchmi-width="140" data-tchmi-height="20" 
+     data-tchmi-text="Trend Buffer:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="LogBufInp" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="180" data-tchmi-top="396" 
+     data-tchmi-width="60" data-tchmi-height="24" 
+     data-tchmi-value="360"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+<div id="LogBufDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="245" data-tchmi-top="400" 
+     data-tchmi-width="90" data-tchmi-height="14" 
+     data-tchmi-text="samples" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 8: MODE ENABLES (Center Bottom) -->
+<!-- ================================================================== -->
+<div id="ModePanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="352" data-tchmi-top="312" 
+     data-tchmi-width="320" data-tchmi-height="105" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="ModeTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="316" 
+     data-tchmi-width="150" data-tchmi-height="16" 
+     data-tchmi-text="MODE ENABLES" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+<div id="ModeDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="480" data-tchmi-top="316" 
+     data-tchmi-width="180" data-tchmi-height="14" 
+     data-tchmi-text="Show/hide in HMI navigation" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Row 1: Auto & Reverse -->
+<div id="ModeAutoLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="342" 
+     data-tchmi-width="90" data-tchmi-height="20" 
+     data-tchmi-text="Auto/Leveling:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="ModeAutoTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="455" data-tchmi-top="338" 
+     data-tchmi-width="50" data-tchmi-height="24" 
+     data-tchmi-toggle-state="Active">
+</div>
+
+<div id="ModeRevLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="520" data-tchmi-top="342" 
+     data-tchmi-width="70" data-tchmi-height="20" 
+     data-tchmi-text="Reverse:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="ModeRevTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="600" data-tchmi-top="338" 
+     data-tchmi-width="50" data-tchmi-height="24" 
+     data-tchmi-toggle-state="Normal">
+</div>
+
+<!-- Row 2: Manual -->
+<div id="ModeManLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="360" data-tchmi-top="372" 
+     data-tchmi-width="90" data-tchmi-height="20" 
+     data-tchmi-text="Manual:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="ModeManTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="455" data-tchmi-top="368" 
+     data-tchmi-width="50" data-tchmi-height="24" 
+     data-tchmi-toggle-state="Normal">
+</div>
+
+<!-- ================================================================== -->
+<!-- PANEL 9: HARDWARE OPTIONS (Right Bottom) -->
+<!-- ================================================================== -->
+<div id="HWPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="680" data-tchmi-top="312" 
+     data-tchmi-width="336" data-tchmi-height="105" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="HWTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="316" 
+     data-tchmi-width="180" data-tchmi-height="16" 
+     data-tchmi-text="HARDWARE OPTIONS" 
+     data-tchmi-text-font-size="10" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- Row 1 -->
+<div id="PhysMasterLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="342" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Physical Master Switch:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="PhysMasterTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="890" data-tchmi-top="338" 
+     data-tchmi-width="50" data-tchmi-height="24" 
+     data-tchmi-toggle-state="Normal">
+</div>
+
+<!-- Row 2 -->
+<div id="PhysFanLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="372" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Physical Fan Button:" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="PhysFanTgl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleSwitch" 
+     data-tchmi-left="890" data-tchmi-top="368" 
+     data-tchmi-width="50" data-tchmi-height="24" 
+     data-tchmi-toggle-state="Normal">
+</div>
+
+<div id="HWDesc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="688" data-tchmi-top="398" 
+     data-tchmi-width="300" data-tchmi-height="14" 
+     data-tchmi-text="When ON, requires physical input to enable" 
+     data-tchmi-text-font-size="8"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- FOOTER -->
+<!-- ================================================================== -->
+<div id="Footer" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="0" data-tchmi-top="420" 
+     data-tchmi-width="1024" data-tchmi-height="180" 
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'>
+</div>
+
+<!-- Warning Box -->
+<div id="WarnBox" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="8" data-tchmi-top="428" 
+     data-tchmi-width="600" data-tchmi-height="50" 
+     data-tchmi-background-color='{"color":"rgba(255, 152, 0, 0.1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-radius="4">
+</div>
+<div id="WarnText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="435" 
+     data-tchmi-width="580" data-tchmi-height="36" 
+     data-tchmi-text="⚠️ WARNING: These settings affect system protection and safety. Verify all changes before applying. Incorrect values may cause equipment damage or safety hazards." 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- Buttons -->
+<div id="ApplyBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="620" data-tchmi-top="428" 
+     data-tchmi-width="125" data-tchmi-height="50" 
+     data-tchmi-text="✓ APPLY" 
+     data-tchmi-text-font-size="16" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(255, 152, 0, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(0, 0, 0, 1)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="CancelBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="755" data-tchmi-top="428" 
+     data-tchmi-width="125" data-tchmi-height="50" 
+     data-tchmi-text="✕ CANCEL" 
+     data-tchmi-text-font-size="16" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<div id="DefaultsBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="890" data-tchmi-top="428" 
+     data-tchmi-width="125" data-tchmi-height="50" 
+     data-tchmi-text="🔄 DEFAULTS" 
+     data-tchmi-text-font-size="13" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(244, 67, 54, 0.5)"}'
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'
+     data-tchmi-border-radius="4">
+</div>
+
+<!-- Status -->
+<div id="StatusLbl" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="16" data-tchmi-top="486" 
+     data-tchmi-width="50" data-tchmi-height="20" 
+     data-tchmi-text="Status:" 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+<div id="StatusText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="70" data-tchmi-top="486" 
+     data-tchmi-width="300" data-tchmi-height="20" 
+     data-tchmi-text="Ready - 30 settings loaded" 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(76, 175, 80, 1)"}'>
+</div>
+
+</div>

@@ -1,0 +1,580 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Alarm_Manager" Id="{8803f468-f3e7-4943-99ec-3ded18c37292}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Alarm_Manager
+// ============================================
+// FB_Alarm_Manager
+// Professional alarm management for Load Bank
+// Features:
+//   - 17 defined alarms (critical + warning)
+//   - Active alarm list with timestamps
+//   - Alarm history (last 50 events)
+//   - Individual + Acknowledge All
+//   - Clear history command
+//   - Works with or without RTC
+//   - Priority-based status text
+// ============================================
+
+VAR_INPUT
+    // ============================================
+    // ALARM SOURCE SIGNALS (directly from FBs/IO)
+    // ============================================
+    
+    // Emergency (Critical)
+    IN_Emergency_Immediate      : BOOL;     // Alarm 1
+    IN_Emergency_Controlled     : BOOL;     // Alarm 2
+    
+    // Temperature (Critical + Warning)
+    IN_Temp_Overtemp            : BOOL;     // Alarm 3 - Critical
+    IN_Temp_Warning             : BOOL;     // Alarm 4 - Warning
+    IN_TC_Sensor_Fail           : BOOL;     // Alarm 5 - Critical
+    IN_Inlet_Overtemp           : BOOL;     // Alarm 6 - Critical
+    IN_Inlet_TC_Fail            : BOOL;     // Alarm 7 - Critical
+    IN_TC_Contingency           : BOOL;     // Alarm 8 - Warning
+    
+    // Fan (Critical)
+    IN_Fan_Motor_Overload       : BOOL;     // Alarm 9
+    IN_Fan_Pressure_Fail        : BOOL;     // Alarm 10
+    IN_Fan_Contactor_Fail       : BOOL;     // Alarm 11
+    
+    // Main Contactor (Critical)
+    IN_Main_Contactor_Fail      : BOOL;     // Alarm 12
+    
+    // Load Controller (Critical + Warning)
+    IN_Step_Feedback_Fault      : BOOL;     // Alarm 13 - Critical
+    IN_Power_Mismatch           : BOOL;     // Alarm 14 - Warning
+    
+    // Gradual Dump (Critical)
+    IN_Dump_Timeout             : BOOL;     // Alarm 15
+    
+    // Imbalance (Warning)
+    IN_Voltage_Imbalance        : BOOL;     // Alarm 16
+    IN_Current_Imbalance        : BOOL;     // Alarm 17
+    
+    // ============================================
+    // REAL-TIME CLOCK (Optional)
+    // ============================================
+    RTC_Valid                   : BOOL := FALSE;    // TRUE if RTC available
+    RTC_Year                    : UINT := 0;
+    RTC_Month                   : UINT := 0;
+    RTC_Day                     : UINT := 0;
+    RTC_Hour                    : UINT := 0;
+    RTC_Minute                  : UINT := 0;
+    RTC_Second                  : UINT := 0;
+    
+    // ============================================
+    // COMMANDS
+    // ============================================
+    Acknowledge_Alarm           : ARRAY[1..20] OF BOOL;     // Ack individual alarm
+    Acknowledge_All_Cmd         : BOOL;                     // Ack all alarms
+    Reset_Cmd                   : BOOL;                     // Reset/clear inactive ack'd alarms
+    Clear_History_Cmd           : BOOL;                     // Clear history buffer
+    
+    Enable                      : BOOL := TRUE;
+END_VAR
+
+VAR_OUTPUT
+    // ============================================
+    // SUMMARY FLAGS
+    // ============================================
+    General_Alarm               : BOOL;     // Any critical alarm active
+    General_Warning             : BOOL;     // Any warning active (no critical)
+    System_Normal               : BOOL;     // No alarms or warnings
+    Any_Fault_Active            : BOOL;     // Blocks Master Enable
+    
+    // ============================================
+    // COUNTS
+    // ============================================
+    Critical_Alarm_Count        : UINT;     // Number of critical alarms
+    Warning_Count               : UINT;     // Number of warnings
+    Total_Active_Count          : UINT;     // Total active alarms
+    Unacknowledged_Count        : UINT;     // Needs operator attention
+    
+    // ============================================
+    // HMI STATUS BAR
+    // ============================================
+    Status_Text                 : STRING(100);  // Main status message
+    Detail_Text                 : STRING(100);  // Secondary detail
+    
+    // ============================================
+    // ACTIVE ALARM LIST (for HMI table)
+    // ============================================
+    Alarm_List                  : ARRAY[1..20] OF DUT_Alarm;
+    Alarm_List_Count            : UINT;     // How many in list
+    
+    // ============================================
+    // HISTORY (for HMI history tab)
+    // ============================================
+    Alarm_History               : ARRAY[1..50] OF DUT_Alarm_History_Record;
+    History_Count               : UINT;     // Total records in history
+    History_Index               : UINT;     // Current write position
+    
+    // ============================================
+    // LED OUTPUTS
+    // ============================================
+    LED_Alarm                   : BOOL;     // Red LED
+    LED_Warning                 : BOOL;     // Yellow LED
+    LED_Normal                  : BOOL;     // Green LED
+    
+    // ============================================
+    // NEWEST ALARM (for popup/notification)
+    // ============================================
+    New_Alarm_Trigger           : BOOL;     // Pulse when new alarm
+    Newest_Alarm_ID             : UINT;     // Which alarm just triggered
+    Newest_Alarm_Name           : STRING(30);
+END_VAR
+
+VAR
+    // ============================================
+    // ALARM DEFINITIONS (constant data)
+    // ============================================
+    Alarm_Name                  : ARRAY[1..17] OF STRING(30) := [
+        'IMMEDIATE E-STOP',         // 1
+        'CONTROLLED E-STOP',        // 2
+        'TEMPERATURE CRITICAL',     // 3
+        'TEMPERATURE WARNING',      // 4
+        'TC SENSOR FAIL',           // 5
+        'INLET TEMP HIGH',          // 6
+        'INLET TC FAIL',            // 7
+        'TC CONTINGENCY MODE',      // 8
+        'FAN MOTOR OVERLOAD',       // 9
+        'FAN PRESSURE FAIL',        // 10
+        'FAN CONTACTOR FAIL',       // 11
+        'MAIN CONTACTOR FAIL',      // 12
+        'STEP FEEDBACK FAULT',      // 13
+        'POWER MISMATCH',           // 14
+        'DUMP TIMEOUT',             // 15
+        'VOLTAGE IMBALANCE',        // 16
+        'CURRENT IMBALANCE'         // 17
+    ];
+    
+    Alarm_Description           : ARRAY[1..17] OF STRING(50) := [
+        'All outputs OFF - Reset required',             // 1
+        'Controlled shutdown in progress',              // 2
+        'Outlet temperature exceeded maximum',          // 3
+        'Outlet temperature approaching limit',         // 4
+        'Thermocouple open or shorted',                 // 5
+        'Inlet/ambient temperature too high',           // 6
+        'Inlet thermocouple failed',                    // 7
+        'Running with reduced TC monitoring',           // 8
+        'Fan motor thermal overload tripped',           // 9
+        'Fan pressure not established',                 // 10
+        'Fan contactor feedback timeout',               // 11
+        'Main contactor feedback timeout',              // 12
+        'Load step feedback mismatch',                  // 13
+        'Measured power differs from expected',         // 14
+        'Gradual dump did not complete in time',        // 15
+        'Phase voltage imbalance detected',             // 16
+        'Phase current imbalance detected'              // 17
+    ];
+    
+    Alarm_Severity              : ARRAY[1..17] OF UINT := [
+        1,  // 1 - Critical
+        1,  // 2 - Critical
+        1,  // 3 - Critical
+        2,  // 4 - Warning
+        1,  // 5 - Critical
+        1,  // 6 - Critical
+        1,  // 7 - Critical
+        2,  // 8 - Warning
+        1,  // 9 - Critical
+        1,  // 10 - Critical
+        1,  // 11 - Critical
+        1,  // 12 - Critical
+        1,  // 13 - Critical
+        2,  // 14 - Warning
+        1,  // 15 - Critical
+        2,  // 16 - Warning
+        2   // 17 - Warning
+    ];
+    
+    // ============================================
+    // INTERNAL STATE
+    // ============================================
+    Alarm_Active                : ARRAY[1..17] OF BOOL;     // Current state
+    Alarm_Active_Prev           : ARRAY[1..17] OF BOOL;     // Previous scan
+    Alarm_Acknowledged          : ARRAY[1..17] OF BOOL;     // Ack state per alarm
+    Alarm_Timestamp             : ARRAY[1..17] OF STRING(20);   // When occurred
+    Alarm_Start_Time            : ARRAY[1..17] OF UDINT;    // Runtime when started (for duration)
+    
+    // Runtime counter (if no RTC)
+    Runtime_Timer               : TON;
+    Runtime_Seconds             : UDINT;    // Seconds since power-on
+    Runtime_Days                : UDINT;
+    Runtime_Hours               : UINT;
+    Runtime_Minutes             : UINT;
+    Runtime_Secs                : UINT;
+    
+    // Working variables
+    i                           : UINT;
+    j                           : UINT;
+    List_Index                  : UINT;
+    Highest_Priority_Alarm      : UINT;
+    Temp_Alarm                  : DUT_Alarm;
+    Temp_History                : DUT_Alarm_History_Record;
+    Current_Timestamp           : STRING(20);
+    
+    // Edge detection
+    Ack_All_Prev                : BOOL;
+    Reset_Prev                  : BOOL;
+    Clear_History_Prev          : BOOL;
+    New_Alarm_Pulse             : BOOL;
+    
+    // First scan
+    First_Scan                  : BOOL := TRUE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// FIRST SCAN - INITIALIZE
+// ============================================
+IF First_Scan THEN
+    FOR i := 1 TO 17 DO
+        Alarm_Active[i] := FALSE;
+        Alarm_Active_Prev[i] := FALSE;
+        Alarm_Acknowledged[i] := FALSE;
+        Alarm_Timestamp[i] := '';
+        Alarm_Start_Time[i] := 0;
+    END_FOR
+    
+    FOR i := 1 TO 20 DO
+        Alarm_List[i].ID := 0;
+        Alarm_List[i].Active := FALSE;
+    END_FOR
+    
+    FOR i := 1 TO 50 DO
+        Alarm_History[i].Alarm_ID := 0;
+    END_FOR
+    
+    History_Index := 0;
+    History_Count := 0;
+    First_Scan := FALSE;
+END_IF
+
+// ============================================
+// NOT ENABLED
+// ============================================
+IF NOT Enable THEN
+    General_Alarm := FALSE;
+    General_Warning := FALSE;
+    System_Normal := TRUE;
+    LED_Alarm := FALSE;
+    LED_Warning := FALSE;
+    LED_Normal := TRUE;
+    Status_Text := 'Alarm Manager Disabled';
+    Detail_Text := '';
+    RETURN;
+END_IF
+
+// ============================================
+// RUNTIME COUNTER (for non-RTC timestamp)
+// ============================================
+Runtime_Timer(IN := TRUE, PT := T#1s);
+IF Runtime_Timer.Q THEN
+    Runtime_Timer(IN := FALSE);
+    Runtime_Seconds := Runtime_Seconds + 1;
+END_IF
+
+// Calculate days, hours, minutes, seconds
+Runtime_Days := Runtime_Seconds / 86400;
+Runtime_Hours := UDINT_TO_UINT((Runtime_Seconds MOD 86400) / 3600);
+Runtime_Minutes := UDINT_TO_UINT((Runtime_Seconds MOD 3600) / 60);
+Runtime_Secs := UDINT_TO_UINT(Runtime_Seconds MOD 60);
+
+// ============================================
+// GENERATE CURRENT TIMESTAMP
+// ============================================
+IF RTC_Valid THEN
+    // Format: "YYYY-MM-DD HH:MM:SS"
+    Current_Timestamp := UINT_TO_STRING(RTC_Year);
+    Current_Timestamp := CONCAT(Current_Timestamp, '-');
+    IF RTC_Month < 10 THEN
+        Current_Timestamp := CONCAT(Current_Timestamp, '0');
+    END_IF
+    Current_Timestamp := CONCAT(Current_Timestamp, UINT_TO_STRING(RTC_Month));
+    Current_Timestamp := CONCAT(Current_Timestamp, '-');
+    IF RTC_Day < 10 THEN
+        Current_Timestamp := CONCAT(Current_Timestamp, '0');
+    END_IF
+    Current_Timestamp := CONCAT(Current_Timestamp, UINT_TO_STRING(RTC_Day));
+    Current_Timestamp := CONCAT(Current_Timestamp, ' ');
+    IF RTC_Hour < 10 THEN
+        Current_Timestamp := CONCAT(Current_Timestamp, '0');
+    END_IF
+    Current_Timestamp := CONCAT(Current_Timestamp, UINT_TO_STRING(RTC_Hour));
+    Current_Timestamp := CONCAT(Current_Timestamp, ':');
+    IF RTC_Minute < 10 THEN
+        Current_Timestamp := CONCAT(Current_Timestamp, '0');
+    END_IF
+    Current_Timestamp := CONCAT(Current_Timestamp, UINT_TO_STRING(RTC_Minute));
+    Current_Timestamp := CONCAT(Current_Timestamp, ':');
+    IF RTC_Second < 10 THEN
+        Current_Timestamp := CONCAT(Current_Timestamp, '0');
+    END_IF
+    Current_Timestamp := CONCAT(Current_Timestamp, UINT_TO_STRING(RTC_Second));
+ELSE
+    // Format: "XXXd HH:MM:SS" (runtime)
+    Current_Timestamp := UDINT_TO_STRING(Runtime_Days);
+    Current_Timestamp := CONCAT(Current_Timestamp, 'd ');
+    IF Runtime_Hours < 10 THEN
+        Current_Timestamp := CONCAT(Current_Timestamp, '0');
+    END_IF
+    Current_Timestamp := CONCAT(Current_Timestamp, UINT_TO_STRING(Runtime_Hours));
+    Current_Timestamp := CONCAT(Current_Timestamp, ':');
+    IF Runtime_Minutes < 10 THEN
+        Current_Timestamp := CONCAT(Current_Timestamp, '0');
+    END_IF
+    Current_Timestamp := CONCAT(Current_Timestamp, UINT_TO_STRING(Runtime_Minutes));
+    Current_Timestamp := CONCAT(Current_Timestamp, ':');
+    IF Runtime_Secs < 10 THEN
+        Current_Timestamp := CONCAT(Current_Timestamp, '0');
+    END_IF
+    Current_Timestamp := CONCAT(Current_Timestamp, UINT_TO_STRING(Runtime_Secs));
+END_IF
+
+// ============================================
+// MAP INPUT SIGNALS TO ALARM ARRAY
+// ============================================
+Alarm_Active[1] := IN_Emergency_Immediate;
+Alarm_Active[2] := IN_Emergency_Controlled;
+Alarm_Active[3] := IN_Temp_Overtemp;
+Alarm_Active[4] := IN_Temp_Warning;
+Alarm_Active[5] := IN_TC_Sensor_Fail;
+Alarm_Active[6] := IN_Inlet_Overtemp;
+Alarm_Active[7] := IN_Inlet_TC_Fail;
+Alarm_Active[8] := IN_TC_Contingency;
+Alarm_Active[9] := IN_Fan_Motor_Overload;
+Alarm_Active[10] := IN_Fan_Pressure_Fail;
+Alarm_Active[11] := IN_Fan_Contactor_Fail;
+Alarm_Active[12] := IN_Main_Contactor_Fail;
+Alarm_Active[13] := IN_Step_Feedback_Fault;
+Alarm_Active[14] := IN_Power_Mismatch;
+Alarm_Active[15] := IN_Dump_Timeout;
+Alarm_Active[16] := IN_Voltage_Imbalance;
+Alarm_Active[17] := IN_Current_Imbalance;
+
+// ============================================
+// DETECT NEW ALARMS (rising edge)
+// ============================================
+New_Alarm_Trigger := FALSE;
+FOR i := 1 TO 17 DO
+    IF Alarm_Active[i] AND NOT Alarm_Active_Prev[i] THEN
+        // NEW ALARM - record timestamp
+        Alarm_Timestamp[i] := Current_Timestamp;
+        Alarm_Start_Time[i] := Runtime_Seconds;
+        Alarm_Acknowledged[i] := FALSE;
+        
+        // Trigger new alarm notification
+        New_Alarm_Trigger := TRUE;
+        Newest_Alarm_ID := i;
+        Newest_Alarm_Name := Alarm_Name[i];
+    END_IF
+END_FOR
+
+// ============================================
+// DETECT CLEARED ALARMS (falling edge) - ADD TO HISTORY
+// ============================================
+FOR i := 1 TO 17 DO
+    IF NOT Alarm_Active[i] AND Alarm_Active_Prev[i] THEN
+        // ALARM CLEARED - add to history
+        History_Index := History_Index + 1;
+        IF History_Index > 50 THEN
+            History_Index := 1;     // Circular buffer wrap
+        END_IF
+        IF History_Count < 50 THEN
+            History_Count := History_Count + 1;
+        END_IF
+        
+        Alarm_History[History_Index].Alarm_ID := i;
+        Alarm_History[History_Index].Alarm_Name := Alarm_Name[i];
+        Alarm_History[History_Index].Severity := Alarm_Severity[i];
+        Alarm_History[History_Index].Time_Occurred := Alarm_Timestamp[i];
+        Alarm_History[History_Index].Time_Cleared := Current_Timestamp;
+        Alarm_History[History_Index].Duration_Sec := Runtime_Seconds - Alarm_Start_Time[i];
+        Alarm_History[History_Index].Was_Acknowledged := Alarm_Acknowledged[i];
+        
+        // Clear timestamp for this alarm
+        Alarm_Timestamp[i] := '';
+        Alarm_Acknowledged[i] := FALSE;
+    END_IF
+END_FOR
+
+// Update previous state
+FOR i := 1 TO 17 DO
+    Alarm_Active_Prev[i] := Alarm_Active[i];
+END_FOR
+
+// ============================================
+// ACKNOWLEDGE INDIVIDUAL ALARMS
+// ============================================
+FOR i := 1 TO 17 DO
+    IF i <= 20 THEN
+        IF Acknowledge_Alarm[i] AND Alarm_Active[i] THEN
+            Alarm_Acknowledged[i] := TRUE;
+        END_IF
+    END_IF
+END_FOR
+
+// ============================================
+// ACKNOWLEDGE ALL (rising edge)
+// ============================================
+IF Acknowledge_All_Cmd AND NOT Ack_All_Prev THEN
+    FOR i := 1 TO 17 DO
+        IF Alarm_Active[i] THEN
+            Alarm_Acknowledged[i] := TRUE;
+        END_IF
+    END_FOR
+END_IF
+Ack_All_Prev := Acknowledge_All_Cmd;
+
+// ============================================
+// CLEAR HISTORY (rising edge)
+// ============================================
+IF Clear_History_Cmd AND NOT Clear_History_Prev THEN
+    FOR i := 1 TO 50 DO
+        Alarm_History[i].Alarm_ID := 0;
+        Alarm_History[i].Alarm_Name := '';
+        Alarm_History[i].Severity := 0;
+        Alarm_History[i].Time_Occurred := '';
+        Alarm_History[i].Time_Cleared := '';
+        Alarm_History[i].Duration_Sec := 0;
+        Alarm_History[i].Was_Acknowledged := FALSE;
+    END_FOR
+    History_Index := 0;
+    History_Count := 0;
+END_IF
+Clear_History_Prev := Clear_History_Cmd;
+
+// ============================================
+// COUNT ALARMS
+// ============================================
+Critical_Alarm_Count := 0;
+Warning_Count := 0;
+Unacknowledged_Count := 0;
+
+FOR i := 1 TO 17 DO
+    IF Alarm_Active[i] THEN
+        IF Alarm_Severity[i] = 1 THEN
+            Critical_Alarm_Count := Critical_Alarm_Count + 1;
+        ELSE
+            Warning_Count := Warning_Count + 1;
+        END_IF
+        
+        IF NOT Alarm_Acknowledged[i] THEN
+            Unacknowledged_Count := Unacknowledged_Count + 1;
+        END_IF
+    END_IF
+END_FOR
+
+Total_Active_Count := Critical_Alarm_Count + Warning_Count;
+
+// ============================================
+// BUILD ACTIVE ALARM LIST (for HMI)
+// ============================================
+List_Index := 0;
+
+// First add critical alarms (higher priority)
+FOR i := 1 TO 17 DO
+    IF Alarm_Active[i] AND Alarm_Severity[i] = 1 THEN
+        List_Index := List_Index + 1;
+        IF List_Index <= 20 THEN
+            Alarm_List[List_Index].ID := i;
+            Alarm_List[List_Index].Name := Alarm_Name[i];
+            Alarm_List[List_Index].Description := Alarm_Description[i];
+            Alarm_List[List_Index].Severity := Alarm_Severity[i];
+            Alarm_List[List_Index].Active := TRUE;
+            Alarm_List[List_Index].Acknowledged := Alarm_Acknowledged[i];
+            Alarm_List[List_Index].Timestamp_Occurred := Alarm_Timestamp[i];
+        END_IF
+    END_IF
+END_FOR
+
+// Then add warnings
+FOR i := 1 TO 17 DO
+    IF Alarm_Active[i] AND Alarm_Severity[i] = 2 THEN
+        List_Index := List_Index + 1;
+        IF List_Index <= 20 THEN
+            Alarm_List[List_Index].ID := i;
+            Alarm_List[List_Index].Name := Alarm_Name[i];
+            Alarm_List[List_Index].Description := Alarm_Description[i];
+            Alarm_List[List_Index].Severity := Alarm_Severity[i];
+            Alarm_List[List_Index].Active := TRUE;
+            Alarm_List[List_Index].Acknowledged := Alarm_Acknowledged[i];
+            Alarm_List[List_Index].Timestamp_Occurred := Alarm_Timestamp[i];
+        END_IF
+    END_IF
+END_FOR
+
+Alarm_List_Count := List_Index;
+
+// Clear unused slots
+FOR i := List_Index + 1 TO 20 DO
+    Alarm_List[i].ID := 0;
+    Alarm_List[i].Name := '';
+    Alarm_List[i].Active := FALSE;
+END_FOR
+
+// ============================================
+// SET SUMMARY FLAGS
+// ============================================
+General_Alarm := Critical_Alarm_Count > 0;
+General_Warning := (Warning_Count > 0) AND NOT General_Alarm;
+System_Normal := (Total_Active_Count = 0);
+Any_Fault_Active := General_Alarm;
+
+// ============================================
+// LED OUTPUTS
+// ============================================
+LED_Alarm := General_Alarm;
+LED_Warning := General_Warning;
+LED_Normal := System_Normal;
+
+// ============================================
+// STATUS TEXT (priority-based)
+// ============================================
+IF Total_Active_Count = 0 THEN
+    Status_Text := 'SYSTEM NORMAL';
+    Detail_Text := 'No active alarms';
+ELSE
+    // Find highest priority (lowest ID among critical)
+    Highest_Priority_Alarm := 0;
+    FOR i := 1 TO 17 DO
+        IF Alarm_Active[i] AND Alarm_Severity[i] = 1 THEN
+            IF Highest_Priority_Alarm = 0 THEN
+                Highest_Priority_Alarm := i;
+            END_IF
+        END_IF
+    END_FOR
+    
+    // If no critical, find first warning
+    IF Highest_Priority_Alarm = 0 THEN
+        FOR i := 1 TO 17 DO
+            IF Alarm_Active[i] AND Alarm_Severity[i] = 2 THEN
+                IF Highest_Priority_Alarm = 0 THEN
+                    Highest_Priority_Alarm := i;
+                END_IF
+            END_IF
+        END_FOR
+    END_IF
+    
+    // Set status text
+    IF Highest_Priority_Alarm > 0 THEN
+        Status_Text := Alarm_Name[Highest_Priority_Alarm];
+        Detail_Text := Alarm_Description[Highest_Priority_Alarm];
+    END_IF
+    
+    // Append count if multiple alarms
+    IF Total_Active_Count > 1 THEN
+        Status_Text := CONCAT(Status_Text, ' (+');
+        Status_Text := CONCAT(Status_Text, UINT_TO_STRING(Total_Active_Count - 1));
+        Status_Text := CONCAT(Status_Text, ' more)');
+    END_IF
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Alarm_Manager">
+      <LineId Id="937" Count="344" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

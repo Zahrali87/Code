@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="DUT_Alarm_History_Record" Id="{f3a1809d-9a11-4cd6-ac34-16c14cefb671}">
+    <Declaration><![CDATA[// ============================================
+// DUT_Alarm_History_Record
+// Structure for alarm history records
+// ============================================
+
+TYPE DUT_Alarm_History_Record :
+STRUCT
+    Alarm_ID            : UINT;             // Alarm number (1-17)
+    Alarm_Name          : STRING(30);       // Short name
+    Severity            : UINT;             // 1=Critical, 2=Warning
+    Time_Occurred       : STRING(20);       // When alarm started
+    Time_Cleared        : STRING(20);       // When alarm cleared
+    Duration_Sec        : UDINT;            // How long active (seconds)
+    Was_Acknowledged    : BOOL;             // Was it ack'd before clearing?
+END_STRUCT
+END_TYPE
+
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

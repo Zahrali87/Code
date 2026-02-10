@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Mode_Manager" Id="{fef3a4d5-ec97-4f0b-811c-e23488fff152}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Mode_Manager
+VAR_INPUT
+    Mode_Select             : UINT;
+    Master_Enable           : BOOL;
+    Emergency_Active        : BOOL;
+    System_Ready            : BOOL;
+END_VAR
+VAR_OUTPUT
+    Active_Mode             : UINT;
+    Mode_Name               : STRING(30);
+    Mode_Ready              : BOOL;
+    Enable_Output           : BOOL;
+END_VAR
+VAR
+    Mode_Select_Prev        : UINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Emergency forces OFF mode
+IF Emergency_Active THEN
+    Active_Mode := LB_MODE_OFF;
+    Mode_Name := 'EMERGENCY STOP';
+    Mode_Ready := FALSE;
+    Enable_Output := FALSE;
+    RETURN;
+END_IF;
+
+// Master enable check
+IF NOT Master_Enable THEN
+    Active_Mode := LB_MODE_OFF;
+    Mode_Name := 'OFF - Enable Required';
+    Mode_Ready := FALSE;
+    Enable_Output := FALSE;
+    RETURN;
+END_IF;
+
+// Mode selection
+IF Mode_Select <> Mode_Select_Prev THEN
+    Active_Mode := Mode_Select;
+END_IF;
+Mode_Select_Prev := Mode_Select;
+
+// Mode names and enable logic
+CASE Active_Mode OF
+    LB_MODE_OFF:
+        Mode_Name := 'OFF';
+        Mode_Ready := TRUE;
+        Enable_Output := FALSE;
+    
+    LB_MODE_AUTO_LEVELING:
+        Mode_Name := 'AUTO LOAD LEVELING';
+        Mode_Ready := System_Ready;
+        Enable_Output := System_Ready;
+    
+    LB_MODE_NUMERIC:
+        Mode_Name := 'NUMERIC LOAD CONTROL';
+        Mode_Ready := System_Ready;
+        Enable_Output := System_Ready;
+    
+    LB_MODE_REVERSE_POWER:
+        Mode_Name := 'REVERSE POWER';
+        Mode_Ready := System_Ready;
+        Enable_Output := System_Ready;
+    
+    LB_MODE_MANUAL:
+        Mode_Name := 'MANUAL SWITCH CONTROL';
+        Mode_Ready := System_Ready;
+        Enable_Output := System_Ready;
+    
+    LB_MODE_RECIPE:
+        Mode_Name := 'RECIPE MODE';
+        Mode_Ready := System_Ready;
+        Enable_Output := System_Ready;
+    
+    LB_MODE_MAINTENANCE:
+        Mode_Name := 'MAINTENANCE MODE';
+        Mode_Ready := TRUE;
+        Enable_Output := TRUE;
+    
+    ELSE
+        Mode_Name := 'UNKNOWN MODE';
+        Mode_Ready := FALSE;
+        Enable_Output := FALSE;
+        Active_Mode := LB_MODE_OFF;
+END_CASE;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Mode_Manager">
+      <LineId Id="322" Count="65" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

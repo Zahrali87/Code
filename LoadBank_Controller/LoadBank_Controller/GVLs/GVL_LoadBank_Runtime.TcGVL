@@ -1,0 +1,259 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <GVL Name="GVL_LoadBank_Runtime" Id="{36720d95-2034-4e57-b326-1d0b63538014}">
+    <Declaration><![CDATA[// ============================================
+// GVL_LoadBank_Runtime
+// UPDATED: Added HMI status text variables
+// ============================================
+
+VAR_GLOBAL
+
+    // ============================================
+    // MASTER ENABLE CONTROL
+    // ============================================
+    HMI_Master_Enable           : BOOL;
+    Master_Enable               : BOOL;
+    Master_Enable_Blocked       : BOOL;
+    Master_Enable_Was_Off       : BOOL;
+
+    // ============================================
+    // FAN START CONTROL
+    // ============================================
+    HMI_Fan_Start               : BOOL;
+    Fan_Start_Command           : BOOL;
+    Fan_Start_Blocked           : BOOL;
+    Fan_Start_Was_Off           : BOOL;
+
+    // ============================================
+    // HMI MODE INPUTS
+    // ============================================
+    HMI_Mode_Select             : UINT;
+    HMI_Target_Power_kW         : REAL;
+    HMI_Target_Frequency        : REAL := 60.0;
+    HMI_Target_Reverse_kW       : REAL;
+    HMI_Recipe_Start            : BOOL;
+    HMI_Recipe_Stop             : BOOL;
+    HMI_Recipe_Pause            : BOOL;
+    HMI_Manual_Step_Cmd         : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    HMI_Reset_Cmd               : BOOL;
+    
+    // ============================================
+    // NUMERIC MODE HMI
+    // ============================================
+    Numeric_Mode_Status         : STRING(100);
+
+    // ============================================
+    // AUTO MODE HMI
+    // ============================================
+    HMI_Min_Load_kW             : REAL;
+    Auto_Mode_Power_Error       : REAL;
+    Auto_Mode_Status            : STRING(100);
+
+    // ============================================
+    // QUARANTINE CONTROL
+    // ============================================
+    Step_Quarantined            : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    Step_Quarantine_Feedback    : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    Step_Quarantine_Manual      : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    Step_Unquarantine_Cmd       : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    Step_Cycle_Count            : ARRAY[1..LB_NUMBER_OF_STEPS] OF UDINT;
+
+    // ============================================
+    // DUMP STATUS
+    // ============================================
+    Dump_Active                 : BOOL;
+    Dump_Percent                : REAL := 100.0;
+    Dump_Complete               : BOOL;
+    Is_Temperature_Dump         : BOOL;
+    Is_Emergency_Dump           : BOOL;
+
+    // ============================================
+    // MAIN CONTACTOR STATUS
+    // ============================================
+    Main_Contactor_Closed       : BOOL;
+    Main_Contactor_Fault        : BOOL;
+    Main_Contactor_Allowed      : BOOL;
+
+    // ============================================
+    // SYSTEM STATUS FLAGS
+    // ============================================
+    System_Ready                : BOOL;
+    System_Running              : BOOL;
+    System_Fault                : BOOL;
+
+    // ============================================
+    // ALARM STATUS
+    // ============================================
+    General_Alarm               : BOOL;
+    General_Warning             : BOOL;
+    System_Normal               : BOOL;
+    Any_Fault_Active            : BOOL;
+
+    // ============================================
+    // ALARM COMMANDS (from HMI)
+    // ============================================
+    Alarm_Acknowledge_Cmd       : BOOL;
+    Alarm_Reset_Cmd             : BOOL;
+
+    // ============================================
+    // STATUS TEXT (for HMI display)
+    // ============================================
+    Status_Fan                  : STRING(100);
+    Status_Temperature          : STRING(100);
+    Status_Main_Contactor       : STRING(100);
+    Status_Load                 : STRING(100);
+    Status_Dump                 : STRING(100);
+
+    // ============================================
+    // HMI STATUS BAR TEXT (NEW)
+    // ============================================
+    HMI_System_Status_Text      : STRING(100);      // NEW: Main status message for HMI status bar
+    HMI_Alarm_Detail_Text       : STRING(100);      // NEW: Secondary detail message for HMI
+
+    // ============================================
+    // MODE CONTROL
+    // ============================================
+    Mode_Current                : UINT;
+    Mode_Requested              : UINT;
+    Mode_Target_Power           : REAL;
+
+    // ============================================
+    // IMBALANCE CALCULATIONS
+    // ============================================
+    Voltage_Imbalance_Percent   : REAL;
+    Current_Imbalance_Percent   : REAL;
+    Voltage_Imbalance_Warning   : BOOL;
+    Voltage_Imbalance_Critical  : BOOL;
+    Current_Imbalance_Warning   : BOOL;
+    Current_Imbalance_Critical  : BOOL;
+
+    // ============================================
+    // TREND BUFFERS (for HMI)
+    // ============================================
+    Trend_Power_Released        : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Power_Target          : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Temp_TC1              : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Temp_TC2              : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Temp_TC3              : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Temp_TC4              : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Voltage_L1L2          : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Voltage_L2L3          : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Voltage_L3L1          : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Current_I1            : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Current_I2            : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Current_I3            : ARRAY[1..LB_TREND_BUFFER_MAX] OF REAL;
+    Trend_Index                 : UINT;
+    Trend_Sample_Count          : UINT;
+
+    // ============================================
+    // SYSTEM STATUS STRUCT (for HMI)
+    // ============================================
+    LB_System_Status            : DUT_Simple_Status;
+    LB_Mode_Status              : DUT_Mode_Status;
+    LB_Emergency_Status         : DUT_Emergency_Status;
+    LB_Recipe_Status            : Recipe_Status;
+
+    // ============================================
+    // STEP STATUS (for HMI)
+    // ============================================
+    LB_HMI_Steps                : ARRAY[1..LB_NUMBER_OF_STEPS] OF DUT_HMI_Step;
+    LB_RATED_KW                 : ARRAY[1..LB_NUMBER_OF_STEPS] OF REAL;
+
+    // ============================================
+    // HMI HELPER VARIABLES
+    // ============================================
+    LB_HMI_Temperature_Status   : INT;
+    LB_HMI_Fan_Status           : INT;
+    LB_HMI_System_Status        : INT;
+    LB_HMI_V_Imbalance_Status   : INT;
+    LB_HMI_I_Imbalance_Status   : INT;
+
+    LB_HMI_Released_Percent     : REAL;
+    LB_HMI_Available_Percent    : REAL;
+
+    LB_HMI_Active_Count         : INT;
+    LB_HMI_Inactive_Count       : INT;
+    LB_HMI_Quarantined_Count    : INT;
+    LB_HMI_Total_Steps          : INT;
+
+    LB_HMI_Active_Bar_Width     : REAL;
+    LB_HMI_Inactive_Bar_Width   : REAL;
+    LB_HMI_Quarantine_Bar_Width : REAL;
+
+    LB_HMI_Hottest_TC           : INT;
+    LB_HMI_Mode_Text            : STRING(20);
+    LB_HMI_Mode_Ready           : BOOL;
+    LB_HMI_Emergency_Text       : STRING(30);
+    
+    // ============================================
+    // MANUAL MODE HMI (8 Switches)
+    // ============================================
+    HMI_Manual_Switch           : ARRAY[1..8] OF BOOL;
+    HMI_Manual_Selected_kW      : REAL;
+    Manual_Mode_Status          : STRING(100);
+    
+    // ============================================
+    // RECIPE MODE HMI 
+    // ============================================
+    HMI_Recipe_Number_Of_Steps  : UINT := 5;
+    HMI_Recipe_Steps            : ARRAY[1..20] OF DUT_Recipe_Step;
+    
+    // ============================================
+    // REVERSE MODE HMI
+    // ============================================
+    HMI_Follow_Percentage       : REAL := 100.0;
+    Reverse_Mode_Target_Power   : REAL;
+    Reverse_Mode_Status         : STRING(100);
+	
+	// ============================================
+    // ALARM MANAGER OUTPUTS (from FB_Alarm_Manager)
+    // ============================================
+    LB_Alarm_List               : ARRAY[1..20] OF DUT_Alarm;        // Active alarm list for HMI
+    LB_Alarm_List_Count         : UINT;                              // Number of active alarms
+    LB_Alarm_History            : ARRAY[1..50] OF DUT_Alarm_History_Record;  // History buffer
+    LB_Alarm_History_Count      : UINT;                              // Number of history records
+    
+    LB_Critical_Alarm_Count     : UINT;                              // Critical alarm count
+    LB_Warning_Count            : UINT;                              // Warning count
+    LB_Total_Alarm_Count        : UINT;                              // Total active count
+    LB_Unacknowledged_Count     : UINT;                              // Unacknowledged count
+    
+    LB_New_Alarm_Trigger        : BOOL;                              // Pulse for new alarm popup
+    LB_Newest_Alarm_ID          : UINT;                              // ID of newest alarm
+    LB_Newest_Alarm_Name        : STRING(30);                        // Name of newest alarm
+    
+    // ============================================
+    // ALARM MANAGER COMMANDS (from HMI)
+    // ============================================
+    HMI_Alarm_Acknowledge       : ARRAY[1..20] OF BOOL;              // Acknowledge individual alarm
+    HMI_Alarm_Acknowledge_All   : BOOL;                              // Acknowledge all alarms
+    HMI_Alarm_Clear_History     : BOOL;                              // Clear history buffer
+	
+	// ============================================
+// MAINTENANCE MODE HMI
+// ============================================
+// Commands (from HMI buttons)
+Maint_Mode_Toggle_Fan               : BOOL;
+Maint_Mode_Toggle_Step              : BOOL;
+Maint_Mode_Reset_Test               : BOOL;
+Maint_Mode_Selected_Step            : INT := 1;
+Maint_Mode_Self_Test_Start          : BOOL;
+Maint_Mode_Self_Test_Stop           : BOOL;
+
+
+// Status (to HMI display)
+Maint_Mode_Feedback_Match           : BOOL;
+Maint_Mode_Response_Time_ms         : INT;
+Maint_Mode_Power_Within_Tolerance   : BOOL;
+Maint_Mode_Self_Test_Running        : BOOL;
+Maint_Mode_Self_Test_Current_Step   : INT;
+Maint_Mode_Self_Test_Pass_Count     : INT;
+Maint_Mode_Self_Test_Fail_Count     : INT;
+Maint_Mode_Self_Test_Complete       : BOOL;
+Maint_Mode_Timeout_Error_Count      : INT;
+Maint_Mode_Self_Test_Timer_Sec      : INT;
+
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

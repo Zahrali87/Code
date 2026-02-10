@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Main_Contactor" Id="{276c69ae-d89e-47e7-97d7-e8e374a539f4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Main_Contactor
+VAR_INPUT
+    // Enable conditions
+    Master_Enable           : BOOL;
+    Fan_Running             : BOOL;
+    Fan_Pressurized         : BOOL;
+    
+    // Block conditions
+    Any_Alarm               : BOOL;
+    Dump_Active             : BOOL;
+    Dump_Complete           : BOOL;
+    Is_Temperature_Dump     : BOOL;             // TRUE = fan stays on, can recover
+    
+    // Feedback
+    Contactor_Feedback      : BOOL;             // NO contact: TRUE = closed
+    
+    // Configuration
+    Feedback_Timeout        : TIME := T#3s;
+    
+    Enable                  : BOOL;
+    Reset                   : BOOL;
+END_VAR
+
+VAR_OUTPUT
+    Contactor_Output        : BOOL;
+    Contactor_Closed        : BOOL;             // Confirmed closed
+    
+    Contactor_Fault         : BOOL;
+    Fault_No_Feedback       : BOOL;             // Commanded ON but no feedback
+    Fault_Stuck_Closed      : BOOL;             // Commanded OFF but still closed
+    
+    Status_Text             : STRING(50);
+END_VAR
+
+VAR
+    Feedback_Timer          : TON;
+    Stuck_Timer             : TON;
+    
+    Fault_Latched           : BOOL;
+    Contactor_Allowed       : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// RESET
+// ============================================
+IF Reset THEN
+    Fault_Latched := FALSE;
+    Contactor_Fault := FALSE;
+    Fault_No_Feedback := FALSE;
+    Fault_Stuck_Closed := FALSE;
+    Feedback_Timer(IN := FALSE);
+    Stuck_Timer(IN := FALSE);
+END_IF;
+
+// ============================================
+// NOT ENABLED
+// ============================================
+IF NOT Enable THEN
+    Contactor_Output := FALSE;
+    Contactor_Closed := FALSE;
+    Status_Text := 'Disabled';
+    RETURN;
+END_IF;
+
+// ============================================
+// FAULT LATCHED
+// ============================================
+IF Fault_Latched THEN
+    Contactor_Output := FALSE;
+    Contactor_Closed := FALSE;
+    Status_Text := 'FAULT - Reset required';
+    RETURN;
+END_IF;
+
+// ============================================
+// CONTACTOR ALLOWED LOGIC
+// ============================================
+Contactor_Allowed := 
+    Master_Enable
+    AND Fan_Running
+    AND Fan_Pressurized
+    AND NOT Any_Alarm
+    AND NOT Dump_Active
+    AND NOT Dump_Complete;
+
+// Special case: Temperature dump recovery
+// After reset, dump flags clear, contactor allowed again
+
+// ============================================
+// CONTACTOR OUTPUT
+// ============================================
+IF Contactor_Allowed THEN
+    Contactor_Output := TRUE;
+ELSE
+    Contactor_Output := FALSE;
+END_IF;
+
+// ============================================
+// FEEDBACK MONITORING - NO FEEDBACK
+// Commanded ON but no feedback within timeout
+// ============================================
+Feedback_Timer(IN := Contactor_Output AND NOT Contactor_Feedback, PT := Feedback_Timeout);
+
+IF Feedback_Timer.Q THEN
+    Fault_No_Feedback := TRUE;
+    Fault_Latched := TRUE;
+    Contactor_Fault := TRUE;
+    Contactor_Output := FALSE;
+    Status_Text := 'FAULT - No feedback';
+    RETURN;
+END_IF;
+
+// ============================================
+// FEEDBACK MONITORING - STUCK CLOSED
+// Commanded OFF but feedback still TRUE
+// ============================================
+Stuck_Timer(IN := NOT Contactor_Output AND Contactor_Feedback, PT := Feedback_Timeout);
+
+IF Stuck_Timer.Q THEN
+    Fault_Stuck_Closed := TRUE;
+    Fault_Latched := TRUE;
+    Contactor_Fault := TRUE;
+    Status_Text := 'FAULT - Stuck closed';
+    RETURN;
+END_IF;
+
+// ============================================
+// CONTACTOR STATUS
+// ============================================
+Contactor_Closed := Contactor_Output AND Contactor_Feedback;
+
+// ============================================
+// STATUS MESSAGE
+// ============================================
+IF Contactor_Closed THEN
+    Status_Text := 'Closed';
+ELSIF Contactor_Output AND NOT Contactor_Feedback THEN
+    Status_Text := 'Closing...';
+ELSIF NOT Contactor_Output AND Contactor_Feedback THEN
+    Status_Text := 'Opening...';
+ELSIF NOT Master_Enable THEN
+    Status_Text := 'No Master Enable';
+ELSIF NOT Fan_Running THEN
+    Status_Text := 'Fan not running';
+ELSIF NOT Fan_Pressurized THEN
+    Status_Text := 'Not pressurized';
+ELSIF Any_Alarm THEN
+    Status_Text := 'Alarm active';
+ELSIF Dump_Active THEN
+    Status_Text := 'Dump active';
+ELSIF Dump_Complete THEN
+    Status_Text := 'Dump complete';
+ELSE
+    Status_Text := 'Open';
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Main_Contactor">
+      <LineId Id="53" Count="111" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Gradual_Dump" Id="{9bf46a61-7ac7-4d63-baf8-aebae9b9425d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Gradual_Dump
+// ============================================
+// GRADUAL DUMP CONTROLLER
+// UPDATED: Separate settings for EMG vs TEMP dump
+// - EMG dump: Uses LB_EMG_DUMP_PERCENT / LB_EMG_DUMP_STEP_TIME
+// - TEMP dump: Uses LB_TEMP_DUMP_PERCENT / LB_TEMP_DUMP_STEP_TIME
+// ============================================
+
+VAR_INPUT
+    // Separate triggers (to know which type)
+    Temp_Dump_Trigger       : BOOL;             // From Temp Monitor
+    EMG_Dump_Trigger        : BOOL;             // From E-Stop Controlled
+    
+    // Current load info
+    Current_Power_kW        : REAL;
+    Rated_Power_kW          : REAL;
+    
+    // EMG dump configuration (from ENG page)
+    EMG_Percent_Per_Step    : REAL := 10.0;     // NEW: % per step for EMG
+    EMG_Step_Time           : TIME := T#1s;     // NEW: Time between steps for EMG
+    
+    // TEMP dump configuration (from ENG page)
+    Temp_Percent_Per_Step   : REAL := 10.0;     // NEW: % per step for temp
+    Temp_Step_Time          : TIME := T#2s;     // NEW: Time between steps for temp
+    
+    // Safety timeout
+    Dump_Timeout            : TIME := T#30s;
+    
+    Enable                  : BOOL;
+    Reset                   : BOOL;
+END_VAR
+
+VAR_OUTPUT
+    Dump_Active             : BOOL;
+    Dump_Complete           : BOOL;
+    Dump_Percent            : REAL := 100.0;    // Current % remaining (100 → 0)
+    Dump_Timeout_Fault      : BOOL;
+    
+    // Type of dump (for fan control)
+    Is_Temperature_Dump     : BOOL;             // Fan uses full cooldown
+    Is_Emergency_Dump       : BOOL;             // Fan uses short delay
+    
+    Target_Power_kW         : REAL;
+    
+    Status_Text             : STRING(100);
+END_VAR
+
+VAR
+    State                   : UINT;
+    Step_Timer              : TON;
+    Timeout_Timer           : TON;
+    
+    Initial_Power_kW        : REAL;
+    Temp_Dump_Latched       : BOOL;
+    EMG_Dump_Latched        : BOOL;
+    
+    // Active settings based on dump type
+    Active_Percent          : REAL;             // NEW: Which percent to use
+    Active_Step_Time        : TIME;             // NEW: Which time to use
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// RESET
+// ============================================
+IF Reset THEN
+    Dump_Active := FALSE;
+    Dump_Complete := FALSE;
+    Dump_Percent := 100.0;
+    Dump_Timeout_Fault := FALSE;
+    Is_Temperature_Dump := FALSE;
+    Is_Emergency_Dump := FALSE;
+    Temp_Dump_Latched := FALSE;
+    EMG_Dump_Latched := FALSE;
+    State := 0;
+    Step_Timer(IN := FALSE);
+    Timeout_Timer(IN := FALSE);
+    Status_Text := 'Reset';
+END_IF;
+
+// ============================================
+// NOT ENABLED
+// ============================================
+IF NOT Enable THEN
+    Dump_Active := FALSE;
+    Dump_Percent := 100.0;
+    Target_Power_kW := Rated_Power_kW;
+    Status_Text := 'Disabled';
+    RETURN;
+END_IF;
+
+// ============================================
+// LATCH DUMP TRIGGERS
+// Once triggered, dump continues until complete
+// EMG takes priority if both trigger
+// ============================================
+IF Temp_Dump_Trigger AND NOT Dump_Complete AND NOT EMG_Dump_Latched THEN
+    Temp_Dump_Latched := TRUE;
+END_IF;
+
+IF EMG_Dump_Trigger AND NOT Dump_Complete THEN
+    EMG_Dump_Latched := TRUE;
+    Temp_Dump_Latched := FALSE;  // EMG overrides temp
+END_IF;
+
+// Set dump type outputs
+Is_Temperature_Dump := Temp_Dump_Latched AND NOT EMG_Dump_Latched;
+Is_Emergency_Dump := EMG_Dump_Latched;
+
+// ============================================
+// SELECT ACTIVE DUMP RATE BASED ON TYPE
+// ============================================
+IF EMG_Dump_Latched THEN
+    Active_Percent := EMG_Percent_Per_Step;
+    Active_Step_Time := EMG_Step_Time;
+ELSE
+    Active_Percent := Temp_Percent_Per_Step;
+    Active_Step_Time := Temp_Step_Time;
+END_IF;
+
+// ============================================
+// STATE MACHINE
+// ============================================
+CASE State OF
+
+    0: // IDLE - Waiting for dump trigger
+        Dump_Active := FALSE;
+        Dump_Complete := FALSE;
+        Dump_Percent := 100.0;
+        Target_Power_kW := Rated_Power_kW;
+        Status_Text := 'Ready';
+        
+        Step_Timer(IN := FALSE);
+        Timeout_Timer(IN := FALSE);
+        
+        IF Temp_Dump_Latched OR EMG_Dump_Latched THEN
+            Initial_Power_kW := Current_Power_kW;
+            Dump_Active := TRUE;
+            State := 10;
+            
+            // Set initial status message
+            IF EMG_Dump_Latched THEN
+                Status_Text := 'CONTROLLED E-STOP - STARTING DUMP';
+            ELSE
+                Status_Text := 'OVER TEMPERATURE - STARTING DUMP';
+            END_IF;
+        END_IF;
+    
+    10: // DUMPING - Gradually reduce load
+        Dump_Active := TRUE;
+        Dump_Complete := FALSE;
+        
+        // Status message with progress
+        IF Is_Emergency_Dump THEN
+            Status_Text := CONCAT('EMG DUMPING - ', REAL_TO_STRING(Dump_Percent));
+            Status_Text := CONCAT(Status_Text, '% remaining');
+        ELSE
+            Status_Text := CONCAT('TEMP DUMPING - ', REAL_TO_STRING(Dump_Percent));
+            Status_Text := CONCAT(Status_Text, '% remaining');
+        END_IF;
+        
+        // Timeout protection
+        Timeout_Timer(IN := TRUE, PT := Dump_Timeout);
+        IF Timeout_Timer.Q THEN
+            Dump_Timeout_Fault := TRUE;
+            Dump_Percent := 0.0;
+            Status_Text := 'DUMP TIMEOUT - FORCED TO 0%';
+            State := 20;
+        END_IF;
+        
+        // Step timer - uses ACTIVE settings based on dump type
+        Step_Timer(IN := TRUE, PT := Active_Step_Time);
+        
+        IF Step_Timer.Q THEN
+            Dump_Percent := Dump_Percent - Active_Percent;
+            
+            IF Dump_Percent <= 0.0 THEN
+                Dump_Percent := 0.0;
+                State := 20;
+            END_IF;
+            
+            Step_Timer(IN := FALSE);
+        END_IF;
+        
+        Target_Power_kW := (Dump_Percent / 100.0) * Rated_Power_kW;
+    
+    20: // COMPLETE - Dump finished
+        Dump_Active := FALSE;
+        Dump_Complete := TRUE;
+        Dump_Percent := 0.0;
+        Target_Power_kW := 0.0;
+        
+        IF Dump_Timeout_Fault THEN
+            Status_Text := 'DUMP TIMEOUT - ALL LOADS OFF';
+        ELSIF Is_Emergency_Dump THEN
+            Status_Text := 'EMG DUMP COMPLETE - ALL LOADS OFF';
+        ELSE
+            Status_Text := 'TEMP DUMP COMPLETE - COOLING DOWN';
+        END_IF;
+        
+        Step_Timer(IN := FALSE);
+        Timeout_Timer(IN := FALSE);
+
+END_CASE;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Gradual_Dump">
+      <LineId Id="526" Count="141" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

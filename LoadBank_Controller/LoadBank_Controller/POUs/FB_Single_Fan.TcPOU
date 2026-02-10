@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Single_Fan" Id="{1a597401-ba4b-4c35-9803-d081b4505357}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Single_Fan
+// ============================================
+// SINGLE FAN CONTROLLER
+// UPDATED: Added Is_Temperature_Dump input
+// - EMG dump: Short delay (Post_Dump_Delay) then fan OFF
+// - TEMP dump: Full cooldown (Cooldown_Time) then fan OFF
+// - Normal stop: Full cooldown (Cooldown_Time) then fan OFF
+// ============================================
+
+VAR_INPUT
+    HMI_Start               : BOOL;             // HMI button (PLC forces OFF on fault)
+    Physical_Start          : BOOL;             // Physical button (PLC cannot control)
+    Physical_Enabled        : BOOL;             // TRUE = physical button required
+    
+    Contactor_Feedback      : BOOL;             // NO: TRUE = contactor closed
+    Motor_Overload_OK       : BOOL;             // NC: TRUE = healthy, FALSE = FAULT
+    Pressure_OK             : BOOL;             // NO: TRUE = pressure OK
+    
+    Emergency_Immediate     : BOOL;             // TRUE = Stop NOW (instant)
+    Emergency_Controlled    : BOOL;             // TRUE = EMG Controlled stop active (short delay after dump)
+    Is_Temperature_Dump     : BOOL;             // NEW: TRUE = Temp dump active (full cooldown after dump)
+    Dump_Complete           : BOOL;             // TRUE = Load at 0%
+    
+    Pressurize_Time         : TIME := T#5s;
+    Cooldown_Time           : TIME := T#180s;   // CHANGED: Default 3 min for normal/temp cooldown
+    Feedback_Timeout        : TIME := T#3s;
+    Post_Dump_Delay         : TIME := T#5s;     // CHANGED: Default 5 sec for EMG only
+    
+    Enable                  : BOOL;
+    Reset_Fault             : BOOL;
+END_VAR
+
+VAR_OUTPUT
+    Contactor_Output        : BOOL;
+    Fan_Running             : BOOL;
+    Fan_Pressurized         : BOOL;
+    
+    Fan_Fault               : BOOL;
+    Fault_Motor_Overload    : BOOL;
+    Fault_Pressure          : BOOL;
+    Fault_Contactor         : BOOL;
+    Fault_Emergency         : BOOL;
+    
+    Force_HMI_Off           : BOOL;             // TRUE = force HMI_Fan_Start := FALSE
+    Physical_Blocked        : BOOL;             // Physical needs OFF→ON cycle
+    
+    Cycle_Count             : UDINT;
+    Status_Message          : STRING(50);
+END_VAR
+
+VAR
+    State                   : UINT;
+    Pressurize_Timer        : TON;
+    Cooldown_Timer          : TON;
+    Feedback_Timer          : TON;
+    Post_Dump_Timer         : TON;
+    
+    Start_Prev              : BOOL;
+    Fault_Latched           : BOOL;
+    Physical_Was_Off        : BOOL;
+    Controlled_Stop_Active  : BOOL;
+    Temp_Stop_Active        : BOOL;             // NEW: Temperature dump stop in progress
+    Start_Command           : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// RESET FAULTS
+// ============================================
+IF Reset_Fault THEN
+    Fault_Latched := FALSE;
+    Fan_Fault := FALSE;
+    Fault_Motor_Overload := FALSE;
+    Fault_Pressure := FALSE;
+    Fault_Contactor := FALSE;
+    Fault_Emergency := FALSE;
+    Controlled_Stop_Active := FALSE;
+    Temp_Stop_Active := FALSE;
+    Post_Dump_Timer(IN := FALSE);
+    Cooldown_Timer(IN := FALSE);
+    IF State = 99 THEN
+        State := 0;
+    END_IF;
+END_IF;
+
+// ============================================
+// FORCE HMI OFF (when fault or controlled stop)
+// ============================================
+Force_HMI_Off := Fault_Latched OR Controlled_Stop_Active OR Temp_Stop_Active;
+
+// ============================================
+// COMBINE START COMMAND
+// ============================================
+IF Physical_Enabled THEN
+    Start_Command := HMI_Start AND Physical_Start AND NOT Force_HMI_Off;
+ELSE
+    Start_Command := HMI_Start AND NOT Force_HMI_Off;
+END_IF;
+
+// ============================================
+// PHYSICAL BUTTON BLOCKING (needs OFF→ON cycle)
+// ============================================
+IF Fault_Latched AND Physical_Enabled THEN
+    Physical_Blocked := TRUE;
+    Physical_Was_Off := FALSE;
+ELSIF Physical_Blocked THEN
+    IF NOT Physical_Start THEN
+        Physical_Was_Off := TRUE;
+    END_IF;
+    
+    IF Physical_Was_Off AND NOT Fault_Latched THEN
+        Physical_Blocked := FALSE;
+        Physical_Was_Off := FALSE;
+    END_IF;
+END_IF;
+
+// ============================================
+// EMERGENCY IMMEDIATE - STOP NOW
+// ============================================
+IF Emergency_Immediate THEN
+    Contactor_Output := FALSE;
+    Fan_Running := FALSE;
+    Fan_Pressurized := FALSE;
+    Fault_Emergency := TRUE;
+    Fault_Latched := TRUE;
+    Fan_Fault := TRUE;
+    Controlled_Stop_Active := FALSE;
+    Temp_Stop_Active := FALSE;
+    State := 99;
+    Status_Message := 'IMMEDIATE E-STOP - FAN OFF';
+    RETURN;
+END_IF;
+
+// ============================================
+// EMERGENCY CONTROLLED - FAN STAYS ON DURING DUMP
+// Then stops after Post_Dump_Delay (short)
+// ============================================
+IF Emergency_Controlled AND NOT Temp_Stop_Active THEN
+    Controlled_Stop_Active := TRUE;
+    
+    IF NOT Dump_Complete THEN
+        Status_Message := 'EMG CTRL - DUMPING LOAD';
+    ELSE
+        // Dump complete - start short delay before fan stop
+        Post_Dump_Timer(IN := TRUE, PT := Post_Dump_Delay);
+        Status_Message := 'EMG CTRL - FAN STOPPING';
+        
+        IF Post_Dump_Timer.Q THEN
+            Contactor_Output := FALSE;
+            Fan_Running := FALSE;
+            Fan_Pressurized := FALSE;
+            Fault_Emergency := TRUE;
+            Fault_Latched := TRUE;
+            Fan_Fault := TRUE;
+            Controlled_Stop_Active := FALSE;
+            Post_Dump_Timer(IN := FALSE);
+            State := 99;
+            Status_Message := 'EMG COMPLETE - RESET REQ';
+            RETURN;
+        END_IF;
+    END_IF;
+END_IF;
+
+// Clear EMG controlled when signal goes away (if not latched)
+IF NOT Emergency_Controlled AND NOT Fault_Latched AND Controlled_Stop_Active THEN
+    Controlled_Stop_Active := FALSE;
+    Post_Dump_Timer(IN := FALSE);
+END_IF;
+
+// ============================================
+// TEMPERATURE DUMP - FAN STAYS ON DURING DUMP
+// Then goes to FULL COOLDOWN (same as normal stop)
+// ============================================
+IF Is_Temperature_Dump AND NOT Emergency_Controlled AND NOT Controlled_Stop_Active THEN
+    Temp_Stop_Active := TRUE;
+    
+    IF NOT Dump_Complete THEN
+        Status_Message := 'OVER TEMP - DUMPING LOAD';
+    ELSE
+        // Dump complete - go to cooldown state (state 40)
+        // Fan keeps running for full cooldown time
+        IF State <> 40 AND State <> 99 THEN
+            State := 40;
+            Cooldown_Timer(IN := FALSE);  // Reset timer to start fresh
+            Status_Message := 'TEMP - COOLING DOWN';
+        END_IF;
+    END_IF;
+END_IF;
+
+// ============================================
+// MOTOR OVERLOAD CHECK
+// ============================================
+IF Contactor_Output AND NOT Motor_Overload_OK THEN
+    Fault_Motor_Overload := TRUE;
+    Fault_Latched := TRUE;
+    Fan_Fault := TRUE;
+    Contactor_Output := FALSE;
+    Fan_Running := FALSE;
+    Fan_Pressurized := FALSE;
+    Controlled_Stop_Active := FALSE;
+    Temp_Stop_Active := FALSE;
+    State := 99;
+    Status_Message := 'MOTOR OVERLOAD FAULT';
+    RETURN;
+END_IF;
+
+// ============================================
+// FAULT LATCHED - STAY STOPPED
+// Exception: Controlled E-Stop or Temp dump keeps fan running
+// ============================================
+IF Fault_Latched AND NOT Controlled_Stop_Active AND NOT Temp_Stop_Active THEN
+    Contactor_Output := FALSE;
+    Fan_Running := FALSE;
+    Fan_Pressurized := FALSE;
+    Status_Message := 'FAULT - RESET REQUIRED';
+    RETURN;
+END_IF;
+
+// Physical blocked check
+IF Physical_Enabled AND Physical_Blocked THEN
+    Contactor_Output := FALSE;
+    Fan_Running := FALSE;
+    Fan_Pressurized := FALSE;
+    Status_Message := 'CYCLE PHYSICAL OFF-ON';
+    RETURN;
+END_IF;
+
+// ============================================
+// NOT ENABLED
+// ============================================
+IF NOT Enable AND NOT Controlled_Stop_Active AND NOT Temp_Stop_Active THEN
+    Contactor_Output := FALSE;
+    Fan_Running := FALSE;
+    Fan_Pressurized := FALSE;
+    State := 0;
+    Status_Message := 'FAN OFF';
+    Pressurize_Timer(IN := FALSE);
+    Cooldown_Timer(IN := FALSE);
+    Feedback_Timer(IN := FALSE);
+    RETURN;
+END_IF;
+
+// ============================================
+// STATE MACHINE
+// ============================================
+CASE State OF
+
+    0: // OFF
+        Contactor_Output := FALSE;
+        Fan_Running := FALSE;
+        Fan_Pressurized := FALSE;
+        Status_Message := 'FAN OFF';
+        
+        Pressurize_Timer(IN := FALSE);
+        Cooldown_Timer(IN := FALSE);
+        Feedback_Timer(IN := FALSE);
+        
+        IF Start_Command AND NOT Start_Prev THEN
+            State := 10;
+            Cycle_Count := Cycle_Count + 1;
+        END_IF;
+    
+    10: // STARTING
+        Contactor_Output := TRUE;
+        Fan_Running := FALSE;
+        Fan_Pressurized := FALSE;
+        Status_Message := 'FAN STARTING';
+        
+        Feedback_Timer(IN := NOT Contactor_Feedback, PT := Feedback_Timeout);
+        
+        IF Feedback_Timer.Q THEN
+            Fault_Contactor := TRUE;
+            Fault_Latched := TRUE;
+            Fan_Fault := TRUE;
+            Status_Message := 'CONTACTOR FAULT';
+            State := 99;
+        ELSIF Contactor_Feedback THEN
+            Feedback_Timer(IN := FALSE);
+            State := 20;
+        END_IF;
+    
+    20: // PRESSURIZING
+        Contactor_Output := TRUE;
+        Fan_Running := FALSE;
+        Fan_Pressurized := FALSE;
+        Status_Message := 'FAN PRESSURIZING';
+        
+        Pressurize_Timer(IN := TRUE, PT := Pressurize_Time);
+        
+        IF Pressurize_Timer.Q THEN
+            IF Pressure_OK THEN
+                Fan_Pressurized := TRUE;
+                Pressurize_Timer(IN := FALSE);
+                State := 30;
+            ELSE
+                Fault_Pressure := TRUE;
+                Fault_Latched := TRUE;
+                Fan_Fault := TRUE;
+                Status_Message := 'PRESSURE FAULT';
+                State := 99;
+            END_IF;
+        END_IF;
+        
+        IF NOT Start_Command AND NOT Controlled_Stop_Active AND NOT Temp_Stop_Active THEN
+            Pressurize_Timer(IN := FALSE);
+            State := 40;
+        END_IF;
+    
+    30: // RUNNING
+        Contactor_Output := TRUE;
+        Fan_Running := TRUE;
+        Fan_Pressurized := TRUE;
+        
+        // Don't overwrite status if in controlled/temp stop
+        IF NOT Controlled_Stop_Active AND NOT Temp_Stop_Active THEN
+            Status_Message := 'FAN RUNNING';
+        END_IF;
+        
+        IF NOT Pressure_OK THEN
+            Fault_Pressure := TRUE;
+            Fault_Latched := TRUE;
+            Fan_Fault := TRUE;
+            Controlled_Stop_Active := FALSE;
+            Temp_Stop_Active := FALSE;
+            Status_Message := 'PRESSURE LOSS FAULT';
+            State := 99;
+        END_IF;
+        
+        IF NOT Start_Command AND NOT Controlled_Stop_Active AND NOT Temp_Stop_Active THEN
+            State := 40;
+        END_IF;
+    
+    40: // COOLING DOWN (used for normal stop AND temperature dump)
+        Contactor_Output := TRUE;
+        Fan_Running := FALSE;
+        Fan_Pressurized := FALSE;
+        
+        Cooldown_Timer(IN := TRUE, PT := Cooldown_Time);
+        
+        // Calculate remaining time for display
+        IF Temp_Stop_Active THEN
+            Status_Message := 'TEMP COOLDOWN';
+        ELSE
+            Status_Message := 'FAN COOLING DOWN';
+        END_IF;
+        
+        IF Cooldown_Timer.Q THEN
+            Cooldown_Timer(IN := FALSE);
+            Contactor_Output := FALSE;
+            
+            // If this was temp stop, set fault to require reset
+            IF Temp_Stop_Active THEN
+                Fault_Emergency := TRUE;
+                Fault_Latched := TRUE;
+                Fan_Fault := TRUE;
+                Temp_Stop_Active := FALSE;
+                Status_Message := 'TEMP STOP COMPLETE';
+                State := 99;
+            ELSE
+                Status_Message := 'FAN OFF';
+                State := 0;
+            END_IF;
+        END_IF;
+    
+    99: // FAULT
+        Contactor_Output := FALSE;
+        Fan_Running := FALSE;
+        Fan_Pressurized := FALSE;
+        Fan_Fault := TRUE;
+
+END_CASE;
+
+Start_Prev := Start_Command;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Single_Fan">
+      <LineId Id="2634" Count="306" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

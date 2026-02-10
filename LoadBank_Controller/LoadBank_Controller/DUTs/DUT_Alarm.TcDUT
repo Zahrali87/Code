@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="DUT_Alarm" Id="{1203c32e-ebf7-4ee2-b162-ae852155ec99}">
+    <Declaration><![CDATA[// ============================================
+// DUT_Alarm
+// Structure for active alarm records
+// ============================================
+
+TYPE DUT_Alarm :
+STRUCT
+    ID                  : UINT;             // Alarm number (1-17)
+    Name                : STRING(30);       // Short name "FAN FAULT"
+    Description         : STRING(50);       // Detail "Motor overload tripped"
+    Severity            : UINT;             // 1=Critical (Red), 2=Warning (Yellow)
+    Active              : BOOL;             // Currently active?
+    Acknowledged        : BOOL;             // Operator acknowledged?
+    Timestamp_Occurred  : STRING(20);       // When alarm started
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

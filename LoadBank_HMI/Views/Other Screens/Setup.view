@@ -1,0 +1,524 @@
+<!-- Setup.view - TwinCAT HMI Customer Settings Screen -->
+<!-- Load Bank Control System -->
+<!-- Open access - no login required for customers -->
+<!-- GVL Variables: GVL_LoadBank_Persistent -->
+
+<div id="Setup" data-tchmi-type="TcHmi.Controls.System.TcHmiView" 
+     data-tchmi-top="0" data-tchmi-left="0" 
+     data-tchmi-width="1024" data-tchmi-height="600"
+     data-tchmi-width-mode="Value"
+     data-tchmi-height-mode="Value"
+     data-tchmi-scale-mode="ScaleToFit"
+     data-tchmi-creator-viewport-width="1024" 
+     data-tchmi-creator-viewport-height="600">
+
+<script type="text/javascript" data-tchmi-target-attribute="data-tchmi-trigger">
+[{
+    "event": "onLoaded",
+    "actions": [{
+        "objectType": "Function",
+        "active": true,
+        "fn": function() {
+            // Initialize LoadBank module for Setup page
+            if (typeof LoadBank !== 'undefined') {
+                LoadBank.init('Setup', {});
+            }
+            // Initialize Settings module
+            if (typeof Settings !== 'undefined') {
+                Settings.init('Setup');
+            }
+        }
+    }]
+}]
+</script>
+
+<!-- ================================================================== -->
+<!-- HEADER BAR -->
+<!-- ================================================================== -->
+<div id="SetupHeaderBar" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="0" data-tchmi-top="0" 
+     data-tchmi-width="1024" data-tchmi-height="50" 
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}' 
+     data-tchmi-border-radius="0" data-tchmi-border-width="0">
+</div>
+
+<!-- Back Button -->
+<div id="SetupBackBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="10" data-tchmi-top="8" 
+     data-tchmi-width="80" data-tchmi-height="34" 
+     data-tchmi-text="← BACK" 
+     data-tchmi-text-font-size="13" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Page Title -->
+<div id="SetupTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="110" data-tchmi-top="12" 
+     data-tchmi-width="250" data-tchmi-height="28" 
+     data-tchmi-text="⚙️ CUSTOMER SETUP" 
+     data-tchmi-text-font-size="20" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Engineer Login Button -->
+<div id="SetupEngLoginBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="890" data-tchmi-top="8" 
+     data-tchmi-width="120" data-tchmi-height="34" 
+     data-tchmi-text="🔐 ENGINEER" 
+     data-tchmi-text-font-size="11" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- ROW 1: RAMP SETTINGS & AUTO LEVEL SETTINGS -->
+<!-- ================================================================== -->
+
+<!-- RAMP SETTINGS PANEL -->
+<div id="RampSettingsPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="10" data-tchmi-top="60" 
+     data-tchmi-width="330" data-tchmi-height="160" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="8">
+</div>
+
+<div id="RampSettingsTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="70" 
+     data-tchmi-width="200" data-tchmi-height="20" 
+     data-tchmi-text="RAMP SETTINGS" 
+     data-tchmi-text-font-size="14" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Ramp Up Delay -->
+<div id="RampUpLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="105" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Ramp Up Delay (ms):" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="RampUpInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="220" data-tchmi-top="100" 
+     data-tchmi-width="100" data-tchmi-height="30" 
+     data-tchmi-value="500"
+     data-tchmi-min-value="100"
+     data-tchmi-max-value="5000"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4">
+</div>
+
+<!-- Ramp Down Delay -->
+<div id="RampDownLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="145" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Ramp Down Delay (ms):" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="RampDownInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="220" data-tchmi-top="140" 
+     data-tchmi-width="100" data-tchmi-height="30" 
+     data-tchmi-value="500"
+     data-tchmi-min-value="100"
+     data-tchmi-max-value="5000"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4">
+</div>
+
+<!-- Ramp Help Text -->
+<div id="RampHelpText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="180" 
+     data-tchmi-width="300" data-tchmi-height="30" 
+     data-tchmi-text="Delay between each step change during ramping" 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- AUTO LEVEL SETTINGS PANEL -->
+<div id="AutoLevelPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="350" data-tchmi-top="60" 
+     data-tchmi-width="330" data-tchmi-height="160" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="8">
+</div>
+
+<div id="AutoLevelTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="365" data-tchmi-top="70" 
+     data-tchmi-width="200" data-tchmi-height="20" 
+     data-tchmi-text="AUTO LEVEL SETTINGS" 
+     data-tchmi-text-font-size="14" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Deadband -->
+<div id="DeadbandLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="365" data-tchmi-top="105" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Deadband (kW):" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="DeadbandInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="560" data-tchmi-top="100" 
+     data-tchmi-width="100" data-tchmi-height="30" 
+     data-tchmi-value="5"
+     data-tchmi-min-value="1"
+     data-tchmi-max-value="50"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4">
+</div>
+
+<!-- Hysteresis -->
+<div id="HysteresisLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="365" data-tchmi-top="145" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Hysteresis (kW):" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="HysteresisInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="560" data-tchmi-top="140" 
+     data-tchmi-width="100" data-tchmi-height="30" 
+     data-tchmi-value="2"
+     data-tchmi-min-value="1"
+     data-tchmi-max-value="20"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4">
+</div>
+
+<!-- Auto Level Help Text -->
+<div id="AutoLevelHelpText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="365" data-tchmi-top="180" 
+     data-tchmi-width="300" data-tchmi-height="30" 
+     data-tchmi-text="Power tolerance window for auto leveling mode" 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- DISPLAY SETTINGS PANEL -->
+<div id="DisplayPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="690" data-tchmi-top="60" 
+     data-tchmi-width="324" data-tchmi-height="160" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="8">
+</div>
+
+<div id="DisplayTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="705" data-tchmi-top="70" 
+     data-tchmi-width="200" data-tchmi-height="20" 
+     data-tchmi-text="DISPLAY SETTINGS" 
+     data-tchmi-text-font-size="14" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Theme Selection -->
+<div id="ThemeLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="705" data-tchmi-top="105" 
+     data-tchmi-width="100" data-tchmi-height="20" 
+     data-tchmi-text="Theme:" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+
+<div id="ThemeDarkBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="705" data-tchmi-top="130" 
+     data-tchmi-width="100" data-tchmi-height="35" 
+     data-tchmi-text="🌙 DARK" 
+     data-tchmi-text-font-size="12" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(76, 175, 80, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(76, 175, 80, 1)"}'
+     data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+     data-tchmi-border-radius="4"
+     data-tchmi-text-color='{"color":"rgba(255, 255, 255, 1)"}'>
+</div>
+
+<div id="ThemeLightBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="815" data-tchmi-top="130" 
+     data-tchmi-width="100" data-tchmi-height="35" 
+     data-tchmi-text="☀️ LIGHT" 
+     data-tchmi-text-font-size="12" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Theme Help Text -->
+<div id="ThemeHelpText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="705" data-tchmi-top="180" 
+     data-tchmi-width="300" data-tchmi-height="30" 
+     data-tchmi-text="Select display color scheme" 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- ROW 2: DUMP SETTINGS (E-STOP) -->
+<!-- ================================================================== -->
+
+<!-- DUMP SETTINGS PANEL -->
+<div id="DumpSettingsPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="10" data-tchmi-top="230" 
+     data-tchmi-width="670" data-tchmi-height="160" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(244, 67, 54, 0.5)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="8">
+</div>
+
+<div id="DumpSettingsTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="240" 
+     data-tchmi-width="300" data-tchmi-height="20" 
+     data-tchmi-text="🛑 E-STOP / DUMP SETTINGS" 
+     data-tchmi-text-font-size="14" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Dump Percent Per Step -->
+<div id="DumpPercentLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="275" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Dump % Per Step:" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="DumpPercentInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="200" data-tchmi-top="270" 
+     data-tchmi-width="80" data-tchmi-height="30" 
+     data-tchmi-value="10"
+     data-tchmi-min-value="5"
+     data-tchmi-max-value="50"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4">
+</div>
+<div id="DumpPercentUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="285" data-tchmi-top="275" 
+     data-tchmi-width="30" data-tchmi-height="20" 
+     data-tchmi-text="%" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Dump Step Time -->
+<div id="DumpStepTimeLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="315" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Dump Step Time (sec):" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="DumpStepTimeInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="200" data-tchmi-top="310" 
+     data-tchmi-width="80" data-tchmi-height="30" 
+     data-tchmi-value="1"
+     data-tchmi-min-value="0.5"
+     data-tchmi-max-value="10"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4">
+</div>
+<div id="DumpStepTimeUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="285" data-tchmi-top="315" 
+     data-tchmi-width="30" data-tchmi-height="20" 
+     data-tchmi-text="sec" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Dump Timeout (E-Stop) -->
+<div id="DumpTimeoutLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="350" data-tchmi-top="275" 
+     data-tchmi-width="200" data-tchmi-height="20" 
+     data-tchmi-text="E-Stop Dump Timeout (sec):" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="DumpTimeoutInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="570" data-tchmi-top="270" 
+     data-tchmi-width="80" data-tchmi-height="30" 
+     data-tchmi-value="30"
+     data-tchmi-min-value="10"
+     data-tchmi-max-value="120"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4">
+</div>
+
+<!-- Dump Help Text -->
+<div id="DumpHelpText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="355" 
+     data-tchmi-width="630" data-tchmi-height="30" 
+     data-tchmi-text="Gradual load dump during emergency stop. Timeout = max time before fault if dump not complete." 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- MAINTENANCE SETTINGS PANEL -->
+<div id="MaintenancePanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="690" data-tchmi-top="230" 
+     data-tchmi-width="324" data-tchmi-height="160" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="8">
+</div>
+
+<div id="MaintenanceTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="705" data-tchmi-top="240" 
+     data-tchmi-width="200" data-tchmi-height="20" 
+     data-tchmi-text="🔧 MAINTENANCE" 
+     data-tchmi-text-font-size="14" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Test Duration -->
+<div id="TestDurationLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="705" data-tchmi-top="275" 
+     data-tchmi-width="180" data-tchmi-height="20" 
+     data-tchmi-text="Test Duration (sec):" 
+     data-tchmi-text-font-size="13"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+<div id="TestDurationInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" 
+     data-tchmi-left="890" data-tchmi-top="270" 
+     data-tchmi-width="80" data-tchmi-height="30" 
+     data-tchmi-value="30"
+     data-tchmi-min-value="10"
+     data-tchmi-max-value="300"
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="4">
+</div>
+
+<!-- Maintenance Help Text -->
+<div id="MaintenanceHelpText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="705" data-tchmi-top="315" 
+     data-tchmi-width="300" data-tchmi-height="50" 
+     data-tchmi-text="Duration for maintenance test cycles. Used for step verification and burn-in." 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- INFO PANEL -->
+<!-- ================================================================== -->
+<div id="InfoPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="10" data-tchmi-top="400" 
+     data-tchmi-width="1004" data-tchmi-height="80" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="8">
+</div>
+
+<div id="InfoTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="410" 
+     data-tchmi-width="200" data-tchmi-height="20" 
+     data-tchmi-text="ℹ️ INFORMATION" 
+     data-tchmi-text-font-size="14" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<div id="InfoText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="25" data-tchmi-top="435" 
+     data-tchmi-width="960" data-tchmi-height="40" 
+     data-tchmi-text="These settings can be adjusted by the operator. For advanced configuration (temperature limits, TC settings, mode enables, imbalance thresholds), please log in as Engineer." 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- FOOTER - APPLY / CANCEL BUTTONS -->
+<!-- ================================================================== -->
+<div id="SetupFooterBar" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="0" data-tchmi-top="540" 
+     data-tchmi-width="1024" data-tchmi-height="60" 
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-border-width="0">
+</div>
+
+<!-- Apply Button -->
+<div id="SetupApplyBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="340" data-tchmi-top="550" 
+     data-tchmi-width="150" data-tchmi-height="40" 
+     data-tchmi-text="✓ APPLY" 
+     data-tchmi-text-font-size="16" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(76, 175, 80, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(76, 175, 80, 1)"}'
+     data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+     data-tchmi-border-radius="8"
+     data-tchmi-text-color='{"color":"rgba(255, 255, 255, 1)"}'>
+</div>
+
+<!-- Cancel Button -->
+<div id="SetupCancelBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="530" data-tchmi-top="550" 
+     data-tchmi-width="150" data-tchmi-height="40" 
+     data-tchmi-text="✕ CANCEL" 
+     data-tchmi-text-font-size="16" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="8"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+
+<!-- Status Text -->
+<div id="SetupStatusText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="20" data-tchmi-top="560" 
+     data-tchmi-width="300" data-tchmi-height="20" 
+     data-tchmi-text="Status: Ready" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-color='{"color":"rgba(76, 175, 80, 1)"}'>
+</div>
+
+</div>

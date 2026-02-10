@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Maintenance_Mode" Id="{7d12e330-6b4b-4cd7-9e92-021545592ba8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Maintenance_Mode
+VAR_INPUT
+    Mode_Active             : BOOL;
+    
+    Number_of_Steps         : UINT := 10;
+    
+    Test_Step_Number        : UINT;
+    Test_Fan_Command        : BOOL;
+    Test_Step_Command       : BOOL;
+    
+    Step_Feedback           : ARRAY[1..100] OF BOOL;
+    Fan_Running             : BOOL;
+    
+    Master_Enable           : BOOL;
+    Emergency_Active        : BOOL;
+END_VAR
+VAR_OUTPUT
+    Mode_Ready              : BOOL;
+    Test_Active             : BOOL;
+    
+    Step_Output             : ARRAY[1..100] OF BOOL;
+    Fan_Start               : BOOL;
+    
+    Status_Message          : STRING(100);
+    Fault_Message           : STRING(100);
+END_VAR
+VAR
+    i                       : UINT;
+    Test_Step_Prev          : BOOL;
+    Test_Fan_Prev           : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+
+IF NOT Mode_Active THEN
+    Test_Active := FALSE;
+    Mode_Ready := FALSE;
+    
+    FOR i := 1 TO 100 DO
+        Step_Output[i] := FALSE;
+    END_FOR;
+    
+    Fan_Start := FALSE;
+    Status_Message := 'Maintenance mode not active';
+    Fault_Message := '';
+    RETURN;
+END_IF;
+
+IF Emergency_Active THEN
+    Test_Active := FALSE;
+    Mode_Ready := FALSE;
+    
+    FOR i := 1 TO 100 DO
+        Step_Output[i] := FALSE;
+    END_FOR;
+    
+    Fan_Start := FALSE;
+    Status_Message := 'EMERGENCY ACTIVE';
+    Fault_Message := 'Emergency stop activated';
+    RETURN;
+END_IF;
+
+IF NOT Master_Enable THEN
+    Mode_Ready := FALSE;
+    Status_Message := 'Master enable required';
+    Fault_Message := '';
+    RETURN;
+END_IF;
+
+Mode_Ready := TRUE;
+
+// Fan test
+IF Test_Fan_Command AND NOT Test_Fan_Prev THEN
+    Fan_Start := NOT Fan_Start;
+    
+    IF Fan_Start THEN
+        Status_Message := 'Fan test ACTIVE';
+    ELSE
+        Status_Message := 'Fan test STOPPED';
+    END_IF;
+END_IF;
+
+Test_Fan_Prev := Test_Fan_Command;
+
+// Step test
+IF Test_Step_Command AND NOT Test_Step_Prev THEN
+    IF Test_Step_Number > 0 AND Test_Step_Number <= Number_of_Steps THEN
+        Step_Output[Test_Step_Number] := NOT Step_Output[Test_Step_Number];
+        
+        IF Step_Output[Test_Step_Number] THEN
+            Test_Active := TRUE;
+            Status_Message := CONCAT('Testing step ', UINT_TO_STRING(Test_Step_Number));
+            Status_Message := CONCAT(Status_Message, ' - ON');
+        ELSE
+            Test_Active := FALSE;
+            Status_Message := CONCAT('Testing step ', UINT_TO_STRING(Test_Step_Number));
+            Status_Message := CONCAT(Status_Message, ' - OFF');
+        END_IF;
+    ELSE
+        Fault_Message := 'Invalid step number';
+    END_IF;
+END_IF;
+
+Test_Step_Prev := Test_Step_Command;
+
+// Check feedback
+IF Test_Active THEN
+    IF Test_Step_Number > 0 AND Test_Step_Number <= Number_of_Steps THEN
+        IF Step_Output[Test_Step_Number] AND NOT Step_Feedback[Test_Step_Number] THEN
+            Fault_Message := CONCAT('Step ', UINT_TO_STRING(Test_Step_Number));
+            Fault_Message := CONCAT(Fault_Message, ' feedback fault');
+        ELSIF NOT Step_Output[Test_Step_Number] AND Step_Feedback[Test_Step_Number] THEN
+            Fault_Message := CONCAT('Step ', UINT_TO_STRING(Test_Step_Number));
+            Fault_Message := CONCAT(Fault_Message, ' contactor stuck');
+        ELSE
+            Fault_Message := '';
+        END_IF;
+    END_IF;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Maintenance_Mode">
+      <LineId Id="472" Count="85" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

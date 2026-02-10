@@ -1,0 +1,272 @@
+<!-- Login.view - Engineer Login Page -->
+<!-- Load Bank Control System -->
+<!-- Resolution: 1024x600 with ScaleToFit -->
+
+<div id="Login" data-tchmi-type="TcHmi.Controls.System.TcHmiView" 
+     data-tchmi-top="0" data-tchmi-left="0" 
+     data-tchmi-width="1024" data-tchmi-height="600"
+     data-tchmi-width-mode="Value"
+     data-tchmi-height-mode="Value"
+     data-tchmi-scale-mode="ScaleToFit"
+     data-tchmi-creator-viewport-width="1024" 
+     data-tchmi-creator-viewport-height="600">
+
+<script type="text/javascript" data-tchmi-target-attribute="data-tchmi-trigger">
+[{
+    "event": "onLoaded",
+    "actions": [{
+        "objectType": "Function",
+        "active": true,
+        "fn": function() {
+            if (typeof Login !== 'undefined') {
+                Login.init();
+            }
+        }
+    }]
+}]
+</script>
+
+<!-- ================================================================== -->
+<!-- BACKGROUND -->
+<!-- ================================================================== -->
+<div id="Background" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="0" data-tchmi-top="0" 
+     data-tchmi-width="1024" data-tchmi-height="600" 
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- HEADER BAR -->
+<!-- ================================================================== -->
+<div id="HeaderBar" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="0" data-tchmi-top="0" 
+     data-tchmi-width="1024" data-tchmi-height="40" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'>
+</div>
+
+<div id="BackBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="8" data-tchmi-top="4" 
+     data-tchmi-width="70" data-tchmi-height="32" 
+     data-tchmi-text="← BACK" 
+     data-tchmi-text-font-size="11" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<div id="PageTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="90" data-tchmi-top="8" 
+     data-tchmi-width="200" data-tchmi-height="24" 
+     data-tchmi-text="🔐 ENGINEER LOGIN" 
+     data-tchmi-text-font-size="16" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<div id="DateTimeText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="850" data-tchmi-top="10" 
+     data-tchmi-width="160" data-tchmi-height="20" 
+     data-tchmi-text="2026-01-20 12:00:00" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-horizontal-alignment="Right"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- CENTER LOGIN PANEL -->
+<!-- ================================================================== -->
+<div id="LoginPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="312" data-tchmi-top="120" 
+     data-tchmi-width="400" data-tchmi-height="360" 
+     data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+     data-tchmi-border-radius="12">
+</div>
+
+<!-- Lock Icon -->
+<div id="LockIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="312" data-tchmi-top="140" 
+     data-tchmi-width="400" data-tchmi-height="50" 
+     data-tchmi-text="🔒" 
+     data-tchmi-text-font-size="40"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<!-- Title -->
+<div id="LoginTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="312" data-tchmi-top="195" 
+     data-tchmi-width="400" data-tchmi-height="30" 
+     data-tchmi-text="Engineer Access" 
+     data-tchmi-text-font-size="20" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<div id="LoginSubtitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="312" data-tchmi-top="225" 
+     data-tchmi-width="400" data-tchmi-height="20" 
+     data-tchmi-text="Enter password to access engineering settings" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- Password Label -->
+<div id="PasswordLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="352" data-tchmi-top="260" 
+     data-tchmi-width="100" data-tchmi-height="18" 
+     data-tchmi-text="Password:" 
+     data-tchmi-text-font-size="12"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+</div>
+
+<!-- Password Input -->
+<div id="PasswordInputBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="352" data-tchmi-top="282" 
+     data-tchmi-width="320" data-tchmi-height="50" 
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 1)"}'
+     data-tchmi-border-color='{"color":"rgba(77, 212, 255, 0.5)"}'
+     data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+     data-tchmi-border-radius="8">
+</div>
+<div id="PasswordInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiPasswordInput" 
+     data-tchmi-left="360" data-tchmi-top="290" 
+     data-tchmi-width="304" data-tchmi-height="34" 
+     data-tchmi-background-color='{"color":"rgba(15, 28, 46, 0)"}'
+     data-tchmi-text-font-size="18"
+     data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+</div>
+
+<!-- Login Button -->
+<div id="LoginBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+     data-tchmi-left="352" data-tchmi-top="350" 
+     data-tchmi-width="320" data-tchmi-height="50" 
+     data-tchmi-text="🔓 LOGIN" 
+     data-tchmi-text-font-size="16" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-background-color='{"color":"rgba(255, 152, 0, 1)"}'
+     data-tchmi-border-radius="8"
+     data-tchmi-text-color='{"color":"rgba(0, 0, 0, 1)"}'>
+</div>
+
+<!-- Status Message -->
+<div id="StatusMessage" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="352" data-tchmi-top="410" 
+     data-tchmi-width="320" data-tchmi-height="20" 
+     data-tchmi-text="" 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'>
+</div>
+
+<!-- Attempts Counter -->
+<div id="AttemptsText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="352" data-tchmi-top="435" 
+     data-tchmi-width="320" data-tchmi-height="16" 
+     data-tchmi-text="Attempts remaining: 3" 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- WARNING PANEL -->
+<!-- ================================================================== -->
+<div id="WarningPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="212" data-tchmi-top="500" 
+     data-tchmi-width="600" data-tchmi-height="70" 
+     data-tchmi-background-color='{"color":"rgba(255, 152, 0, 0.1)"}'
+     data-tchmi-border-color='{"color":"rgba(255, 152, 0, 0.5)"}'
+     data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+     data-tchmi-border-radius="8">
+</div>
+
+<div id="WarningIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="230" data-tchmi-top="520" 
+     data-tchmi-width="30" data-tchmi-height="30" 
+     data-tchmi-text="⚠️" 
+     data-tchmi-text-font-size="20">
+</div>
+
+<div id="WarningTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="270" data-tchmi-top="510" 
+     data-tchmi-width="530" data-tchmi-height="18" 
+     data-tchmi-text="RESTRICTED ACCESS" 
+     data-tchmi-text-font-size="12" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-color='{"color":"rgba(255, 152, 0, 1)"}'>
+</div>
+
+<div id="WarningText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="270" data-tchmi-top="530" 
+     data-tchmi-width="530" data-tchmi-height="32" 
+     data-tchmi-text="Engineering settings can affect system safety and performance. Only authorized personnel should access this area. Changes are logged." 
+     data-tchmi-text-font-size="10"
+     data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+</div>
+
+<!-- ================================================================== -->
+<!-- LOCKOUT OVERLAY (Hidden by default) -->
+<!-- ================================================================== -->
+<div id="LockoutOverlay" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="0" data-tchmi-top="0" 
+     data-tchmi-width="1024" data-tchmi-height="600" 
+     data-tchmi-background-color='{"color":"rgba(0, 0, 0, 0.85)"}'
+     data-tchmi-visibility="Collapsed">
+</div>
+
+<div id="LockoutPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" 
+     data-tchmi-left="312" data-tchmi-top="200" 
+     data-tchmi-width="400" data-tchmi-height="200" 
+     data-tchmi-background-color='{"color":"rgba(244, 67, 54, 0.2)"}'
+     data-tchmi-border-color='{"color":"rgba(244, 67, 54, 1)"}'
+     data-tchmi-border-width='{"left":3,"right":3,"top":3,"bottom":3}'
+     data-tchmi-border-radius="12"
+     data-tchmi-visibility="Collapsed">
+</div>
+
+<div id="LockoutIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="312" data-tchmi-top="220" 
+     data-tchmi-width="400" data-tchmi-height="50" 
+     data-tchmi-text="🚫" 
+     data-tchmi-text-font-size="40"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-visibility="Collapsed">
+</div>
+
+<div id="LockoutTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="312" data-tchmi-top="275" 
+     data-tchmi-width="400" data-tchmi-height="30" 
+     data-tchmi-text="ACCESS LOCKED" 
+     data-tchmi-text-font-size="18" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'
+     data-tchmi-visibility="Collapsed">
+</div>
+
+<div id="LockoutMessage" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="332" data-tchmi-top="310" 
+     data-tchmi-width="360" data-tchmi-height="40" 
+     data-tchmi-text="Too many failed attempts. Please wait 5 minutes before trying again." 
+     data-tchmi-text-font-size="11"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'
+     data-tchmi-visibility="Collapsed">
+</div>
+
+<div id="LockoutTimer" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" 
+     data-tchmi-left="312" data-tchmi-top="355" 
+     data-tchmi-width="400" data-tchmi-height="30" 
+     data-tchmi-text="Time remaining: 5:00" 
+     data-tchmi-text-font-size="14" 
+     data-tchmi-text-font-weight="Bold"
+     data-tchmi-text-horizontal-alignment="Center"
+     data-tchmi-text-color='{"color":"rgba(244, 67, 54, 1)"}'
+     data-tchmi-visibility="Collapsed">
+</div>
+
+</div>

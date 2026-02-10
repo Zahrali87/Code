@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Reverse_Mode" Id="{dec0d578-a705-425b-b981-18ee3847fa88}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Reverse_Mode
+
+VAR_INPUT
+    Mode_Active             : BOOL;             // TRUE when this mode is selected
+    Generator_Power_kW      : REAL;             // Power from external meter (generator output)
+    Follow_Percentage       : REAL := 100.0;    // % of generator power to absorb (0-100)
+    Max_Power_kW            : REAL;             // Available power limit
+    System_Ready            : BOOL;             // System ready to operate
+END_VAR
+
+VAR_OUTPUT
+    Target_Power_kW         : REAL;             // Output to Load_Controller
+    Status_Text             : STRING(100);      // Status for HMI
+END_VAR
+
+VAR
+    Calculated_Target       : REAL;
+    Clamped_Percentage      : REAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// NOT ACTIVE - RESET OUTPUT
+// ============================================
+IF NOT Mode_Active THEN
+    Target_Power_kW := 0.0;
+    Status_Text := 'Mode not active';
+    RETURN;
+END_IF;
+
+
+// ============================================
+// SYSTEM NOT READY
+// ============================================
+IF NOT System_Ready THEN
+    Target_Power_kW := 0.0;
+    Status_Text := 'System not ready';
+    RETURN;
+END_IF;
+
+
+// ============================================
+// VALIDATE FOLLOW PERCENTAGE
+// ============================================
+Clamped_Percentage := Follow_Percentage;
+
+IF Clamped_Percentage < 0.0 THEN
+    Clamped_Percentage := 0.0;
+ELSIF Clamped_Percentage > 100.0 THEN
+    Clamped_Percentage := 100.0;
+END_IF;
+
+
+// ============================================
+// CALCULATE TARGET POWER
+// ============================================
+Calculated_Target := Generator_Power_kW * (Clamped_Percentage / 100.0);
+
+
+// ============================================
+// CLAMP TO AVAILABLE POWER
+// ============================================
+IF Calculated_Target < 0.0 THEN
+    Calculated_Target := 0.0;
+END_IF;
+
+IF Calculated_Target > Max_Power_kW THEN
+    Calculated_Target := Max_Power_kW;
+    Status_Text := 'Limited to available power';
+ELSIF Generator_Power_kW <= 0.0 THEN
+    Status_Text := 'Waiting for generator power';
+ELSIF Clamped_Percentage = 0.0 THEN
+    Status_Text := 'Follow at 0% - No load';
+ELSE
+    Status_Text := 'Following generator';
+END_IF;
+
+
+// ============================================
+// OUTPUT
+// ============================================
+Target_Power_kW := Calculated_Target;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Reverse_Mode">
+      <LineId Id="377" Count="60" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,23 @@
+{
+    "$schema": "../Packages/Beckhoff.TwinCAT.HMI.Framework/Server/Schema/tchmiconfig.schema.json",
+    "basePath": "",
+    "scaleMode": "None",
+    "startPage": "Views/Desktop.view",
+    "loginPage": "",
+    "symbols": {
+        "AddDataTypes": true
+    },
+    "themes": [
+        "Themes/LoadBankNavyTheme.theme"
+    ],
+    "viewport": {
+        "width": 1024,
+        "height": 600,
+        "default": true
+    },
+    "activeTheme": "Themes/LoadBankNavyTheme.theme",
+    "creatorSettings": {
+        "viewportWidth": 1024,
+        "viewportHeight": 600
+    }
+}

@@ -1,0 +1,494 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_DataLogger" Id="{6a85ad68-d35e-4b26-8801-d6090520021b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_DataLogger
+(******************************************************************************
+ * FB_DataLogger
+ * 
+ * Purpose: Data logging for Load Bank system
+ *   1. Circular buffer for HMI trends (real-time viewing)
+ *   2. USB/SD CSV file logging (long-term storage)
+ *
+ * Features:
+ *   - Configurable sample rate (1s to 60s)
+ *   - Configurable buffer size (up to 3600 samples)
+ *   - Daily CSV files with auto-rotation
+ *   - Enable/disable for buffer and USB separately
+ *
+ * Author: Load Bank Project
+ * Date: January 2026
+ ******************************************************************************)
+
+VAR_INPUT
+    // Enable controls
+    Enable                  : BOOL := TRUE;         // Master enable
+    USB_Log_Enable          : BOOL := TRUE;         // Enable USB file logging
+    
+    // Sample rate (from GVL_Persistent)
+    Sample_Time             : TIME := T#10s;        // How often to sample
+    Buffer_Size             : UINT := 360;          // Active buffer size (max 3600)
+    
+    // Data inputs - Power
+    Power_Released          : REAL;
+    Power_Target            : REAL;
+    
+    // Data inputs - Temperature (up to 4 TCs)
+    Temp_TC1                : REAL;
+    Temp_TC2                : REAL;
+    Temp_TC3                : REAL;
+    Temp_TC4                : REAL;
+    Number_Of_TCs           : UINT := 2;            // How many TCs configured
+    
+    // Data inputs - Voltage (3-phase)
+    Voltage_L1L2            : REAL;
+    Voltage_L2L3            : REAL;
+    Voltage_L3L1            : REAL;
+    
+    // Data inputs - Current (3-phase)
+    Current_I1              : REAL;
+    Current_I2              : REAL;
+    Current_I3              : REAL;
+    
+    // USB path configuration
+    USB_Path                : STRING(100) := 'C:\DataLog\';  // Path for CSV files
+    
+    // Commands
+    Clear_Buffer            : BOOL;                 // Clear all trend buffers
+    
+END_VAR
+
+VAR_OUTPUT
+    // Status
+    Buffer_Index            : UINT;                 // Current write position (0 to Buffer_Size-1)
+    Buffer_Full             : BOOL;                 // Buffer has wrapped at least once
+    Samples_Logged          : UDINT;                // Total samples since enable
+    
+    // USB status
+    USB_Active              : BOOL;                 // USB logging is active
+    USB_File_Open           : BOOL;                 // File currently open
+    USB_Error               : BOOL;                 // Error writing to USB
+    USB_Error_Code          : UDINT;                // Last error code
+    Current_File_Name       : STRING(50);           // Current log file name
+    
+    // Trend buffer outputs (circular buffers)
+    // These are written to GVL arrays for HMI access
+    Trend_Write_Index       : UINT;                 // Current write index for HMI
+    
+END_VAR
+
+VAR
+    // Timing
+    Sample_Timer            : TON;
+    Sample_Trigger          : BOOL;
+    
+    // Buffer management
+    Internal_Index          : UINT := 0;
+    Buffer_Wrapped          : BOOL := FALSE;
+    
+    // USB file handling
+    FB_FileOpen             : FB_FileOpen;
+    FB_FilePuts             : FB_FilePuts;
+    FB_FileClose            : FB_FileClose;
+    FB_CreateDir            : FB_CreateDir;
+    
+    File_Handle             : UINT := 0;
+    File_State              : UINT := 0;            // State machine for file ops
+    Write_Buffer            : STRING(500);          // Line buffer for CSV
+    
+    // Date tracking for daily files
+    Last_Day                : WORD := 0;
+    Last_Month              : WORD := 0;
+    System_Time             : TIMESTRUCT;
+    FB_GetTime              : NT_GetTime;
+    
+    // Internal flags
+    Init_Done               : BOOL := FALSE;
+    Dir_Created             : BOOL := FALSE;
+    Need_New_File           : BOOL := FALSE;
+    Write_Pending           : BOOL := FALSE;
+    Close_Pending           : BOOL := FALSE;
+    
+    // Helpers
+    i                       : UINT;
+    sTemp                   : STRING(20);
+    
+END_VAR
+
+VAR CONSTANT
+    MAX_BUFFER              : UINT := 3600;         // Maximum array size
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================================================
+// INITIALIZATION
+// ============================================================================
+IF NOT Init_Done THEN
+    Internal_Index := 0;
+    Buffer_Wrapped := FALSE;
+    Samples_Logged := 0;
+    File_State := 0;
+    Init_Done := TRUE;
+END_IF
+
+// ============================================================================
+// CLEAR BUFFER COMMAND
+// ============================================================================
+IF Clear_Buffer THEN
+    Internal_Index := 0;
+    Buffer_Wrapped := FALSE;
+    Samples_Logged := 0;
+    
+    // Clear all GVL trend arrays
+    FOR i := 1 TO MAX_BUFFER DO
+        Trend_Power_Released[i] := 0.0;
+        Trend_Power_Target[i] := 0.0;
+        Trend_Temp_TC1[i] := 0.0;
+        Trend_Temp_TC2[i] := 0.0;
+        Trend_Temp_TC3[i] := 0.0;
+        Trend_Temp_TC4[i] := 0.0;
+        Trend_Voltage_L1L2[i] := 0.0;
+        Trend_Voltage_L2L3[i] := 0.0;
+        Trend_Voltage_L3L1[i] := 0.0;
+        Trend_Current_I1[i] := 0.0;
+        Trend_Current_I2[i] := 0.0;
+        Trend_Current_I3[i] := 0.0;
+    END_FOR
+END_IF
+
+// ============================================================================
+// SAMPLE TIMER
+// ============================================================================
+Sample_Timer(
+    IN := Enable AND NOT Sample_Timer.Q,
+    PT := Sample_Time
+);
+
+Sample_Trigger := Sample_Timer.Q;
+
+// Reset timer on trigger
+IF Sample_Trigger THEN
+    Sample_Timer(IN := FALSE);
+END_IF
+
+// ============================================================================
+// GET CURRENT TIME (for file naming and timestamps)
+// ============================================================================
+FB_GetTime(
+    NETID := '',
+    START := TRUE,
+    TMOUT := T#1s
+);
+
+IF NOT FB_GetTime.BUSY AND NOT FB_GetTime.ERR THEN
+    System_Time := FB_GetTime.TIMESTR;
+END_IF
+
+// ============================================================================
+// DATA SAMPLING - CIRCULAR BUFFER
+// ============================================================================
+IF Enable AND Sample_Trigger THEN
+    
+    // Clamp buffer size
+    IF Buffer_Size > MAX_BUFFER THEN
+        Buffer_Size := MAX_BUFFER;
+    END_IF
+    IF Buffer_Size < 1 THEN
+        Buffer_Size := 1;
+    END_IF
+    
+    // Calculate array index (1-based for TwinCAT arrays)
+    i := Internal_Index + 1;
+    
+    // Write to GVL trend arrays
+    Trend_Power_Released[i] := Power_Released;
+    Trend_Power_Target[i] := Power_Target;
+    Trend_Temp_TC1[i] := Temp_TC1;
+    Trend_Temp_TC2[i] := Temp_TC2;
+    Trend_Temp_TC3[i] := Temp_TC3;
+    Trend_Temp_TC4[i] := Temp_TC4;
+    Trend_Voltage_L1L2[i] := Voltage_L1L2;
+    Trend_Voltage_L2L3[i] := Voltage_L2L3;
+    Trend_Voltage_L3L1[i] := Voltage_L3L1;
+    Trend_Current_I1[i] := Current_I1;
+    Trend_Current_I2[i] := Current_I2;
+    Trend_Current_I3[i] := Current_I3;
+    
+    // Increment index with wrap-around
+    Internal_Index := Internal_Index + 1;
+    IF Internal_Index >= Buffer_Size THEN
+        Internal_Index := 0;
+        Buffer_Wrapped := TRUE;
+    END_IF
+    
+    // Update outputs
+    Buffer_Index := Internal_Index;
+    Buffer_Full := Buffer_Wrapped;
+    Samples_Logged := Samples_Logged + 1;
+    Trend_Write_Index := Internal_Index;
+    
+    // Trigger USB write
+    IF USB_Log_Enable THEN
+        Write_Pending := TRUE;
+    END_IF
+    
+END_IF
+
+// ============================================================================
+// USB FILE LOGGING - STATE MACHINE
+// ============================================================================
+IF USB_Log_Enable AND Enable THEN
+    
+    CASE File_State OF
+        
+        // --------------------------------------------------------------------
+        // State 0: Idle / Check if new file needed
+        // --------------------------------------------------------------------
+        0:
+            USB_Active := TRUE;
+            
+            // Check if date changed (need new daily file)
+            IF (System_Time.wDay <> Last_Day) OR (System_Time.wMonth <> Last_Month) OR NOT USB_File_Open THEN
+                Need_New_File := TRUE;
+                
+                // Close existing file first if open
+                IF USB_File_Open THEN
+                    File_State := 50;  // Go to close state
+                ELSE
+                    File_State := 10;  // Go to create directory
+                END_IF
+            ELSIF Write_Pending THEN
+                File_State := 30;  // Go to write state
+            END_IF
+            
+        // --------------------------------------------------------------------
+        // State 10: Create directory if needed
+        // --------------------------------------------------------------------
+        10:
+            FB_CreateDir(
+                sNetId := '',
+                sPathName := USB_Path,
+                ePath := PATH_GENERIC,
+                bExecute := TRUE,
+                tTimeout := T#2s
+            );
+            File_State := 11;
+            
+        11:
+            FB_CreateDir(bExecute := FALSE);
+            IF NOT FB_CreateDir.bBusy THEN
+                // Ignore error (directory may already exist)
+                Dir_Created := TRUE;
+                File_State := 20;  // Go to open file
+            END_IF
+            
+        // --------------------------------------------------------------------
+        // State 20: Open/Create daily CSV file
+        // --------------------------------------------------------------------
+        20:
+            // Build filename: YYYY-MM-DD.csv
+            Current_File_Name := CONCAT(
+                CONCAT(
+                    CONCAT(
+                        CONCAT(USB_Path, WORD_TO_STRING(System_Time.wYear)),
+                        '-'
+                    ),
+                    RIGHT(CONCAT('0', WORD_TO_STRING(System_Time.wMonth)), 2)
+                ),
+                CONCAT(
+                    CONCAT('-', RIGHT(CONCAT('0', WORD_TO_STRING(System_Time.wDay)), 2)),
+                    '.csv'
+                )
+            );
+            
+            FB_FileOpen(
+                sNetId := '',
+                sPathName := Current_File_Name,
+                nMode := FOPEN_MODEAPPEND OR FOPEN_MODETEXT,
+                ePath := PATH_GENERIC,
+                bExecute := TRUE,
+                tTimeout := T#2s
+            );
+            File_State := 21;
+            
+        21:
+            FB_FileOpen(bExecute := FALSE);
+            IF NOT FB_FileOpen.bBusy THEN
+                IF FB_FileOpen.bError THEN
+                    USB_Error := TRUE;
+                    USB_Error_Code := FB_FileOpen.nErrId;
+                    File_State := 0;
+                ELSE
+                    File_Handle := FB_FileOpen.hFile;
+                    USB_File_Open := TRUE;
+                    USB_Error := FALSE;
+                    Last_Day := System_Time.wDay;
+                    Last_Month := System_Time.wMonth;
+                    Need_New_File := FALSE;
+                    
+                    // Write header if new file (check file position)
+                    File_State := 25;
+                END_IF
+            END_IF
+            
+        // --------------------------------------------------------------------
+        // State 25: Write CSV header (for new files)
+        // --------------------------------------------------------------------
+        25:
+            // CSV Header line
+            Write_Buffer := 'Timestamp,Power_Released,Power_Target,Temp_TC1,Temp_TC2,Temp_TC3,Temp_TC4,Voltage_L1L2,Voltage_L2L3,Voltage_L3L1,Current_I1,Current_I2,Current_I3';
+            Write_Buffer := CONCAT(Write_Buffer, '$n');
+            
+            FB_FilePuts(
+                sNetId := '',
+                hFile := File_Handle,
+                sLine := Write_Buffer,
+                bExecute := TRUE,
+                tTimeout := T#1s
+            );
+            File_State := 26;
+            
+        26:
+            FB_FilePuts(bExecute := FALSE);
+            IF NOT FB_FilePuts.bBusy THEN
+                IF FB_FilePuts.bError THEN
+                    USB_Error := TRUE;
+                    USB_Error_Code := FB_FilePuts.nErrId;
+                END_IF
+                File_State := 0;  // Back to idle
+            END_IF
+            
+        // --------------------------------------------------------------------
+        // State 30: Write data line
+        // --------------------------------------------------------------------
+        30:
+            IF NOT USB_File_Open THEN
+                File_State := 10;  // Need to open file first
+            ELSE
+                // Build CSV line: Timestamp,Data1,Data2,...
+                // Timestamp format: YYYY-MM-DD HH:MM:SS
+                Write_Buffer := CONCAT(
+                    CONCAT(
+                        CONCAT(WORD_TO_STRING(System_Time.wYear), '-'),
+                        CONCAT(RIGHT(CONCAT('0', WORD_TO_STRING(System_Time.wMonth)), 2), '-')
+                    ),
+                    CONCAT(
+                        RIGHT(CONCAT('0', WORD_TO_STRING(System_Time.wDay)), 2),
+                        ' '
+                    )
+                );
+                Write_Buffer := CONCAT(Write_Buffer,
+                    CONCAT(
+                        CONCAT(RIGHT(CONCAT('0', WORD_TO_STRING(System_Time.wHour)), 2), ':'),
+                        CONCAT(
+                            CONCAT(RIGHT(CONCAT('0', WORD_TO_STRING(System_Time.wMinute)), 2), ':'),
+                            RIGHT(CONCAT('0', WORD_TO_STRING(System_Time.wSecond)), 2)
+                        )
+                    )
+                );
+                
+                // Add data values
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Power_Released));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Power_Target));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Temp_TC1));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Temp_TC2));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Temp_TC3));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Temp_TC4));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Voltage_L1L2));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Voltage_L2L3));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Voltage_L3L1));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Current_I1));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Current_I2));
+                Write_Buffer := CONCAT(Write_Buffer, ',');
+                Write_Buffer := CONCAT(Write_Buffer, REAL_TO_STRING(Current_I3));
+                Write_Buffer := CONCAT(Write_Buffer, '$n');
+                
+                FB_FilePuts(
+                    sNetId := '',
+                    hFile := File_Handle,
+                    sLine := Write_Buffer,
+                    bExecute := TRUE,
+                    tTimeout := T#1s
+                );
+                File_State := 31;
+            END_IF
+            
+        31:
+            FB_FilePuts(bExecute := FALSE);
+            IF NOT FB_FilePuts.bBusy THEN
+                IF FB_FilePuts.bError THEN
+                    USB_Error := TRUE;
+                    USB_Error_Code := FB_FilePuts.nErrId;
+                END_IF
+                Write_Pending := FALSE;
+                File_State := 0;  // Back to idle
+            END_IF
+            
+        // --------------------------------------------------------------------
+        // State 50: Close file
+        // --------------------------------------------------------------------
+        50:
+            FB_FileClose(
+                sNetId := '',
+                hFile := File_Handle,
+                bExecute := TRUE,
+                tTimeout := T#2s
+            );
+            File_State := 51;
+            
+        51:
+            FB_FileClose(bExecute := FALSE);
+            IF NOT FB_FileClose.bBusy THEN
+                USB_File_Open := FALSE;
+                File_Handle := 0;
+                
+                IF Need_New_File THEN
+                    File_State := 10;  // Create new file
+                ELSE
+                    File_State := 0;   // Back to idle
+                END_IF
+            END_IF
+            
+    END_CASE
+    
+ELSE
+    // USB logging disabled
+    USB_Active := FALSE;
+    
+    // Close file if open
+    IF USB_File_Open THEN
+        File_State := 50;
+    END_IF
+    
+END_IF
+
+// ============================================================================
+// DISABLE HANDLING
+// ============================================================================
+IF NOT Enable THEN
+    Sample_Timer(IN := FALSE);
+    USB_Active := FALSE;
+    
+    // Close file on disable
+    IF USB_File_Open AND File_State = 0 THEN
+        File_State := 50;
+    END_IF
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_DataLogger">
+      <LineId Id="727" Count="364" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="DUT_Emergency_Status" Id="{14b24e1f-64e4-41ca-85d9-dff1895617b1}">
+    <Declaration><![CDATA[TYPE DUT_Emergency_Status :
+STRUCT
+    Emergency_Active        : BOOL;
+    Emergency_Type          : STRING(20);
+    Emergency_Complete      : BOOL;
+    Ramp_Progress_Percent   : UINT;
+    Status_Message          : STRING(100);
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

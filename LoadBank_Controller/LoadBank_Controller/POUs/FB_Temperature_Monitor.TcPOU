@@ -1,0 +1,341 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Temperature_Monitor" Id="{21f48962-535b-4455-b895-f8c16438e043}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Temperature_Monitor
+VAR_INPUT
+    // TC Readings
+    Outlet_TC_Readings      : ARRAY[1..4] OF REAL;
+    Inlet_TC_Reading        : REAL;
+    
+    // Configuration
+    Outlet_TC_Count         : UINT := 2;                // 2 or 4 only
+    Inlet_TC_Enabled        : BOOL := TRUE;
+    
+    // Outlet TC Thresholds
+    Outlet_Warning_Temp     : REAL := 350.0;
+    Outlet_Maximum_Temp     : REAL := 400.0;
+    TC_Open_Limit           : REAL := 700.0;            // Above = TC open
+    TC_Short_Limit          : REAL := -50.0;            // Below = TC shorted
+    
+    // Inlet TC Thresholds
+    Inlet_Warning_Temp      : REAL := 50.0;
+    Inlet_Maximum_Temp      : REAL := 75.0;
+    
+    Enable                  : BOOL;
+    Reset                   : BOOL;
+END_VAR
+
+VAR_OUTPUT
+    // Calculated values
+    Outlet_Temp_Avg         : REAL;
+    Outlet_Temp_Max         : REAL;
+    Inlet_Temp              : REAL;
+    Delta_T                 : REAL;
+    Hottest_TC_Index        : UINT;
+    
+    // Individual OUTLET TC Fail (for alarm page)
+    Outlet_TC1_Fail         : BOOL;
+    Outlet_TC2_Fail         : BOOL;
+    Outlet_TC3_Fail         : BOOL;
+    Outlet_TC4_Fail         : BOOL;
+    
+    // Individual OUTLET TC Warning (for alarm page)
+    Outlet_TC1_Warning      : BOOL;
+    Outlet_TC2_Warning      : BOOL;
+    Outlet_TC3_Warning      : BOOL;
+    Outlet_TC4_Warning      : BOOL;
+    
+    // Individual OUTLET TC Overtemp (for alarm page)
+    Outlet_TC1_Overtemp     : BOOL;
+    Outlet_TC2_Overtemp     : BOOL;
+    Outlet_TC3_Overtemp     : BOOL;
+    Outlet_TC4_Overtemp     : BOOL;
+    
+    // INLET TC Status (for alarm page)
+    Inlet_TC_Fail           : BOOL;
+    Inlet_TC_Warning        : BOOL;
+    Inlet_TC_Overtemp       : BOOL;
+    
+    // Combined status
+    TC_Fail_Dump_Required   : BOOL;                     // TC fail requires dump
+    Any_Warning             : BOOL;
+    Any_Overtemp            : BOOL;
+    Contingency_Mode        : BOOL;                     // Running with backup TC (4 TC only)
+    
+    Dump_Command            : BOOL;
+    
+    Status_Text             : STRING(100);
+END_VAR
+
+VAR
+    i                       : UINT;
+    TempSum                 : REAL;
+    ValidCount              : UINT;
+    
+    TC_Fail_Arr             : ARRAY[1..4] OF BOOL;
+    TC_Warning_Arr          : ARRAY[1..4] OF BOOL;
+    TC_Overtemp_Arr         : ARRAY[1..4] OF BOOL;
+    TC_Valid_Arr            : ARRAY[1..4] OF BOOL;
+    
+    Warning_Latched         : BOOL;
+    Overtemp_Latched        : BOOL;
+    
+    Side1_Failed            : BOOL;                     // TC1 + TC2 both failed
+    Side2_Failed            : BOOL;                     // TC3 + TC4 both failed
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// RESET
+// ============================================
+IF Reset THEN
+    Outlet_TC1_Fail := FALSE;
+    Outlet_TC2_Fail := FALSE;
+    Outlet_TC3_Fail := FALSE;
+    Outlet_TC4_Fail := FALSE;
+    
+    Outlet_TC1_Warning := FALSE;
+    Outlet_TC2_Warning := FALSE;
+    Outlet_TC3_Warning := FALSE;
+    Outlet_TC4_Warning := FALSE;
+    
+    Outlet_TC1_Overtemp := FALSE;
+    Outlet_TC2_Overtemp := FALSE;
+    Outlet_TC3_Overtemp := FALSE;
+    Outlet_TC4_Overtemp := FALSE;
+    
+    Inlet_TC_Fail := FALSE;
+    Inlet_TC_Warning := FALSE;
+    Inlet_TC_Overtemp := FALSE;
+    
+    TC_Fail_Dump_Required := FALSE;
+    Warning_Latched := FALSE;
+    Overtemp_Latched := FALSE;
+    Contingency_Mode := FALSE;
+END_IF;
+
+// ============================================
+// NOT ENABLED
+// ============================================
+IF NOT Enable THEN
+    Any_Warning := FALSE;
+    Any_Overtemp := FALSE;
+    Dump_Command := FALSE;
+    Status_Text := 'Temp monitoring disabled';
+    RETURN;
+END_IF;
+
+// ============================================
+// CHECK EACH OUTLET TC - HEALTH AND TEMPERATURE
+// ============================================
+FOR i := 1 TO 4 DO
+    TC_Fail_Arr[i] := FALSE;
+    TC_Warning_Arr[i] := FALSE;
+    TC_Overtemp_Arr[i] := FALSE;
+    TC_Valid_Arr[i] := FALSE;
+    
+    IF i <= Outlet_TC_Count THEN
+        // TC Health Check
+        IF Outlet_TC_Readings[i] > TC_Open_Limit OR Outlet_TC_Readings[i] < TC_Short_Limit THEN
+            TC_Fail_Arr[i] := TRUE;
+        ELSE
+            TC_Valid_Arr[i] := TRUE;
+            
+            // Temperature Check
+            IF Outlet_TC_Readings[i] >= Outlet_Maximum_Temp THEN
+                TC_Overtemp_Arr[i] := TRUE;
+            ELSIF Outlet_TC_Readings[i] >= Outlet_Warning_Temp THEN
+                TC_Warning_Arr[i] := TRUE;
+            END_IF;
+        END_IF;
+    END_IF;
+END_FOR;
+
+// Copy to individual outputs (for alarm page)
+Outlet_TC1_Fail := TC_Fail_Arr[1];
+Outlet_TC2_Fail := TC_Fail_Arr[2];
+Outlet_TC3_Fail := TC_Fail_Arr[3];
+Outlet_TC4_Fail := TC_Fail_Arr[4];
+
+Outlet_TC1_Warning := TC_Warning_Arr[1];
+Outlet_TC2_Warning := TC_Warning_Arr[2];
+Outlet_TC3_Warning := TC_Warning_Arr[3];
+Outlet_TC4_Warning := TC_Warning_Arr[4];
+
+Outlet_TC1_Overtemp := TC_Overtemp_Arr[1];
+Outlet_TC2_Overtemp := TC_Overtemp_Arr[2];
+Outlet_TC3_Overtemp := TC_Overtemp_Arr[3];
+Outlet_TC4_Overtemp := TC_Overtemp_Arr[4];
+
+// ============================================
+// CHECK INLET TC (if enabled)
+// ============================================
+IF Inlet_TC_Enabled THEN
+    IF Inlet_TC_Reading > TC_Open_Limit OR Inlet_TC_Reading < TC_Short_Limit THEN
+        Inlet_TC_Fail := TRUE;
+        Inlet_TC_Warning := FALSE;
+        Inlet_TC_Overtemp := FALSE;
+    ELSE
+        Inlet_TC_Fail := FALSE;
+        
+        IF Inlet_TC_Reading >= Inlet_Maximum_Temp THEN
+            Inlet_TC_Overtemp := TRUE;
+            Inlet_TC_Warning := FALSE;
+        ELSIF Inlet_TC_Reading >= Inlet_Warning_Temp THEN
+            Inlet_TC_Warning := TRUE;
+            Inlet_TC_Overtemp := FALSE;
+        ELSE
+            Inlet_TC_Warning := FALSE;
+            Inlet_TC_Overtemp := FALSE;
+        END_IF;
+    END_IF;
+ELSE
+    Inlet_TC_Fail := FALSE;
+    Inlet_TC_Warning := FALSE;
+    Inlet_TC_Overtemp := FALSE;
+END_IF;
+
+// ============================================
+// TC FAIL LOGIC
+// 2 TCs: ANY fail = DUMP
+// 4 TCs: Both same side fail = DUMP
+// ============================================
+Side1_Failed := FALSE;
+Side2_Failed := FALSE;
+TC_Fail_Dump_Required := FALSE;
+Contingency_Mode := FALSE;
+
+CASE Outlet_TC_Count OF
+    2:
+        // 2 TCs: ANY single fail = DUMP (no backup)
+        IF TC_Fail_Arr[1] OR TC_Fail_Arr[2] THEN
+            TC_Fail_Dump_Required := TRUE;
+        END_IF;
+        
+    4:
+        // Check Side 1 (TC1 + TC2)
+        IF TC_Fail_Arr[1] AND TC_Fail_Arr[2] THEN
+            Side1_Failed := TRUE;
+            TC_Fail_Dump_Required := TRUE;
+        END_IF;
+        
+        // Check Side 2 (TC3 + TC4)
+        IF TC_Fail_Arr[3] AND TC_Fail_Arr[4] THEN
+            Side2_Failed := TRUE;
+            TC_Fail_Dump_Required := TRUE;
+        END_IF;
+        
+        // Contingency = any single fail but not both on same side
+        IF (TC_Fail_Arr[1] OR TC_Fail_Arr[2] OR TC_Fail_Arr[3] OR TC_Fail_Arr[4]) 
+           AND NOT TC_Fail_Dump_Required THEN
+            Contingency_Mode := TRUE;
+        END_IF;
+        
+    ELSE
+        TC_Fail_Dump_Required := TRUE;
+        Status_Text := 'Invalid TC count (2 or 4)';
+END_CASE;
+
+// ============================================
+// CALCULATE AVERAGE AND FIND MAX (valid TCs only)
+// ============================================
+TempSum := 0.0;
+ValidCount := 0;
+Outlet_Temp_Max := -999.0;
+Hottest_TC_Index := 0;
+
+FOR i := 1 TO Outlet_TC_Count DO
+    IF TC_Valid_Arr[i] THEN
+        TempSum := TempSum + Outlet_TC_Readings[i];
+        ValidCount := ValidCount + 1;
+        
+        IF Outlet_TC_Readings[i] > Outlet_Temp_Max THEN
+            Outlet_Temp_Max := Outlet_TC_Readings[i];
+            Hottest_TC_Index := i;
+        END_IF;
+    END_IF;
+END_FOR;
+
+IF ValidCount > 0 THEN
+    Outlet_Temp_Avg := TempSum / UINT_TO_REAL(ValidCount);
+ELSE
+    Outlet_Temp_Avg := 0.0;
+    Outlet_Temp_Max := 0.0;
+END_IF;
+
+// Store inlet value
+IF Inlet_TC_Enabled AND NOT Inlet_TC_Fail THEN
+    Inlet_Temp := Inlet_TC_Reading;
+    Delta_T := Outlet_Temp_Max - Inlet_Temp;
+ELSE
+    Inlet_Temp := 0.0;
+    Delta_T := 0.0;
+END_IF;
+
+// ============================================
+// COMBINED STATUS
+// ============================================
+Any_Warning := TC_Warning_Arr[1] OR TC_Warning_Arr[2] OR TC_Warning_Arr[3] OR TC_Warning_Arr[4] OR Inlet_TC_Warning;
+Any_Overtemp := TC_Overtemp_Arr[1] OR TC_Overtemp_Arr[2] OR TC_Overtemp_Arr[3] OR TC_Overtemp_Arr[4] OR Inlet_TC_Overtemp;
+
+// Latch alarms
+IF Any_Warning THEN
+    Warning_Latched := TRUE;
+END_IF;
+
+IF Any_Overtemp THEN
+    Overtemp_Latched := TRUE;
+END_IF;
+
+// ============================================
+// DUMP COMMAND
+// ============================================
+Dump_Command := Any_Overtemp OR TC_Fail_Dump_Required OR (Inlet_TC_Enabled AND Inlet_TC_Fail);
+
+// ============================================
+// STATUS MESSAGE
+// ============================================
+IF Outlet_TC_Count = 2 THEN
+    IF TC_Fail_Arr[1] AND TC_Fail_Arr[2] THEN
+        Status_Text := 'TC1+TC2 FAIL - DUMPING';
+    ELSIF TC_Fail_Arr[1] THEN
+        Status_Text := 'TC1 FAIL - DUMPING';
+    ELSIF TC_Fail_Arr[2] THEN
+        Status_Text := 'TC2 FAIL - DUMPING';
+    END_IF;
+ELSIF Outlet_TC_Count = 4 THEN
+    IF Side1_Failed AND Side2_Failed THEN
+        Status_Text := 'ALL TCs FAIL - DUMPING';
+    ELSIF Side1_Failed THEN
+        Status_Text := 'TC1+TC2 FAIL - DUMPING';
+    ELSIF Side2_Failed THEN
+        Status_Text := 'TC3+TC4 FAIL - DUMPING';
+    END_IF;
+END_IF;
+
+// Override with other conditions
+IF Inlet_TC_Enabled AND Inlet_TC_Fail THEN
+    Status_Text := 'INLET TC FAIL - DUMPING';
+ELSIF Inlet_TC_Overtemp THEN
+    Status_Text := 'INLET OVERTEMP - DUMPING';
+ELSIF Any_Overtemp THEN
+    Status_Text := 'OUTLET OVERTEMP - DUMPING';
+ELSIF Contingency_Mode THEN
+    Status_Text := 'CONTINGENCY MODE';
+ELSIF Inlet_TC_Warning THEN
+    Status_Text := 'INLET TEMP WARNING';
+ELSIF Any_Warning THEN
+    Status_Text := 'OUTLET TEMP WARNING';
+ELSIF Warning_Latched OR Overtemp_Latched THEN
+    Status_Text := 'Alarm history - reset';
+ELSIF NOT TC_Fail_Dump_Required THEN
+    Status_Text := 'Normal';
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Temperature_Monitor">
+      <LineId Id="1046" Count="244" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

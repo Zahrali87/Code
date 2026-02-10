@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <DUT Name="DUT_HMI_Step" Id="{1c454512-c74d-4096-9848-5d232399ca09}">
+    <Declaration><![CDATA[TYPE DUT_HMI_Step :
+STRUCT
+    Step_Number             : UINT;
+    Rated_Power_kW          : REAL;
+    Status_Active           : BOOL;
+    Status_Quarantined      : BOOL;
+    Status_Feedback_Fault   : BOOL;
+    Status_Power_Fault      : BOOL;
+    Cycle_Count             : UDINT;
+    Measured_Power_kW       : REAL;
+    Power_Error_Percent     : REAL;
+	Has_Feedback            : BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

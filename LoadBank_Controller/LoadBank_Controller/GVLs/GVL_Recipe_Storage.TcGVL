@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <GVL Name="GVL_Recipe_Storage" Id="{0850dc8a-3e5f-4b15-aa49-a8c6a53a5c98}">
+    <Declaration><![CDATA[VAR_GLOBAL PERSISTENT
+    // 4 recipe storage slots
+    Saved_Recipes           : ARRAY[1..4] OF DUT_Saved_Recipe;
+END_VAR
+
+VAR_GLOBAL
+    // HMI Interface - Recipe Management
+    HMI_Recipe_Select_Index     : UINT := 1;        // Which slot is selected (1-4)
+    HMI_Recipe_Save_Cmd         : BOOL;             // Trigger to save current recipe
+    HMI_Recipe_Load_Cmd         : BOOL;             // Trigger to load selected recipe
+    HMI_Recipe_Delete_Cmd       : BOOL;             // Trigger to delete selected recipe
+    
+    // Recipe names for dropdown (bind to HMI combobox)
+    HMI_Recipe_Name_1           : STRING(40);
+    HMI_Recipe_Name_2           : STRING(40);
+    HMI_Recipe_Name_3           : STRING(40);
+    HMI_Recipe_Name_4           : STRING(40);
+    
+    // Status feedback
+    HMI_Recipe_Operation_Status : STRING(50);       // "Saved", "Loaded", "Deleted", "Error"
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

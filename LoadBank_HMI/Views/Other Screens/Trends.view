@@ -1,0 +1,283 @@
+<!-- Trends.view - TwinCAT HMI Trends Screen -->
+<!-- Load Bank Control System - v7 -->
+<!-- Fixed: Correct JSON format for button colors -->
+
+<div id="Trends_1" data-tchmi-type="TcHmi.Controls.System.TcHmiView" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="1024" data-tchmi-height="600" data-tchmi-creator-viewport-width="1024" data-tchmi-creator-viewport-height="600" data-tchmi-background-color="rgba(10, 20, 32, 1)">
+
+    <!-- ================================================================== -->
+    <!-- LAYER 1: BACKGROUNDS -->
+    <!-- ================================================================== -->
+    
+    <div id="TrendsHeaderBar" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="0" data-tchmi-top="0" data-tchmi-width="1024" data-tchmi-height="55" data-tchmi-fill-color="rgba(15, 28, 46, 1)" data-tchmi-stroke-thickness="0">
+    </div>
+
+    <div id="TrendsPowerPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="10" data-tchmi-top="60" data-tchmi-width="497" data-tchmi-height="260" data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+
+    <div id="TrendsTempPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="517" data-tchmi-top="60" data-tchmi-width="497" data-tchmi-height="260" data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+
+    <div id="TrendsVoltagePanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="10" data-tchmi-top="330" data-tchmi-width="497" data-tchmi-height="260" data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+
+    <div id="TrendsCurrentPanel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="517" data-tchmi-top="330" data-tchmi-width="497" data-tchmi-height="260" data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- LAYER 2: CHART PLACEHOLDERS -->
+    <!-- ================================================================== -->
+
+    <div id="TrendsPowerChartBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="20" data-tchmi-top="95" data-tchmi-width="477" data-tchmi-height="215" data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 0.5)" data-tchmi-stroke-thickness="1">
+    </div>
+    <div id="TrendsPowerChartText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="20" data-tchmi-top="190" data-tchmi-width="477" data-tchmi-height="30" data-tchmi-text="Chart: Connect PLC" data-tchmi-text-font-size="14" data-tchmi-text-color="rgba(77, 212, 255, 0.5)" data-tchmi-text-horizontal-alignment="Center">
+    </div>
+
+    <div id="TrendsTempChartBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="527" data-tchmi-top="95" data-tchmi-width="477" data-tchmi-height="215" data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 0.5)" data-tchmi-stroke-thickness="1">
+    </div>
+    <div id="TrendsTempChartText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="527" data-tchmi-top="190" data-tchmi-width="477" data-tchmi-height="30" data-tchmi-text="Chart: Connect PLC" data-tchmi-text-font-size="14" data-tchmi-text-color="rgba(77, 212, 255, 0.5)" data-tchmi-text-horizontal-alignment="Center">
+    </div>
+
+    <div id="TrendsVoltageChartBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="20" data-tchmi-top="365" data-tchmi-width="477" data-tchmi-height="215" data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 0.5)" data-tchmi-stroke-thickness="1">
+    </div>
+    <div id="TrendsVoltageChartText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="20" data-tchmi-top="460" data-tchmi-width="477" data-tchmi-height="30" data-tchmi-text="Chart: Connect PLC" data-tchmi-text-font-size="14" data-tchmi-text-color="rgba(77, 212, 255, 0.5)" data-tchmi-text-horizontal-alignment="Center">
+    </div>
+
+    <div id="TrendsCurrentChartBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="527" data-tchmi-top="365" data-tchmi-width="477" data-tchmi-height="215" data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 0.5)" data-tchmi-stroke-thickness="1">
+    </div>
+    <div id="TrendsCurrentChartText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="527" data-tchmi-top="460" data-tchmi-width="477" data-tchmi-height="30" data-tchmi-text="Chart: Connect PLC" data-tchmi-text-font-size="14" data-tchmi-text-color="rgba(77, 212, 255, 0.5)" data-tchmi-text-horizontal-alignment="Center">
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- LAYER 3: TITLES -->
+    <!-- ================================================================== -->
+
+    <div id="TrendsPageTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="120" data-tchmi-top="12" data-tchmi-width="200" data-tchmi-height="30" data-tchmi-text="📈 TRENDS" data-tchmi-text-font-size="22" data-tchmi-text-font-weight="Bold" data-tchmi-text-color="rgba(77, 212, 255, 1)">
+    </div>
+
+    <div id="TrendsPowerTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="20" data-tchmi-top="68" data-tchmi-width="180" data-tchmi-height="20" data-tchmi-text="⚡ POWER OUTPUT" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold" data-tchmi-text-color="rgba(77, 212, 255, 1)">
+    </div>
+    
+    <div id="TrendsTempTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="527" data-tchmi-top="68" data-tchmi-width="180" data-tchmi-height="20" data-tchmi-text="🌡️ TEMPERATURE" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold" data-tchmi-text-color="rgba(77, 212, 255, 1)">
+    </div>
+    
+    <div id="TrendsVoltageTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="20" data-tchmi-top="338" data-tchmi-width="150" data-tchmi-height="20" data-tchmi-text="⚡ VOLTAGE" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold" data-tchmi-text-color="rgba(77, 212, 255, 1)">
+    </div>
+    
+    <div id="TrendsCurrentTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="527" data-tchmi-top="338" data-tchmi-width="150" data-tchmi-height="20" data-tchmi-text="⚡ CURRENT" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold" data-tchmi-text-color="rgba(77, 212, 255, 1)">
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- LAYER 4: BUTTONS WITH JSON COLOR FORMAT -->
+    <!-- ================================================================== -->
+
+    <!-- Back Button -->
+    <div id="TrendsBackBtn" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="10" data-tchmi-top="10" data-tchmi-width="90" data-tchmi-height="35" 
+         data-tchmi-text="← BACK" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+
+    <!-- Time Range Buttons -->
+    <div id="TimeBtn5M" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="734" data-tchmi-top="12" data-tchmi-width="50" data-tchmi-height="32" 
+         data-tchmi-text="5M" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="TimeBtn15M" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="789" data-tchmi-top="12" data-tchmi-width="50" data-tchmi-height="32" 
+         data-tchmi-text="15M" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="TimeBtn30M" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="844" data-tchmi-top="12" data-tchmi-width="50" data-tchmi-height="32" 
+         data-tchmi-text="30M" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="TimeBtn1H" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="899" data-tchmi-top="12" data-tchmi-width="50" data-tchmi-height="32" 
+         data-tchmi-text="1H" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="TimeBtnAll" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="954" data-tchmi-top="12" data-tchmi-width="50" data-tchmi-height="32" 
+         data-tchmi-text="ALL" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+
+    <!-- Power Buttons -->
+    <div id="PowerBtnReleased" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="312" data-tchmi-top="65" data-tchmi-width="60" data-tchmi-height="26" 
+         data-tchmi-text="Released" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="PowerBtnAvailable" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="377" data-tchmi-top="65" data-tchmi-width="60" data-tchmi-height="26" 
+         data-tchmi-text="Available" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="PowerBtnTarget" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="442" data-tchmi-top="65" data-tchmi-width="55" data-tchmi-height="26" 
+         data-tchmi-text="Target" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+
+    <!-- Temperature Buttons -->
+    <div id="TempBtnTC1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="794" data-tchmi-top="65" data-tchmi-width="38" data-tchmi-height="26" 
+         data-tchmi-text="TC1" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="TempBtnTC2" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="837" data-tchmi-top="65" data-tchmi-width="38" data-tchmi-height="26" 
+         data-tchmi-text="TC2" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="TempBtnTC3" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="880" data-tchmi-top="65" data-tchmi-width="38" data-tchmi-height="26" 
+         data-tchmi-text="TC3" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="TempBtnTC4" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="923" data-tchmi-top="65" data-tchmi-width="38" data-tchmi-height="26" 
+         data-tchmi-text="TC4" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="TempBtnAll" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="966" data-tchmi-top="65" data-tchmi-width="38" data-tchmi-height="26" 
+         data-tchmi-text="ALL" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+
+    <!-- Voltage Buttons -->
+    <div id="VoltageBtnL1L2" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="309" data-tchmi-top="335" data-tchmi-width="45" data-tchmi-height="26" 
+         data-tchmi-text="L1-L2" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="VoltageBtnL2L3" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="359" data-tchmi-top="335" data-tchmi-width="45" data-tchmi-height="26" 
+         data-tchmi-text="L2-L3" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="VoltageBtnL3L1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="409" data-tchmi-top="335" data-tchmi-width="45" data-tchmi-height="26" 
+         data-tchmi-text="L3-L1" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="VoltageBtnAll" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="459" data-tchmi-top="335" data-tchmi-width="38" data-tchmi-height="26" 
+         data-tchmi-text="ALL" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+
+    <!-- Current Buttons -->
+    <div id="CurrentBtnI1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="846" data-tchmi-top="335" data-tchmi-width="35" data-tchmi-height="26" 
+         data-tchmi-text="I1" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="CurrentBtnI2" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="886" data-tchmi-top="335" data-tchmi-width="35" data-tchmi-height="26" 
+         data-tchmi-text="I2" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="CurrentBtnI3" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="926" data-tchmi-top="335" data-tchmi-width="35" data-tchmi-height="26" 
+         data-tchmi-text="I3" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <div id="CurrentBtnAll" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" 
+         data-tchmi-left="966" data-tchmi-top="335" data-tchmi-width="38" data-tchmi-height="26" 
+         data-tchmi-text="ALL" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":1,"right":1,"top":1,"bottom":1}'
+         data-tchmi-border-radius="4"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+
+</div>

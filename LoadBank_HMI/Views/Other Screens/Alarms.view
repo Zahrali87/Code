@@ -1,0 +1,728 @@
+<!-- Alarms.view - TwinCAT HMI Alarm Management Screen -->
+<!-- Load Bank Control System -->
+<div id="Alarms" data-tchmi-type="TcHmi.Controls.System.TcHmiView" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="1024" data-tchmi-height="600" data-tchmi-creator-viewport-width="1024" data-tchmi-creator-viewport-height="600" data-tchmi-background-color="rgba(10, 20, 32, 1)">
+    <!-- ================================================================== -->
+    <!-- HEADER BAR -->
+    <!-- ================================================================== -->
+
+    <div id="HeaderBar" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="0" data-tchmi-top="0" data-tchmi-width="1024" data-tchmi-height="70"
+         data-tchmi-fill-color="rgba(15, 28, 46, 1)" data-tchmi-stroke-thickness="0">
+    </div>
+    <div id="HeaderLine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="0" data-tchmi-top="69" data-tchmi-width="1024" data-tchmi-height="1"
+         data-tchmi-fill-color="rgba(45, 70, 99, 1)">
+    </div>
+    <!-- Back Button -->
+    <div id="btnBack" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="15" data-tchmi-top="12" data-tchmi-width="100" data-tchmi-height="46"
+         data-tchmi-text="← BACK" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+    </div>
+    <!-- Title -->
+    <div id="txtTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="130" data-tchmi-top="18" data-tchmi-width="300" data-tchmi-height="40"
+         data-tchmi-text="ALARM MANAGEMENT" data-tchmi-text-font-size="28" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)">
+    </div>
+    <!-- ACK ALL Button - Yellow -->
+    <div id="btnAckAllBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="644" data-tchmi-top="12" data-tchmi-width="110" data-tchmi-height="46"
+         data-tchmi-fill-color="rgba(255, 193, 7, 1)" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+    <div id="btnAckAllText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="644" data-tchmi-top="12" data-tchmi-width="110" data-tchmi-height="46"
+         data-tchmi-text="ACK ALL" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(0, 0, 0, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+    </div>
+    <!-- RESET Button - Green -->
+    <div id="btnResetBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="764" data-tchmi-top="12" data-tchmi-width="100" data-tchmi-height="46"
+         data-tchmi-fill-color="rgba(76, 175, 80, 1)" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+    <div id="btnResetText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="764" data-tchmi-top="12" data-tchmi-width="100" data-tchmi-height="46"
+         data-tchmi-text="RESET" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(255, 255, 255, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+    </div>
+    <!-- CLEAR HISTORY Button - Orange -->
+    <div id="btnClearHistoryBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="874" data-tchmi-top="12" data-tchmi-width="135" data-tchmi-height="46"
+         data-tchmi-fill-color="rgba(255, 152, 0, 1)" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+    <div id="btnClearHistoryText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="874" data-tchmi-top="12" data-tchmi-width="135" data-tchmi-height="46"
+         data-tchmi-text="CLEAR HISTORY" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(255, 255, 255, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+    </div>
+    <!-- ================================================================== -->
+    <!-- TAB BUTTONS -->
+    <!-- ================================================================== -->
+    <!-- Active Tab Button -->
+    <div id="btnTabActive" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="15" data-tchmi-top="85" data-tchmi-width="180" data-tchmi-height="45"
+         data-tchmi-text="ACTIVE ALARMS" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(26, 41, 66, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(77, 212, 255, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(77, 212, 255, 1)"}'>
+    </div>
+    <!-- History Tab Button -->
+    <div id="btnTabHistory" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="200" data-tchmi-top="85" data-tchmi-width="140" data-tchmi-height="45"
+         data-tchmi-text="HISTORY" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(148, 163, 184, 1)"}'>
+    </div>
+    <!-- ================================================================== -->
+    <!-- ALARM COUNTS -->
+    <!-- ================================================================== -->
+    <!-- Critical Dot -->
+    <div id="CountCriticalDot" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="720" data-tchmi-top="95" data-tchmi-width="14" data-tchmi-height="14"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="2" data-tchmi-radius-y="2">
+    </div>
+    <div id="txtCriticalCount" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="738" data-tchmi-top="90" data-tchmi-width="30" data-tchmi-height="24"
+         data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(244, 67, 54, 1)">
+    </div>
+    <!-- Warning Dot -->
+    <div id="CountWarningDot" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="780" data-tchmi-top="95" data-tchmi-width="14" data-tchmi-height="14"
+         data-tchmi-fill-color="rgba(255, 193, 7, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="2" data-tchmi-radius-y="2">
+    </div>
+    <div id="txtWarningCount" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="798" data-tchmi-top="90" data-tchmi-width="30" data-tchmi-height="24"
+         data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(255, 193, 7, 1)">
+    </div>
+    <!-- Unack Label + Count -->
+    <div id="lblUnack" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="845" data-tchmi-top="93" data-tchmi-width="50" data-tchmi-height="20"
+         data-tchmi-text="UNACK:" data-tchmi-text-font-size="12"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <div id="txtUnackCount" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="895" data-tchmi-top="90" data-tchmi-width="30" data-tchmi-height="24"
+         data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(255, 152, 0, 1)">
+    </div>
+    <!-- Total Label + Count -->
+    <div id="lblTotal" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="940" data-tchmi-top="93" data-tchmi-width="45" data-tchmi-height="20"
+         data-tchmi-text="TOTAL:" data-tchmi-text-font-size="12"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <div id="txtTotalCount" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="985" data-tchmi-top="90" data-tchmi-width="30" data-tchmi-height="24"
+         data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)">
+    </div>
+    <!-- ================================================================== -->
+    <!-- ACTIVE ALARMS PANEL -->
+    <!-- ================================================================== -->
+    <div id="panelActiveAlarms" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="135" data-tchmi-width="994" data-tchmi-height="390"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)"
+         data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+    <!-- Active Header Row -->
+    <div id="ActiveHeaderBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="135" data-tchmi-width="994" data-tchmi-height="40"
+         data-tchmi-fill-color="rgba(36, 58, 86, 1)" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+    <div id="ActiveHdrSev" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="30" data-tchmi-top="145" data-tchmi-width="40" data-tchmi-height="20"
+         data-tchmi-text="SEV" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <div id="ActiveHdrId" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="145" data-tchmi-width="50" data-tchmi-height="20"
+         data-tchmi-text="ID" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <div id="ActiveHdrTime" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="140" data-tchmi-top="145" data-tchmi-width="140" data-tchmi-height="20"
+         data-tchmi-text="TIME" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <div id="ActiveHdrAlarm" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="145" data-tchmi-width="200" data-tchmi-height="20"
+         data-tchmi-text="ALARM / DESCRIPTION" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <div id="ActiveHdrAction" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="915" data-tchmi-top="145" data-tchmi-width="70" data-tchmi-height="20"
+         data-tchmi-text="ACTION" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <!-- Alarm Row 1 -->
+    <div id="alarmRow1_leftBorder" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="177" data-tchmi-width="4" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0">
+    </div>
+    <div id="alarmRow1_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="19" data-tchmi-top="177" data-tchmi-width="990" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="0 0 1 0">
+    </div>
+    <div id="alarmRow1_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="30" data-tchmi-top="187" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="6" data-tchmi-radius-y="6">
+    </div>
+    <div id="alarmRow1_sevText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="30" data-tchmi-top="187" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-text="!" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(255, 255, 255, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+    </div>
+    <div id="alarmRow1_id" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="195" data-tchmi-width="50" data-tchmi-height="20"
+         data-tchmi-text="#1" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <div id="alarmRow1_time" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="140" data-tchmi-top="195" data-tchmi-width="140" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)">
+    </div>
+    <div id="alarmRow1_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="185" data-tchmi-width="600" data-tchmi-height="22"
+         data-tchmi-text="" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(232, 240, 247, 1)">
+    </div>
+    <div id="alarmRow1_desc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="205" data-tchmi-width="600" data-tchmi-height="18"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)">
+    </div>
+    <div id="alarmRow1_btnAck" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="910" data-tchmi-top="187" data-tchmi-width="80" data-tchmi-height="36"
+         data-tchmi-text="ACK" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="6"
+         data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'>
+    </div>
+    <!-- Alarm Row 2 -->
+    <div id="alarmRow2_leftBorder" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="232" data-tchmi-width="4" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow2_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="19" data-tchmi-top="232" data-tchmi-width="990" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="0 0 1 0"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow2_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="30" data-tchmi-top="242" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="6" data-tchmi-radius-y="6"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow2_sevText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="30" data-tchmi-top="242" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-text="!" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(255, 255, 255, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow2_id" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="250" data-tchmi-width="50" data-tchmi-height="20"
+         data-tchmi-text="#2" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow2_time" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="140" data-tchmi-top="250" data-tchmi-width="140" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow2_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="240" data-tchmi-width="600" data-tchmi-height="22"
+         data-tchmi-text="" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(232, 240, 247, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow2_desc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="260" data-tchmi-width="600" data-tchmi-height="18"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow2_btnAck" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="910" data-tchmi-top="242" data-tchmi-width="80" data-tchmi-height="36"
+         data-tchmi-text="ACK" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="6"
+         data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- Alarm Row 3 (Warning - Yellow) -->
+    <div id="alarmRow3_leftBorder" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="287" data-tchmi-width="4" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(255, 193, 7, 1)" data-tchmi-stroke-thickness="0" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow3_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="19" data-tchmi-top="287" data-tchmi-width="990" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="0 0 1 0" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow3_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="30" data-tchmi-top="297" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-fill-color="rgba(255, 193, 7, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="6" data-tchmi-radius-y="6" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow3_sevText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="30" data-tchmi-top="297" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-text="⚠" data-tchmi-text-font-size="18" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(0, 0, 0, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow3_id" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="305" data-tchmi-width="50" data-tchmi-height="20"
+         data-tchmi-text="#3" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow3_time" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="140" data-tchmi-top="305" data-tchmi-width="140" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow3_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="295" data-tchmi-width="600" data-tchmi-height="22"
+         data-tchmi-text="" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(232, 240, 247, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow3_desc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="315" data-tchmi-width="600" data-tchmi-height="18"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow3_btnAck" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="910" data-tchmi-top="297" data-tchmi-width="80" data-tchmi-height="36"
+         data-tchmi-text="ACK" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="6"
+         data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- Alarm Row 4 -->
+    <div id="alarmRow4_leftBorder" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="342" data-tchmi-width="4" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow4_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="19" data-tchmi-top="342" data-tchmi-width="990" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="0 0 1 0"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow4_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="30" data-tchmi-top="352" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="6" data-tchmi-radius-y="6"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow4_sevText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="30" data-tchmi-top="352" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-text="!" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(255, 255, 255, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow4_id" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="360" data-tchmi-width="50" data-tchmi-height="20"
+         data-tchmi-text="#4" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow4_time" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="140" data-tchmi-top="360" data-tchmi-width="140" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow4_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="350" data-tchmi-width="600" data-tchmi-height="22"
+         data-tchmi-text="" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(232, 240, 247, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow4_desc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="370" data-tchmi-width="600" data-tchmi-height="18"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow4_btnAck" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="910" data-tchmi-top="352" data-tchmi-width="80" data-tchmi-height="36"
+         data-tchmi-text="ACK" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="6"
+         data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- Alarm Row 5 -->
+    <div id="alarmRow5_leftBorder" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="397" data-tchmi-width="4" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow5_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="19" data-tchmi-top="397" data-tchmi-width="990" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="0 0 1 0"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow5_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="30" data-tchmi-top="407" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="6" data-tchmi-radius-y="6"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow5_sevText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="30" data-tchmi-top="407" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-text="!" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(255, 255, 255, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow5_id" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="415" data-tchmi-width="50" data-tchmi-height="20"
+         data-tchmi-text="#5" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow5_time" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="140" data-tchmi-top="415" data-tchmi-width="140" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow5_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="405" data-tchmi-width="600" data-tchmi-height="22"
+         data-tchmi-text="" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(232, 240, 247, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow5_desc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="425" data-tchmi-width="600" data-tchmi-height="18"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow5_btnAck" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="910" data-tchmi-top="407" data-tchmi-width="80" data-tchmi-height="36"
+         data-tchmi-text="ACK" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="6"
+         data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- Alarm Row 6 (Warning - Yellow) -->
+    <div id="alarmRow6_leftBorder" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="452" data-tchmi-width="4" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(255, 193, 7, 1)" data-tchmi-stroke-thickness="0" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow6_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="19" data-tchmi-top="452" data-tchmi-width="990" data-tchmi-height="55"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)" data-tchmi-stroke-thickness="0 0 1 0"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow6_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="30" data-tchmi-top="462" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-fill-color="rgba(255, 193, 7, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="6" data-tchmi-radius-y="6"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow6_sevText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="30" data-tchmi-top="462" data-tchmi-width="36" data-tchmi-height="36"
+         data-tchmi-text="⚠" data-tchmi-text-font-size="18" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(0, 0, 0, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow6_id" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="470" data-tchmi-width="50" data-tchmi-height="20"
+         data-tchmi-text="#6" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow6_time" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="140" data-tchmi-top="470" data-tchmi-width="140" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="14"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow6_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="460" data-tchmi-width="600" data-tchmi-height="22"
+         data-tchmi-text="" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(232, 240, 247, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow6_desc" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="295" data-tchmi-top="480" data-tchmi-width="600" data-tchmi-height="18"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="alarmRow6_btnAck" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="910" data-tchmi-top="462" data-tchmi-width="80" data-tchmi-height="36"
+         data-tchmi-text="ACK" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="6"
+         data-tchmi-text-color='{"color":"rgba(255, 193, 7, 1)"}'
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- No Alarms Panel -->
+    <div id="panelNoAlarms" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="177" data-tchmi-width="994" data-tchmi-height="348"
+         data-tchmi-fill-color="rgba(26, 41, 66, 0)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="NoAlarmsIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="462" data-tchmi-top="280" data-tchmi-width="100" data-tchmi-height="80"
+         data-tchmi-text="✓" data-tchmi-text-font-size="64" data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-text-color="rgba(76, 175, 80, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="NoAlarmsTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="362" data-tchmi-top="360" data-tchmi-width="300" data-tchmi-height="40"
+         data-tchmi-text="No Active Alarms" data-tchmi-text-font-size="26" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-text-color="rgba(76, 175, 80, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="NoAlarmsSubtitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="362" data-tchmi-top="395" data-tchmi-width="300" data-tchmi-height="30"
+         data-tchmi-text="System is operating normally" data-tchmi-text-font-size="16"
+         data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- ================================================================== -->
+    <!-- HISTORY PANEL (Initially Hidden) -->
+    <!-- ================================================================== -->
+    <div id="panelHistory" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="135" data-tchmi-width="994" data-tchmi-height="390"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(45, 70, 99, 1)"
+         data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- History Header Row -->
+    <div id="HistoryHeaderBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="135" data-tchmi-width="994" data-tchmi-height="40"
+         data-tchmi-fill-color="rgba(36, 58, 86, 1)" data-tchmi-radius-x="8" data-tchmi-radius-y="8"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="HistHdrSev" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="30" data-tchmi-top="145" data-tchmi-width="40" data-tchmi-height="20"
+         data-tchmi-text="SEV" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="HistHdrOccurred" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="145" data-tchmi-width="130" data-tchmi-height="20"
+         data-tchmi-text="OCCURRED" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="HistHdrCleared" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="225" data-tchmi-top="145" data-tchmi-width="130" data-tchmi-height="20"
+         data-tchmi-text="CLEARED" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="HistHdrAlarm" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="370" data-tchmi-top="145" data-tchmi-width="200" data-tchmi-height="20"
+         data-tchmi-text="ALARM" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="HistHdrDuration" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="815" data-tchmi-top="145" data-tchmi-width="80" data-tchmi-height="20"
+         data-tchmi-text="DURATION" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="HistHdrAcked" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="925" data-tchmi-top="145" data-tchmi-width="60" data-tchmi-height="20"
+         data-tchmi-text="ACK'D" data-tchmi-text-font-size="13" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- History Row 1 -->
+    <div id="historyRow1_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="177" data-tchmi-width="994" data-tchmi-height="48"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="historyRow1_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="30" data-tchmi-top="185" data-tchmi-width="32" data-tchmi-height="32"
+         data-tchmi-fill-color="rgba(244, 67, 54, 1)" data-tchmi-radius-x="4" data-tchmi-radius-y="4"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="historyRow1_occurred" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="80" data-tchmi-top="191" data-tchmi-width="130" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="historyRow1_cleared" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="225" data-tchmi-top="191" data-tchmi-width="130" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="historyRow1_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="370" data-tchmi-top="191" data-tchmi-width="430" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="15" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(232, 240, 247, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="historyRow1_duration" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="815" data-tchmi-top="191" data-tchmi-width="80" data-tchmi-height="20"
+         data-tchmi-text="" data-tchmi-text-font-size="13"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="historyRow1_acked" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="940" data-tchmi-top="189" data-tchmi-width="30" data-tchmi-height="24"
+         data-tchmi-text="✓" data-tchmi-text-font-size="18" data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-text-color="rgba(76, 175, 80, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- History Row 2-6 (collapsed by default) -->
+    <div id="historyRow2_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="15" data-tchmi-top="225" data-tchmi-width="994" data-tchmi-height="48" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow2_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow2_occurred" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow2_cleared" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow2_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow2_duration" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow2_acked" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow3_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow3_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow3_occurred" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow3_cleared" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow3_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow3_duration" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow3_acked" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow4_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow4_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow4_occurred" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow4_cleared" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow4_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow4_duration" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow4_acked" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow5_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow5_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow5_occurred" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow5_cleared" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow5_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow5_duration" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow5_acked" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow6_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow6_sevIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow6_occurred" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow6_cleared" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow6_name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow6_duration" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <div id="historyRow6_acked" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-visibility="Collapsed"></div>
+    <!-- No History Panel -->
+    <div id="panelNoHistory" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="15" data-tchmi-top="177" data-tchmi-width="994" data-tchmi-height="348"
+         data-tchmi-fill-color="rgba(26, 41, 66, 0)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="NoHistoryIcon" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="462" data-tchmi-top="280" data-tchmi-width="100" data-tchmi-height="80"
+         data-tchmi-text="📋" data-tchmi-text-font-size="56" data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="NoHistoryTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="362" data-tchmi-top="360" data-tchmi-width="300" data-tchmi-height="40"
+         data-tchmi-text="No History" data-tchmi-text-font-size="26" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="NoHistorySubtitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="362" data-tchmi-top="395" data-tchmi-width="300" data-tchmi-height="30"
+         data-tchmi-text="Alarm history is empty" data-tchmi-text-font-size="16"
+         data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-text-color="rgba(148, 163, 184, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <!-- ================================================================== -->
+    <!-- BOTTOM NAVIGATION BAR -->
+    <!-- ================================================================== -->
+    <div id="NavBarLine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="0" data-tchmi-top="530" data-tchmi-width="1024" data-tchmi-height="1"
+         data-tchmi-fill-color="rgba(45, 70, 99, 1)">
+    </div>
+    <div id="NavBarBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="0" data-tchmi-top="531" data-tchmi-width="1024" data-tchmi-height="69"
+         data-tchmi-fill-color="rgba(15, 28, 46, 1)" data-tchmi-stroke-thickness="0">
+    </div>
+    <div id="btnNavHome" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="15" data-tchmi-top="540" data-tchmi-width="190" data-tchmi-height="50"
+         data-tchmi-text="🏠 HOME" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+    </div>
+    <div id="btnNavSteps" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="215" data-tchmi-top="540" data-tchmi-width="190" data-tchmi-height="50"
+         data-tchmi-text="⚡ STEPS" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+    </div>
+    <div id="btnNavTrends" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="415" data-tchmi-top="540" data-tchmi-width="190" data-tchmi-height="50"
+         data-tchmi-text="📈 TRENDS" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+    </div>
+    <div id="btnNavAlarmsBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="615" data-tchmi-top="540" data-tchmi-width="190" data-tchmi-height="50"
+         data-tchmi-fill-color="rgba(77, 212, 255, 1)" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+    </div>
+    <div id="btnNavAlarmsText" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="615" data-tchmi-top="540" data-tchmi-width="190" data-tchmi-height="50"
+         data-tchmi-text="🔔 ALARMS" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-color="rgba(10, 20, 32, 1)" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+    </div>
+    <div id="btnNavSetup" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="815" data-tchmi-top="540" data-tchmi-width="190" data-tchmi-height="50"
+         data-tchmi-text="⚙️ SETUP" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'>
+    </div>
+    <!-- ================================================================== -->
+    <!-- CONFIRMATION DIALOG OVERLAY -->
+    <!-- ================================================================== -->
+    <div id="dialogOverlay" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="0" data-tchmi-top="0" data-tchmi-width="1024" data-tchmi-height="600"
+         data-tchmi-fill-color="rgba(0, 0, 0, 0.7)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="dialogBox" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle"
+         data-tchmi-left="312" data-tchmi-top="200" data-tchmi-width="400" data-tchmi-height="200"
+         data-tchmi-fill-color="rgba(26, 41, 66, 1)" data-tchmi-stroke-color="rgba(77, 212, 255, 1)"
+         data-tchmi-stroke-thickness="2" data-tchmi-radius-x="12" data-tchmi-radius-y="12"
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="dialogTitle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="312" data-tchmi-top="215" data-tchmi-width="400" data-tchmi-height="35"
+         data-tchmi-text="Clear History?" data-tchmi-text-font-size="24" data-tchmi-text-font-weight="Bold"
+         data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-text-color="rgba(77, 212, 255, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="dialogMessage" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock"
+         data-tchmi-left="332" data-tchmi-top="255" data-tchmi-width="360" data-tchmi-height="60"
+         data-tchmi-text="This will permanently delete all alarm history records. This action cannot be undone."
+         data-tchmi-text-font-size="15" data-tchmi-text-horizontal-alignment="Center"
+         data-tchmi-text-color="rgba(232, 240, 247, 1)" data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="btnDialogCancel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="332" data-tchmi-top="330" data-tchmi-width="170" data-tchmi-height="45"
+         data-tchmi-text="CANCEL" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(36, 58, 86, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(45, 70, 99, 1)"}'
+         data-tchmi-border-width='{"left":2,"right":2,"top":2,"bottom":2}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(232, 240, 247, 1)"}'
+         data-tchmi-visibility="Collapsed">
+    </div>
+    <div id="btnDialogConfirm" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton"
+         data-tchmi-left="522" data-tchmi-top="330" data-tchmi-width="170" data-tchmi-height="45"
+         data-tchmi-text="CLEAR" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold"
+         data-tchmi-background-color='{"color":"rgba(244, 67, 54, 1)"}'
+         data-tchmi-border-color='{"color":"rgba(244, 67, 54, 1)"}'
+         data-tchmi-border-radius="8"
+         data-tchmi-text-color='{"color":"rgba(255, 255, 255, 1)"}'
+         data-tchmi-visibility="Collapsed">
+    </div>
+</div>

@@ -1,0 +1,1480 @@
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+<div id="Steps" data-tchmi-type="TcHmi.Controls.System.TcHmiView" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="1024" data-tchmi-height="600" data-tchmi-creator-viewport-width="1024" data-tchmi-creator-viewport-height="600">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(10, 20, 32, 1)"}</script>
+
+
+
+<!-- HEADER BAR -->
+
+<div id="HeaderBar_11" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="0" data-tchmi-top="0" data-tchmi-width="1024" data-tchmi-height="50" data-tchmi-stroke-thickness="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="btnBack_9" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="10" data-tchmi-top="8" data-tchmi-width="90" data-tchmi-height="34" data-tchmi-text="← BACK" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+</div>
+
+<div id="lblTitle_9" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="120" data-tchmi-top="12" data-tchmi-width="350" data-tchmi-height="30" data-tchmi-text="LOAD STEPS - DETAILED VIEW" data-tchmi-text-font-size="18" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="lblTotalStepsLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="720" data-tchmi-top="8" data-tchmi-width="70" data-tchmi-height="12" data-tchmi-text="TOTAL STEPS" data-tchmi-text-font-size="8" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="lblTotalStepsValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="720" data-tchmi-top="22" data-tchmi-width="70" data-tchmi-height="22" data-tchmi-text="8" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="lblActiveLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="804" data-tchmi-top="8" data-tchmi-width="50" data-tchmi-height="12" data-tchmi-text="ACTIVE" data-tchmi-text-font-size="8" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="lblActiveValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="804" data-tchmi-top="22" data-tchmi-width="50" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="lblInactiveLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="868" data-tchmi-top="8" data-tchmi-width="55" data-tchmi-height="12" data-tchmi-text="INACTIVE" data-tchmi-text-font-size="8" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="lblInactiveValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="868" data-tchmi-top="22" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="8" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(76, 175, 80, 1)"}</script>
+
+</div>
+
+<div id="lblQuarantinedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="937" data-tchmi-top="8" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="QUARANTINED" data-tchmi-text-font-size="8" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="lblQuarantinedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="937" data-tchmi-top="22" data-tchmi-width="80" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(244, 67, 54, 1)"}</script>
+
+</div>
+
+
+
+<!-- POWER SUMMARY BOX -->
+
+<div id="SummaryBar" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="10" data-tchmi-top="55" data-tchmi-width="1004" data-tchmi-height="70" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="summaryRatedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="80" data-tchmi-top="62" data-tchmi-width="150" data-tchmi-height="32" data-tchmi-text="2560" data-tchmi-text-font-size="28" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="summaryRatedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="80" data-tchmi-top="96" data-tchmi-width="150" data-tchmi-height="16" data-tchmi-text="TOTAL RATED (KW)" data-tchmi-text-font-size="10" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="summaryReleasedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="300" data-tchmi-top="62" data-tchmi-width="150" data-tchmi-height="32" data-tchmi-text="0" data-tchmi-text-font-size="28" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="summaryReleasedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="300" data-tchmi-top="96" data-tchmi-width="150" data-tchmi-height="16" data-tchmi-text="RELEASED POWER (KW)" data-tchmi-text-font-size="10" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="summaryAvailableValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="550" data-tchmi-top="62" data-tchmi-width="150" data-tchmi-height="32" data-tchmi-text="2560" data-tchmi-text-font-size="28" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(76, 175, 80, 1)"}</script>
+
+</div>
+
+<div id="summaryAvailableLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="550" data-tchmi-top="96" data-tchmi-width="150" data-tchmi-height="16" data-tchmi-text="AVAILABLE (KW)" data-tchmi-text-font-size="10" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="summaryQuarantinedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="800" data-tchmi-top="62" data-tchmi-width="150" data-tchmi-height="32" data-tchmi-text="0" data-tchmi-text-font-size="28" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(244, 67, 54, 1)"}</script>
+
+</div>
+
+<div id="summaryQuarantinedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="800" data-tchmi-top="96" data-tchmi-width="150" data-tchmi-height="16" data-tchmi-text="QUARANTINED (KW)" data-tchmi-text-font-size="10" data-tchmi-text-horizontal-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+
+
+<!-- FILTER BOX (SEPARATE) -->
+
+<div id="FilterBar" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="10" data-tchmi-top="130" data-tchmi-width="1004" data-tchmi-height="50" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="btnFilterAll" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="20" data-tchmi-top="137" data-tchmi-width="130" data-tchmi-height="36" data-tchmi-text="ALL STEPS" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(33, 150, 243, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 8, "topRight": 8, "bottomLeft": 8, "bottomRight": 8}</script>
+
+</div>
+
+<div id="btnFilterActive" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="160" data-tchmi-top="137" data-tchmi-width="130" data-tchmi-height="36" data-tchmi-text="ACTIVE ONLY" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 8, "topRight": 8, "bottomLeft": 8, "bottomRight": 8}</script>
+
+</div>
+
+<div id="btnFilterInactive" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="300" data-tchmi-top="137" data-tchmi-width="130" data-tchmi-height="36" data-tchmi-text="INACTIVE ONLY" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 8, "topRight": 8, "bottomLeft": 8, "bottomRight": 8}</script>
+
+</div>
+
+<div id="btnFilterQuarantined" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="440" data-tchmi-top="137" data-tchmi-width="130" data-tchmi-height="36" data-tchmi-text="QUARANTINED" data-tchmi-text-font-size="12" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 8, "topRight": 8, "bottomLeft": 8, "bottomRight": 8}</script>
+
+</div>
+
+
+
+<!-- ROW 1: Cards 1-6 -->
+
+<!-- Card 1 -->
+
+<div id="card1_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="8" data-tchmi-top="190" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card1_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="10" data-tchmi-top="199" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card1_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="22" data-tchmi-top="195" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 1" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card1_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="103" data-tchmi-top="196" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card1_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="22" data-tchmi-top="215" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card1_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="22" data-tchmi-top="227" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card1_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="68" data-tchmi-top="232" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card1_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="22" data-tchmi-top="252" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card1_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="28" data-tchmi-top="254" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card1_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="28" data-tchmi-top="264" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card1_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="22" data-tchmi-top="283" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card1_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="85" data-tchmi-top="282" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card1_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="22" data-tchmi-top="302" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card1_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="86" data-tchmi-top="302" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 2 -->
+
+<div id="card2_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="177" data-tchmi-top="190" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card2_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="179" data-tchmi-top="199" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card2_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="191" data-tchmi-top="195" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 2" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card2_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="272" data-tchmi-top="196" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card2_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="191" data-tchmi-top="215" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card2_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="191" data-tchmi-top="227" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card2_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="237" data-tchmi-top="232" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card2_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="191" data-tchmi-top="252" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card2_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="197" data-tchmi-top="254" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card2_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="197" data-tchmi-top="264" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card2_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="191" data-tchmi-top="283" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card2_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="254" data-tchmi-top="282" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card2_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="191" data-tchmi-top="302" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card2_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="255" data-tchmi-top="302" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 3 -->
+
+<div id="card3_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="346" data-tchmi-top="190" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card3_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="348" data-tchmi-top="199" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card3_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="360" data-tchmi-top="195" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 3" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card3_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="441" data-tchmi-top="196" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card3_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="360" data-tchmi-top="215" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card3_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="360" data-tchmi-top="227" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card3_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="406" data-tchmi-top="232" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card3_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="360" data-tchmi-top="252" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card3_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="366" data-tchmi-top="254" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card3_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="366" data-tchmi-top="264" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card3_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="360" data-tchmi-top="283" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card3_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="423" data-tchmi-top="282" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card3_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="360" data-tchmi-top="302" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card3_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="424" data-tchmi-top="302" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 4 -->
+
+<div id="card4_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="515" data-tchmi-top="190" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card4_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="517" data-tchmi-top="199" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card4_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="529" data-tchmi-top="195" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 4" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card4_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="610" data-tchmi-top="196" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card4_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="529" data-tchmi-top="215" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card4_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="529" data-tchmi-top="227" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card4_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="575" data-tchmi-top="232" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card4_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="529" data-tchmi-top="252" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card4_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="535" data-tchmi-top="254" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card4_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="535" data-tchmi-top="264" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card4_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="529" data-tchmi-top="283" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card4_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="592" data-tchmi-top="282" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card4_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="529" data-tchmi-top="302" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card4_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="593" data-tchmi-top="302" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 5 -->
+
+<div id="card5_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="684" data-tchmi-top="190" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card5_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="686" data-tchmi-top="199" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card5_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="698" data-tchmi-top="195" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 5" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card5_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="779" data-tchmi-top="196" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card5_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="698" data-tchmi-top="215" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card5_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="698" data-tchmi-top="227" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card5_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="744" data-tchmi-top="232" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card5_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="698" data-tchmi-top="252" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card5_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="704" data-tchmi-top="254" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card5_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="704" data-tchmi-top="264" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card5_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="698" data-tchmi-top="283" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card5_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="761" data-tchmi-top="282" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card5_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="698" data-tchmi-top="302" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card5_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="762" data-tchmi-top="302" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 6 -->
+
+<div id="card6_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="853" data-tchmi-top="190" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card6_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="855" data-tchmi-top="199" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card6_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="867" data-tchmi-top="195" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 6" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card6_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="948" data-tchmi-top="196" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card6_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="867" data-tchmi-top="215" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card6_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="867" data-tchmi-top="227" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card6_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="913" data-tchmi-top="232" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card6_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="867" data-tchmi-top="252" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card6_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="873" data-tchmi-top="254" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card6_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="873" data-tchmi-top="264" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card6_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="867" data-tchmi-top="283" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card6_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="930" data-tchmi-top="282" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card6_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="867" data-tchmi-top="302" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card6_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="931" data-tchmi-top="302" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+
+
+<!-- ROW 2: Cards 7-12 -->
+
+<!-- Card 7 -->
+
+<div id="card7_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="8" data-tchmi-top="340" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card7_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="10" data-tchmi-top="349" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card7_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="22" data-tchmi-top="345" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 7" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card7_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="103" data-tchmi-top="346" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card7_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="22" data-tchmi-top="365" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card7_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="22" data-tchmi-top="377" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card7_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="68" data-tchmi-top="382" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card7_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="22" data-tchmi-top="402" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card7_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="28" data-tchmi-top="404" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card7_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="28" data-tchmi-top="414" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card7_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="22" data-tchmi-top="433" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card7_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="85" data-tchmi-top="432" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card7_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="22" data-tchmi-top="452" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card7_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="86" data-tchmi-top="452" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 8 -->
+
+<div id="card8_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="177" data-tchmi-top="340" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card8_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="179" data-tchmi-top="349" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card8_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="191" data-tchmi-top="345" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 8" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card8_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="272" data-tchmi-top="346" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card8_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="191" data-tchmi-top="365" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card8_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="191" data-tchmi-top="377" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card8_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="237" data-tchmi-top="382" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card8_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="191" data-tchmi-top="402" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card8_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="197" data-tchmi-top="404" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card8_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="197" data-tchmi-top="414" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card8_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="191" data-tchmi-top="433" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card8_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="254" data-tchmi-top="432" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card8_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="191" data-tchmi-top="452" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card8_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="255" data-tchmi-top="452" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 9 -->
+
+<div id="card9_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="346" data-tchmi-top="340" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card9_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="348" data-tchmi-top="349" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card9_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="360" data-tchmi-top="345" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 9" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card9_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="441" data-tchmi-top="346" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card9_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="360" data-tchmi-top="365" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card9_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="360" data-tchmi-top="377" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card9_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="406" data-tchmi-top="382" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card9_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="360" data-tchmi-top="402" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card9_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="366" data-tchmi-top="404" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card9_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="366" data-tchmi-top="414" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card9_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="360" data-tchmi-top="433" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card9_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="423" data-tchmi-top="432" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card9_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="360" data-tchmi-top="452" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card9_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="424" data-tchmi-top="452" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 10 -->
+
+<div id="card10_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="515" data-tchmi-top="340" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card10_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="517" data-tchmi-top="349" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card10_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="529" data-tchmi-top="345" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 10" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card10_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="610" data-tchmi-top="346" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card10_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="529" data-tchmi-top="365" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card10_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="529" data-tchmi-top="377" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card10_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="575" data-tchmi-top="382" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card10_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="529" data-tchmi-top="402" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card10_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="535" data-tchmi-top="404" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card10_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="535" data-tchmi-top="414" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card10_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="529" data-tchmi-top="433" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card10_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="592" data-tchmi-top="432" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card10_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="529" data-tchmi-top="452" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card10_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="593" data-tchmi-top="452" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 11 -->
+
+<div id="card11_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="684" data-tchmi-top="340" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card11_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="686" data-tchmi-top="349" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card11_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="698" data-tchmi-top="345" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 11" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card11_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="779" data-tchmi-top="346" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card11_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="698" data-tchmi-top="365" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card11_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="698" data-tchmi-top="377" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card11_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="744" data-tchmi-top="382" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card11_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="698" data-tchmi-top="402" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card11_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="704" data-tchmi-top="404" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card11_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="704" data-tchmi-top="414" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card11_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="698" data-tchmi-top="433" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card11_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="761" data-tchmi-top="432" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card11_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="698" data-tchmi-top="452" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card11_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="762" data-tchmi-top="452" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- Card 12 -->
+
+<div id="card12_bg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="853" data-tchmi-top="340" data-tchmi-width="163" data-tchmi-height="145" data-tchmi-stroke-thickness="1" data-tchmi-radius-x="8" data-tchmi-radius-y="8">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(26, 41, 66, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-stroke-color" type="application/json">{"color": "rgba(45, 70, 99, 1)"}</script>
+
+</div>
+
+<div id="card12_indicator" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="855" data-tchmi-top="349" data-tchmi-width="2" data-tchmi-height="127" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="0" data-tchmi-radius-y="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card12_stepNum" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="867" data-tchmi-top="345" data-tchmi-width="70" data-tchmi-height="18" data-tchmi-text="STEP 12" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card12_status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="948" data-tchmi-top="346" data-tchmi-width="60" data-tchmi-height="16" data-tchmi-text="OFF" data-tchmi-text-font-size="9" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(100, 116, 139, 1)"}</script>
+
+</div>
+
+<div id="card12_ratedLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="867" data-tchmi-top="365" data-tchmi-width="80" data-tchmi-height="12" data-tchmi-text="RATED POWER" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card12_ratedValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="867" data-tchmi-top="377" data-tchmi-width="55" data-tchmi-height="22" data-tchmi-text="0" data-tchmi-text-font-size="20" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(77, 212, 255, 1)"}</script>
+
+</div>
+
+<div id="card12_ratedUnit" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="913" data-tchmi-top="382" data-tchmi-width="30" data-tchmi-height="14" data-tchmi-text="kW" data-tchmi-text-font-size="11">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card12_measuredBg" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="867" data-tchmi-top="402" data-tchmi-width="141" data-tchmi-height="28" data-tchmi-stroke-thickness="0" data-tchmi-radius-x="4" data-tchmi-radius-y="4">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="card12_measuredLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="873" data-tchmi-top="404" data-tchmi-width="60" data-tchmi-height="10" data-tchmi-text="MEASURED" data-tchmi-text-font-size="7">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card12_measuredValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="873" data-tchmi-top="414" data-tchmi-width="80" data-tchmi-height="14" data-tchmi-text="0.0 kW" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(100, 181, 246, 1)"}</script>
+
+</div>
+
+<div id="card12_errorLabel" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="867" data-tchmi-top="433" data-tchmi-width="60" data-tchmi-height="12" data-tchmi-text="Power Error" data-tchmi-text-font-size="8">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="card12_errorValue" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="930" data-tchmi-top="432" data-tchmi-width="60" data-tchmi-height="14" data-tchmi-text="--" data-tchmi-text-font-size="11" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 152, 0, 1)"}</script>
+
+</div>
+
+<div id="card12_btnToggle" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="867" data-tchmi-top="452" data-tchmi-width="60" data-tchmi-height="24" data-tchmi-text="TOGGLE" data-tchmi-text-font-size="8" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+<div id="card12_btnQuarantine" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="931" data-tchmi-top="452" data-tchmi-width="68" data-tchmi-height="24" data-tchmi-text="QUARANTINE" data-tchmi-text-font-size="7" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 4, "topRight": 4, "bottomLeft": 4, "bottomRight": 4}</script>
+
+</div>
+
+
+
+<!-- PAGINATION -->
+
+<div id="btnPrevPage" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="300" data-tchmi-top="495" data-tchmi-width="100" data-tchmi-height="36" data-tchmi-text="◄ PREV" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 8, "topRight": 8, "bottomLeft": 8, "bottomRight": 8}</script>
+
+</div>
+
+<div id="lblPageInfo" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-left="420" data-tchmi-top="495" data-tchmi-width="200" data-tchmi-height="36" data-tchmi-text="Page 1 of 1" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(148, 163, 184, 1)"}</script>
+
+</div>
+
+<div id="btnNextPage" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="640" data-tchmi-top="495" data-tchmi-width="100" data-tchmi-height="36" data-tchmi-text="NEXT ►" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-radius" type="application/json">{"topLeft": 8, "topRight": 8, "bottomLeft": 8, "bottomRight": 8}</script>
+
+</div>
+
+
+
+<!-- FOOTER BAR -->
+
+<div id="FooterBar_9" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiRectangle" data-tchmi-left="0" data-tchmi-top="540" data-tchmi-width="1024" data-tchmi-height="60" data-tchmi-stroke-thickness="0">
+
+<script data-tchmi-target-attribute="data-tchmi-fill-color" type="application/json">{"color": "rgba(15, 28, 46, 1)"}</script>
+
+</div>
+
+<div id="btnEStop_9" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="15" data-tchmi-top="550" data-tchmi-width="134" data-tchmi-height="40" data-tchmi-text="● E-STOP" data-tchmi-text-font-size="16" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(255, 255, 255, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(198, 40, 40, 1)"}</script>
+
+</div>
+
+<div id="btnReset_9" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="160" data-tchmi-top="550" data-tchmi-width="110" data-tchmi-height="40" data-tchmi-text="RESET" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+</div>
+
+<div id="btnTrends_9" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="610" data-tchmi-top="550" data-tchmi-width="120" data-tchmi-height="40" data-tchmi-text="📈 TRENDS" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+</div>
+
+<div id="btnAlarms_9" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="740" data-tchmi-top="550" data-tchmi-width="120" data-tchmi-height="40" data-tchmi-text="🔔 ALARMS" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+</div>
+
+<div id="btnSetup_9" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-left="870" data-tchmi-top="550" data-tchmi-width="120" data-tchmi-height="40" data-tchmi-text="⚙ SETUP" data-tchmi-text-font-size="14" data-tchmi-text-font-weight="Bold">
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">{"color": "rgba(232, 240, 247, 1)"}</script>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">{"color": "rgba(36, 58, 86, 1)"}</script>
+
+</div>
+
+
+
+</div>
+

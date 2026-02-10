@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
+  <POU Name="FB_Numeric_Mode" Id="{3c1d6f92-b325-4495-8bd6-52596a6ebc72}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Numeric_Mode
+VAR_INPUT
+    Mode_Active             : BOOL;             // TRUE when this mode is selected
+    Target_Power_Setpoint   : REAL;             // User entered kW value from HMI keypad
+    Rated_Power_kW          : REAL;             // Load bank rated capacity (limit)
+    System_Ready            : BOOL;             // System ready to operate
+END_VAR
+
+VAR_OUTPUT
+    Target_Power_kW         : REAL;             // Output to Load_Controller
+    Status_Text             : STRING(100);      // Status for HMI
+END_VAR
+
+VAR
+    Clamped_Target          : REAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ============================================
+// NOT ACTIVE - RESET OUTPUT
+// ============================================
+IF NOT Mode_Active THEN
+    Target_Power_kW := 0.0;
+    Status_Text := 'Mode not active';
+    RETURN;
+END_IF;
+
+// ============================================
+// SYSTEM NOT READY
+// ============================================
+IF NOT System_Ready THEN
+    Target_Power_kW := 0.0;
+    Status_Text := 'System not ready';
+    RETURN;
+END_IF;
+
+// ============================================
+// VALIDATE AND CLAMP TO RATED CAPACITY
+// ============================================
+Clamped_Target := Target_Power_Setpoint;
+
+// No negative values
+IF Clamped_Target < 0.0 THEN
+    Clamped_Target := 0.0;
+END_IF;
+
+// Limit to rated capacity
+IF Clamped_Target > Rated_Power_kW THEN
+    Clamped_Target := Rated_Power_kW;
+    Status_Text := 'Limited to rated capacity';
+ELSIF Clamped_Target = 0.0 THEN
+    Status_Text := 'Idle - Enter target power';
+ELSE
+    Status_Text := 'Running';
+END_IF;
+
+Target_Power_kW := Clamped_Target;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Numeric_Mode">
+      <LineId Id="440" Count="37" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

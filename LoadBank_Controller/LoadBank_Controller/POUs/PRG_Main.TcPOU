@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
   <POU Name="PRG_Main" Id="{f4e4631f-475c-4b5d-8b5a-6d568c70cda9}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM PRG_Main
@@ -303,7 +303,9 @@ ELSE
     Fan_Start_Command := HMI_Fan_Start AND NOT Fan_Start_Blocked;
 END_IF;
 
-// Call Single Fan FB (UPDATED - Added Is_Temperature_Dump)
+// ============================================================
+// SINGLE FAN FB (UPDATED - Added debounce, phase monitor)
+// ============================================================
 Single_Fan(
     HMI_Start := HMI_Fan_Start,
     Physical_Start := IO_Physical_Fan_Start,
@@ -311,20 +313,30 @@ Single_Fan(
     Contactor_Feedback := IO_Fan_Contactor_FB,
     Motor_Overload_OK := IO_Fan_Motor_Overload_OK,
     Pressure_OK := IO_Fan_Pressure_OK,
+    
+    // NEW: Phase Monitor
+    Phase_Monitor_OK := IO_Phase_Monitor_OK,
+    Phase_Monitor_Enabled := LB_ENABLE_PHASE_MONITOR,
+    
     Emergency_Immediate := EMG_Immediate_Active,
     Emergency_Controlled := Is_Emergency_Dump,
     Is_Temperature_Dump := Is_Temperature_Dump,
     Dump_Complete := Dump_Complete,
+    
+    // Configurable times
     Pressurize_Time := LB_FAN_PRESSURIZE_TIME,
     Cooldown_Time := LB_FAN_COOLDOWN_TIME,
     Feedback_Timeout := LB_FAN_FEEDBACK_TIMEOUT,
     Post_Dump_Delay := LB_FAN_POST_DUMP_DELAY,
+    
+    // NEW: Debounce times
+    Debounce_Pressure := LB_DEBOUNCE_PRESSURE,
+    Debounce_Contactor := LB_DEBOUNCE_CONTACTOR,
+    Debounce_Overload := LB_DEBOUNCE_OVERLOAD,
+    
     Enable := Fan_Start_Command,
     Reset_Fault := Alarm_Reset_Pulse
 );
-
-// Fan output
-IO_Fan_Contactor_Coil := Single_Fan.Contactor_Output;
 
 // Update status
 Status_Fan := Single_Fan.Status_Message;
@@ -332,9 +344,15 @@ LB_System_Status.Fan_Running := Single_Fan.Fan_Running;
 LB_System_Status.Fan_Fault := Single_Fan.Fan_Fault;
 LB_System_Status.Fan_Cycle_Count := Single_Fan.Cycle_Count;
 
+// NEW: Cooldown status for HMI
+LB_HMI_Fan_Cooldown_Active := Single_Fan.Cooldown_Active;
+LB_HMI_Fan_Cooldown_Remaining := Single_Fan.Cooldown_Remaining;
+
 // HMI fan status
 IF Single_Fan.Fan_Fault THEN
     LB_HMI_Fan_Status := 5;         // Fault
+ELSIF Single_Fan.Cooldown_Active THEN
+    LB_HMI_Fan_Status := 4;         // Cooling down
 ELSIF Single_Fan.Fan_Running AND Single_Fan.Fan_Pressurized THEN
     LB_HMI_Fan_Status := 3;         // Running
 ELSIF Single_Fan.Fan_Running AND NOT Single_Fan.Fan_Pressurized THEN
@@ -361,9 +379,6 @@ Main_Contactor(
     Enable := TRUE,
     Reset := Alarm_Reset_Pulse
 );
-
-// Main contactor output
-IO_Main_Contactor_Coil := Main_Contactor.Contactor_Output;
 
 // Update status
 Main_Contactor_Closed := Main_Contactor.Contactor_Closed;
@@ -510,14 +525,67 @@ CASE Mode_Manager.Active_Mode OF
         LB_Recipe_Status.Status_Message := Recipe_Controller.Status_Message;
         
     LB_MODE_MAINTENANCE:
-        Maintenance_Mode(
-            Mode_Active := TRUE,
-            Master_Enable := Master_Enable,
-            Emergency_Active := Any_Emergency
-        );
-        // Maintenance mode uses direct step control
+        // Maintenance mode handled separately below
+        Mode_Target_Power := 0.0;
 
 END_CASE;
+
+// ============================================================
+// MAINTENANCE MODE FB (UPDATED - Full features)
+// ============================================================
+Maintenance_Mode(
+    Mode_Active := (Mode_Manager.Active_Mode = LB_MODE_MAINTENANCE),
+    Master_Enable := Master_Enable,
+    Emergency_Active := Any_Emergency,
+    
+    // Configuration
+    Number_Of_Steps := LB_NUMBER_OF_STEPS,
+    Power_Tolerance_Percent := Maint_Mode_Power_Tolerance_Percent,
+    Feedback_Timeout_ms := Maint_Mode_Feedback_Timeout_ms,
+    Test_Duration_Sec := Maint_Mode_Test_Duration_Sec,
+    Delay_Between_Steps_ms := 1000,
+    Cycle_Time_ms := 10,
+    
+    // HMI commands
+    Selected_Step := Maint_Mode_Selected_Step,
+    Toggle_Fan_Cmd := Maint_Mode_Toggle_Fan,
+    Toggle_Step_Cmd := Maint_Mode_Toggle_Step,
+    Reset_Test_Cmd := Maint_Mode_Reset_Test,
+    Self_Test_Start := Maint_Mode_Self_Test_Start,
+    Self_Test_Stop := Maint_Mode_Self_Test_Stop,
+    
+    // Feedback from IO
+    Fan_Contactor_FB := IO_Fan_Contactor_FB,
+    Fan_Pressure_OK := IO_Fan_Pressure_OK,
+    Fan_Overload_OK := IO_Fan_Motor_Overload_OK,
+    Step_Feedback := IO_Load_Contactor_FB,
+    Step_Power_kW := IO_Step_Power,
+    Step_Rated_Power := LB_STEP_POWER,
+    Step_Quarantined := Step_Quarantined
+);
+
+// Copy maintenance status to HMI variables
+Maint_Mode_Self_Test_Running := Maintenance_Mode.Self_Test_Running;
+Maint_Mode_Self_Test_Complete := Maintenance_Mode.Self_Test_Complete;
+Maint_Mode_Self_Test_Current_Step := Maintenance_Mode.Self_Test_Current_Step;
+Maint_Mode_Self_Test_Timer_Sec := Maintenance_Mode.Self_Test_Timer_Sec;
+Maint_Mode_Self_Test_Pass_Count := Maintenance_Mode.Self_Test_Pass_Count;
+Maint_Mode_Self_Test_Fail_Count := Maintenance_Mode.Self_Test_Fail_Count;
+Maint_Mode_Feedback_Match := Maintenance_Mode.Feedback_Match;
+Maint_Mode_Response_Time_ms := Maintenance_Mode.Response_Time_ms;
+Maint_Mode_Power_Within_Tolerance := Maintenance_Mode.Power_Within_Tolerance;
+Maint_Mode_Status_Message := Maintenance_Mode.Status_Message;
+
+// Handle quarantine signals from self-test
+IF Maintenance_Mode.Quarantine_Step > 0 THEN
+    Step_Quarantined[Maintenance_Mode.Quarantine_Step] := TRUE;
+    LB_HMI_Steps[Maintenance_Mode.Quarantine_Step].Status_Quarantined := TRUE;
+END_IF;
+
+IF Maintenance_Mode.Unquarantine_Step > 0 THEN
+    Step_Quarantined[Maintenance_Mode.Unquarantine_Step] := FALSE;
+    LB_HMI_Steps[Maintenance_Mode.Unquarantine_Step].Status_Quarantined := FALSE;
+END_IF;
 
 // ============================================================
 // APPLY DUMP LIMIT TO TARGET
@@ -552,10 +620,33 @@ Load_Controller(
     Reset := Alarm_Reset_Pulse
 );
 
-// Step coil outputs
-FOR i := 1 TO LB_NUMBER_OF_STEPS DO
-    IO_Load_Contactor_Coil[i] := Load_Controller.Step_Coil_Cmd[i];
-END_FOR;
+// ============================================================
+// IO OUTPUTS - SINGLE POINT OF CONTROL (UPDATED)
+// ============================================================
+IF Mode_Manager.Active_Mode = LB_MODE_MAINTENANCE THEN
+    // ========================================
+    // MAINTENANCE MODE - Use FB outputs
+    // ========================================
+    IO_Fan_Contactor_Coil := Maintenance_Mode.Fan_Output;
+    
+    FOR i := 1 TO LB_NUMBER_OF_STEPS DO
+        IO_Load_Contactor_Coil[i] := Maintenance_Mode.Step_Output[i];
+    END_FOR;
+    
+    // Main contactor OFF in maintenance
+    IO_Main_Contactor_Coil := FALSE;
+    
+ELSE
+    // ========================================
+    // NORMAL MODES - Use normal FB outputs
+    // ========================================
+    IO_Fan_Contactor_Coil := Single_Fan.Contactor_Output;
+    IO_Main_Contactor_Coil := Main_Contactor.Contactor_Output;
+    
+    FOR i := 1 TO LB_NUMBER_OF_STEPS DO
+        IO_Load_Contactor_Coil[i] := Load_Controller.Step_Coil_Cmd[i];
+    END_FOR;
+END_IF;
 
 // Update status
 Status_Load := Load_Controller.Status_Text;
@@ -699,9 +790,5 @@ ELSE
 END_IF;
 ]]></ST>
     </Implementation>
-    <LineIds Name="PRG_Main">
-      <LineId Id="7505" Count="643" />
-      <LineId Id="5967" Count="0" />
-    </LineIds>
   </POU>
 </TcPlcObject>

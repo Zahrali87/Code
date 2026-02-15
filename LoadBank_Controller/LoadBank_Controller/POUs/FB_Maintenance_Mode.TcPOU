@@ -35,10 +35,10 @@ VAR_INPUT
     Fan_Contactor_FB        : BOOL;
     Fan_Pressure_OK         : BOOL;
     Fan_Overload_OK         : BOOL;
-    Step_Feedback           : ARRAY[1..100] OF BOOL;
-    Step_Power_kW           : ARRAY[1..100] OF REAL;
-    Step_Rated_Power        : ARRAY[1..100] OF REAL;
-    Step_Quarantined        : ARRAY[1..100] OF BOOL;
+    Step_Feedback           : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    Step_Power_kW           : ARRAY[1..LB_NUMBER_OF_STEPS] OF REAL;
+    Step_Rated_Power        : ARRAY[1..LB_NUMBER_OF_STEPS] OF REAL;
+    Step_Quarantined        : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
 END_VAR
 
 VAR_OUTPUT
@@ -47,7 +47,7 @@ VAR_OUTPUT
     
     // Outputs to control
     Fan_Output              : BOOL;
-    Step_Output             : ARRAY[1..100] OF BOOL;
+    Step_Output             : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
     
     // Quarantine signals (active for 1 scan)
     Quarantine_Step         : UINT := 0;
@@ -107,7 +107,7 @@ END_VAR]]></Declaration>
 IF NOT Mode_Active THEN
     // Reset all outputs
     Fan_Output := FALSE;
-    FOR i := 1 TO 100 DO
+    FOR i := 1 TO LB_NUMBER_OF_STEPS DO
         Step_Output[i] := FALSE;
     END_FOR;
     
@@ -124,7 +124,7 @@ END_IF;
 IF Emergency_Active THEN
     // Emergency - shut down
     Fan_Output := FALSE;
-    FOR i := 1 TO 100 DO
+    FOR i := 1 TO LB_NUMBER_OF_STEPS DO
         Step_Output[i] := FALSE;
     END_FOR;
     
@@ -195,7 +195,7 @@ Toggle_Step_Prev := Toggle_Step_Cmd;
 IF Reset_Test_Cmd AND NOT Reset_Test_Prev THEN
     // Turn off all outputs
     Fan_Output := FALSE;
-    FOR i := 1 TO 100 DO
+    FOR i := 1 TO LB_NUMBER_OF_STEPS DO
         Step_Output[i] := FALSE;
     END_FOR;
     

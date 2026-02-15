@@ -3,7 +3,7 @@
   <GVL Name="GVL_LoadBank_Runtime" Id="{36720d95-2034-4e57-b326-1d0b63538014}">
     <Declaration><![CDATA[// ============================================
 // GVL_LoadBank_Runtime
-// UPDATED: Added cooldown status and maintenance status message
+// UPDATED: Added cooldown status and maintenance status
 // ============================================
 
 VAR_GLOBAL
@@ -212,7 +212,7 @@ VAR_GLOBAL
     Reverse_Mode_Status         : STRING(100);
 	
     // ============================================
-    // ALARM MANAGER OUTPUTS (from FB_Alarm_Manager)
+    // ALARM MANAGER OUTPUTS
     // ============================================
     LB_Alarm_List               : ARRAY[1..20] OF DUT_Alarm;
     LB_Alarm_List_Count         : UINT;
@@ -229,7 +229,7 @@ VAR_GLOBAL
     LB_Newest_Alarm_Name        : STRING(30);
     
     // ============================================
-    // ALARM MANAGER COMMANDS (from HMI)
+    // ALARM MANAGER COMMANDS
     // ============================================
     HMI_Alarm_Acknowledge       : ARRAY[1..20] OF BOOL;
     HMI_Alarm_Acknowledge_All   : BOOL;
@@ -242,22 +242,22 @@ VAR_GLOBAL
     Maint_Mode_Toggle_Fan               : BOOL;
     Maint_Mode_Toggle_Step              : BOOL;
     Maint_Mode_Reset_Test               : BOOL;
-    Maint_Mode_Selected_Step            : UINT := 1;        // Changed to UINT
+    Maint_Mode_Selected_Step            : UINT := 1;
     Maint_Mode_Self_Test_Start          : BOOL;
     Maint_Mode_Self_Test_Stop           : BOOL;
 
     // Status (to HMI display)
     Maint_Mode_Feedback_Match           : BOOL;
-    Maint_Mode_Response_Time_ms         : UINT;             // Changed to UINT
+    Maint_Mode_Response_Time_ms         : UINT;
     Maint_Mode_Power_Within_Tolerance   : BOOL;
     Maint_Mode_Self_Test_Running        : BOOL;
-    Maint_Mode_Self_Test_Current_Step   : UINT;             // Changed to UINT
-    Maint_Mode_Self_Test_Pass_Count     : UINT;             // Changed to UINT
-    Maint_Mode_Self_Test_Fail_Count     : UINT;             // Changed to UINT
+    Maint_Mode_Self_Test_Current_Step   : UINT;
+    Maint_Mode_Self_Test_Pass_Count     : UINT;
+    Maint_Mode_Self_Test_Fail_Count     : UINT;
     Maint_Mode_Self_Test_Complete       : BOOL;
-    Maint_Mode_Timeout_Error_Count      : UINT;             // Changed to UINT
-    Maint_Mode_Self_Test_Timer_Sec      : UINT;             // Changed to UINT
-    Maint_Mode_Status_Message           : STRING(100);      // NEW: Status message from FB
+    Maint_Mode_Timeout_Error_Count      : UINT;
+    Maint_Mode_Self_Test_Timer_Sec      : UINT;
+    Maint_Mode_Status_Message           : STRING(100);      // NEW
 
 END_VAR
 ]]></Declaration>

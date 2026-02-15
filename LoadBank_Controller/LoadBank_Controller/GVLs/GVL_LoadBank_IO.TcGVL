@@ -31,13 +31,13 @@
     // ============================================
     // MAIN CONTACTOR INPUT
     // ============================================
-    IO_Main_Contactor_FB        : BOOL;             // NO: TRUE = contactor closed, load contactor
+    IO_Main_Contactor_FB        : BOOL;             // NO: TRUE = contactor closed
 
     // ============================================
     // LOAD STEP INPUTS
     // ============================================
-    IO_Load_Contactor_FB        : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;     // NO: TRUE = closed
-    IO_Step_Power               : ARRAY[1..LB_NUMBER_OF_STEPS] OF REAL;     // kW per step
+    IO_Load_Contactor_FB        : ARRAY[1..LB_NUMBER_OF_STEPS] OF BOOL;
+    IO_Step_Power               : ARRAY[1..LB_NUMBER_OF_STEPS] OF REAL;
 
     // ============================================
     // TEMPERATURE INPUTS
@@ -88,15 +88,14 @@
     // ============================================
     // DIGITAL OUTPUTS - LED INDICATORS
     // ============================================
-    IO_LED_General_Alarm        : BOOL;             // Red LED
-    IO_LED_Warning              : BOOL;             // Yellow LED
-    IO_LED_System_Normal        : BOOL;             // Green LED
+    IO_LED_General_Alarm        : BOOL;
+    IO_LED_Warning              : BOOL;
+    IO_LED_System_Normal        : BOOL;
 	
     // ============================================
     // FAN PHYSICAL CONTROL (Optional)
-    // Only used when LB_ENABLE_PHYSICAL_FAN = TRUE
     // ============================================
-    IO_Physical_Fan_Start       : BOOL;             // Physical start button
+    IO_Physical_Fan_Start       : BOOL;
 
 END_VAR]]></Declaration>
   </GVL>

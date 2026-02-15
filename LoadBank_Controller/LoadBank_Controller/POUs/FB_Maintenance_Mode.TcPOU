@@ -3,60 +3,62 @@
   <POU Name="FB_Maintenance_Mode" Id="{7d12e330-6b4b-4cd7-9e92-021545592ba8}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Maintenance_Mode
 // ============================================
-// MAINTENANCE MODE FUNCTION BLOCK
-// UPDATED: Full features from PRG_Maint_Mode
-// - Manual toggle test for fan and steps
-// - Self-test state machine with power tolerance
-// - Auto-quarantine on fail
-// - Pass/fail counting
-// - Response time measurement
-// - OUTPUTS commands (PRG_Main writes to IO)
+// FB_Maintenance_Mode
+// Full maintenance mode with manual test + self-test
+// Migrated from PRG_Maint_Mode features
 // ============================================
-
 VAR_INPUT
-    // === MODE CONTROL ===
-    Mode_Active             : BOOL;             // TRUE when in maintenance mode
-    Master_Enable           : BOOL;             // System master enable
-    Emergency_Active        : BOOL;             // Emergency stop active
+    // Mode control
+    Mode_Active             : BOOL;
+    Master_Enable           : BOOL;
+    Emergency_Active        : BOOL;
     
-    // === CONFIGURATION ===
-    Number_Of_Steps         : UINT := 10;       // Total steps in system
-    Power_Tolerance_Percent : REAL := 5.0;      // Allowable power error %
-    Feedback_Timeout_ms     : UINT := 3000;     // Contactor feedback timeout
-    Test_Duration_Sec       : UINT := 5;        // How long to test each step
-    Delay_Between_Steps_ms  : UINT := 1000;     // Delay between steps
-    Cycle_Time_ms           : UINT := 10;       // PLC task cycle time
+    // Configuration
+    Number_Of_Steps         : UINT := 10;
+    Power_Tolerance_Percent : REAL := 10.0;
+    Feedback_Timeout_ms     : UINT := 3000;
+    Test_Duration_Sec       : UINT := 5;
+    Delay_Between_Steps_ms  : UINT := 1000;
+    Cycle_Time_ms           : UINT := 10;
     
-    // === MANUAL TEST COMMANDS (from HMI) ===
-    Selected_Step           : UINT := 1;        // Which step to test manually
-    Toggle_Fan_Cmd          : BOOL;             // Toggle fan on/off
-    Toggle_Step_Cmd         : BOOL;             // Toggle selected step on/off
-    Reset_Test_Cmd          : BOOL;             // Reset current test
+    // Manual test commands
+    Selected_Step           : UINT := 1;
+    Toggle_Fan_Cmd          : BOOL;
+    Toggle_Step_Cmd         : BOOL;
+    Reset_Test_Cmd          : BOOL;
     
-    // === SELF TEST COMMANDS (from HMI) ===
-    Self_Test_Start         : BOOL;             // Start automatic self-test
-    Self_Test_Stop          : BOOL;             // Stop self-test
+    // Self-test commands
+    Self_Test_Start         : BOOL;
+    Self_Test_Stop          : BOOL;
     
-    // === FEEDBACK INPUTS (from IO) ===
-    Fan_Contactor_FB        : BOOL;             // Fan contactor feedback
-    Fan_Pressure_OK         : BOOL;             // Fan pressure OK
-    Fan_Overload_OK         : BOOL;             // Fan motor overload OK (TRUE=healthy)
-    Step_Feedback           : ARRAY[1..100] OF BOOL;    // Step contactor feedbacks
-    Step_Power_kW           : ARRAY[1..100] OF REAL;    // Measured power per step
-    Step_Rated_Power        : ARRAY[1..100] OF REAL;    // Rated power per step
-    Step_Quarantined        : ARRAY[1..100] OF BOOL;    // Already quarantined steps
+    // Feedback inputs
+    Fan_Contactor_FB        : BOOL;
+    Fan_Pressure_OK         : BOOL;
+    Fan_Overload_OK         : BOOL;
+    Step_Feedback           : ARRAY[1..100] OF BOOL;
+    Step_Power_kW           : ARRAY[1..100] OF REAL;
+    Step_Rated_Power        : ARRAY[1..100] OF REAL;
+    Step_Quarantined        : ARRAY[1..100] OF BOOL;
 END_VAR
 
 VAR_OUTPUT
-    // === STATUS ===
-    Mode_Ready              : BOOL;             // Ready to operate
-    Test_Active             : BOOL;             // Manual test in progress
+    // Status
+    Mode_Ready              : BOOL;
     
-    // === COMMAND OUTPUTS (PRG_Main uses these for IO) ===
-    Fan_Output              : BOOL;             // Fan contactor command
-    Step_Output             : ARRAY[1..100] OF BOOL;    // Step contactor commands
+    // Outputs to control
+    Fan_Output              : BOOL;
+    Step_Output             : ARRAY[1..100] OF BOOL;
     
-    // === SELF TEST STATUS ===
+    // Quarantine signals (active for 1 scan)
+    Quarantine_Step         : UINT := 0;
+    Unquarantine_Step       : UINT := 0;
+    
+    // Manual test status
+    Feedback_Match          : BOOL;
+    Response_Time_ms        : UINT;
+    Power_Within_Tolerance  : BOOL;
+    
+    // Self-test status
     Self_Test_Running       : BOOL;
     Self_Test_Complete      : BOOL;
     Self_Test_Current_Step  : UINT;
@@ -64,378 +66,367 @@ VAR_OUTPUT
     Self_Test_Pass_Count    : UINT;
     Self_Test_Fail_Count    : UINT;
     
-    // === CURRENT STEP RESULTS ===
-    Feedback_Match          : BOOL;             // Feedback matches command
-    Response_Time_ms        : UINT;             // Response time measured
-    Power_Within_Tolerance  : BOOL;             // Power is within tolerance
-    Power_Error_Percent     : REAL;             // Current power error %
-    
-    // === QUARANTINE OUTPUT ===
-    Quarantine_Step         : UINT;             // Step to quarantine (0=none)
-    Unquarantine_Step       : UINT;             // Step to unquarantine (0=none)
-    
-    // === MESSAGES ===
+    // Status message
     Status_Message          : STRING(100);
-    Fault_Message           : STRING(100);
 END_VAR
 
 VAR
-    // === EDGE DETECTION ===
+    // Internal state
+    i                       : UINT;
+    Self_Test_State         : UINT := 0;
+    
+    // Edge detection
     Toggle_Fan_Prev         : BOOL;
     Toggle_Step_Prev        : BOOL;
     Reset_Test_Prev         : BOOL;
     Self_Test_Start_Prev    : BOOL;
     Self_Test_Stop_Prev     : BOOL;
     
-    // === STATE MACHINE ===
-    Self_Test_State         : INT := 0;
+    // Timers
+    Feedback_Timer          : TON;
+    Test_Duration_Timer     : TON;
+    Delay_Timer             : TON;
+    Response_Timer          : TON;
     
-    // === INTERNAL TIMERS (ms counters) ===
-    Feedback_Wait_Timer     : UINT := 0;
-    Delay_Timer             : UINT := 0;
-    Second_Counter          : UINT := 0;
+    // Self-test variables
+    Test_Step_Index         : UINT;
+    Test_Start_Time_ms      : UDINT;
+    Test_Power_At_Start     : REAL;
+    Waiting_For_Feedback    : BOOL;
     
-    // === INTERNAL ===
-    i                       : UINT;
-    Calculated_Power_Error  : REAL;
-END_VAR
-]]></Declaration>
+    // Power calculation
+    Power_Error_Percent     : REAL;
+    Expected_Power          : REAL;
+    Measured_Power          : REAL;
+END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// ============================================
-// CLEAR QUARANTINE OUTPUTS EACH SCAN
-// (PRG_Main should latch these)
+      <ST><![CDATA[
 // ============================================
-Quarantine_Step := 0;
-Unquarantine_Step := 0;
-
-// ============================================
-// MODE NOT ACTIVE - RESET ALL
+// SAFETY CHECKS
 // ============================================
 IF NOT Mode_Active THEN
-    Test_Active := FALSE;
-    Mode_Ready := FALSE;
+    // Reset all outputs
     Fan_Output := FALSE;
-    
     FOR i := 1 TO 100 DO
         Step_Output[i] := FALSE;
     END_FOR;
     
-    // Reset self-test if it was running
-    IF Self_Test_Running THEN
-        Self_Test_Running := FALSE;
-        Self_Test_State := 0;
-    END_IF;
-    
+    Self_Test_State := 0;
+    Self_Test_Running := FALSE;
+    Self_Test_Complete := FALSE;
+    Mode_Ready := FALSE;
+    Quarantine_Step := 0;
+    Unquarantine_Step := 0;
     Status_Message := 'Maintenance mode not active';
-    Fault_Message := '';
     RETURN;
 END_IF;
 
-// ============================================
-// EMERGENCY ACTIVE - STOP EVERYTHING
-// ============================================
 IF Emergency_Active THEN
-    Test_Active := FALSE;
-    Mode_Ready := FALSE;
+    // Emergency - shut down
     Fan_Output := FALSE;
-    
     FOR i := 1 TO 100 DO
         Step_Output[i] := FALSE;
     END_FOR;
     
-    IF Self_Test_Running THEN
-        Self_Test_Running := FALSE;
-        Self_Test_State := 0;
-    END_IF;
-    
+    Self_Test_State := 0;
+    Self_Test_Running := FALSE;
+    Mode_Ready := FALSE;
     Status_Message := 'EMERGENCY ACTIVE';
-    Fault_Message := 'Emergency stop activated';
     RETURN;
 END_IF;
 
-// ============================================
-// MASTER ENABLE CHECK
-// ============================================
 IF NOT Master_Enable THEN
     Mode_Ready := FALSE;
     Status_Message := 'Master enable required';
-    Fault_Message := '';
     RETURN;
 END_IF;
 
 Mode_Ready := TRUE;
-Status_Message := 'Maintenance mode ready';
+
+// Clear one-shot quarantine signals
+Quarantine_Step := 0;
+Unquarantine_Step := 0;
 
 // ============================================
-// MANUAL FAN TOGGLE (rising edge)
+// MANUAL FAN TOGGLE (Rising Edge)
 // ============================================
 IF Toggle_Fan_Cmd AND NOT Toggle_Fan_Prev THEN
     Fan_Output := NOT Fan_Output;
-    
     IF Fan_Output THEN
-        Status_Message := 'Fan test ACTIVE';
+        Status_Message := 'Fan ON - Manual test';
     ELSE
-        Status_Message := 'Fan test STOPPED';
+        Status_Message := 'Fan OFF';
     END_IF;
 END_IF;
 Toggle_Fan_Prev := Toggle_Fan_Cmd;
 
 // ============================================
-// MANUAL STEP TOGGLE (rising edge)
-// Interlock: Fan must be running with pressure
+// MANUAL STEP TOGGLE (Rising Edge)
+// Requires fan running and pressure OK
 // ============================================
 IF Toggle_Step_Cmd AND NOT Toggle_Step_Prev THEN
     IF Selected_Step > 0 AND Selected_Step <= Number_Of_Steps THEN
-        // Check fan interlock
         IF Fan_Contactor_FB AND Fan_Pressure_OK THEN
             Step_Output[Selected_Step] := NOT Step_Output[Selected_Step];
-            
             IF Step_Output[Selected_Step] THEN
-                Test_Active := TRUE;
-                Status_Message := CONCAT('Testing step ', UINT_TO_STRING(Selected_Step));
-                Status_Message := CONCAT(Status_Message, ' - ON');
-            ELSE
-                Test_Active := FALSE;
                 Status_Message := CONCAT('Step ', UINT_TO_STRING(Selected_Step));
-                Status_Message := CONCAT(Status_Message, ' - OFF');
+                Status_Message := CONCAT(Status_Message, ' ON');
+                // Start response timer
+                Response_Timer(IN := FALSE);
+                Response_Timer(IN := TRUE, PT := T#10s);
+                Waiting_For_Feedback := TRUE;
+            ELSE
+                Status_Message := CONCAT('Step ', UINT_TO_STRING(Selected_Step));
+                Status_Message := CONCAT(Status_Message, ' OFF');
+                Waiting_For_Feedback := FALSE;
             END_IF;
-            Fault_Message := '';
         ELSE
-            Fault_Message := 'Fan must be running first';
+            Status_Message := 'Fan must be running with pressure';
         END_IF;
     ELSE
-        Fault_Message := 'Invalid step number';
+        Status_Message := 'Invalid step number';
     END_IF;
 END_IF;
 Toggle_Step_Prev := Toggle_Step_Cmd;
 
 // ============================================
-// RESET TEST (rising edge)
+// RESET TEST (Rising Edge)
 // ============================================
 IF Reset_Test_Cmd AND NOT Reset_Test_Prev THEN
-    IF Selected_Step > 0 AND Selected_Step <= Number_Of_Steps THEN
-        Step_Output[Selected_Step] := FALSE;
-    END_IF;
-    Test_Active := FALSE;
-    Feedback_Match := TRUE;
-    Response_Time_ms := 0;
-    Power_Within_Tolerance := TRUE;
-    Power_Error_Percent := 0.0;
+    // Turn off all outputs
+    Fan_Output := FALSE;
+    FOR i := 1 TO 100 DO
+        Step_Output[i] := FALSE;
+    END_FOR;
+    
+    // Reset self-test
+    Self_Test_State := 0;
+    Self_Test_Running := FALSE;
+    Self_Test_Complete := FALSE;
+    Self_Test_Pass_Count := 0;
+    Self_Test_Fail_Count := 0;
+    
     Status_Message := 'Test reset';
-    Fault_Message := '';
 END_IF;
 Reset_Test_Prev := Reset_Test_Cmd;
 
 // ============================================
-// MANUAL TEST - CONTINUOUS FEEDBACK CHECK
+// CONTINUOUS FEEDBACK MATCH CHECK
 // ============================================
-IF Test_Active AND NOT Self_Test_Running THEN
-    IF Selected_Step > 0 AND Selected_Step <= Number_Of_Steps THEN
-        // Check feedback match
-        Feedback_Match := Step_Output[Selected_Step] = Step_Feedback[Selected_Step];
-        
-        // Calculate power error
-        IF Step_Rated_Power[Selected_Step] > 0 AND Step_Output[Selected_Step] THEN
-            Calculated_Power_Error := ((Step_Power_kW[Selected_Step] - Step_Rated_Power[Selected_Step]) 
-                                       / Step_Rated_Power[Selected_Step]) * 100.0;
-            Power_Error_Percent := Calculated_Power_Error;
-            Power_Within_Tolerance := ABS(Calculated_Power_Error) <= Power_Tolerance_Percent;
-        ELSE
-            Power_Error_Percent := 0.0;
-            Power_Within_Tolerance := TRUE;
-        END_IF;
-        
-        // Update fault message
-        IF Step_Output[Selected_Step] AND NOT Step_Feedback[Selected_Step] THEN
-            Fault_Message := CONCAT('Step ', UINT_TO_STRING(Selected_Step));
-            Fault_Message := CONCAT(Fault_Message, ' - NO FEEDBACK');
-        ELSIF NOT Step_Output[Selected_Step] AND Step_Feedback[Selected_Step] THEN
-            Fault_Message := CONCAT('Step ', UINT_TO_STRING(Selected_Step));
-            Fault_Message := CONCAT(Fault_Message, ' - CONTACTOR STUCK');
-        ELSIF NOT Power_Within_Tolerance THEN
-            Fault_Message := CONCAT('Step ', UINT_TO_STRING(Selected_Step));
-            Fault_Message := CONCAT(Fault_Message, ' - POWER OUT OF TOLERANCE');
-        ELSE
-            Fault_Message := '';
+IF Selected_Step > 0 AND Selected_Step <= Number_Of_Steps THEN
+    Feedback_Match := (Step_Output[Selected_Step] = Step_Feedback[Selected_Step]);
+    
+    // Measure response time
+    IF Waiting_For_Feedback THEN
+        Response_Timer(IN := TRUE, PT := T#10s);
+        IF Step_Feedback[Selected_Step] THEN
+            Response_Time_ms := TIME_TO_UINT(Response_Timer.ET);
+            Waiting_For_Feedback := FALSE;
         END_IF;
     END_IF;
+ELSE
+    Feedback_Match := FALSE;
 END_IF;
 
 // ============================================
-// SELF TEST - START COMMAND (rising edge)
+// CONTINUOUS POWER TOLERANCE CHECK
+// ============================================
+IF Selected_Step > 0 AND Selected_Step <= Number_Of_Steps THEN
+    IF Step_Output[Selected_Step] AND Step_Feedback[Selected_Step] THEN
+        Expected_Power := Step_Rated_Power[Selected_Step];
+        Measured_Power := Step_Power_kW[Selected_Step];
+        
+        IF Expected_Power > 0.0 THEN
+            Power_Error_Percent := ABS(Measured_Power - Expected_Power) / Expected_Power * 100.0;
+            Power_Within_Tolerance := (Power_Error_Percent <= Power_Tolerance_Percent);
+        ELSE
+            Power_Within_Tolerance := TRUE;
+        END_IF;
+    ELSE
+        Power_Within_Tolerance := TRUE;
+    END_IF;
+ELSE
+    Power_Within_Tolerance := TRUE;
+END_IF;
+
+// ============================================
+// SELF-TEST START (Rising Edge)
 // ============================================
 IF Self_Test_Start AND NOT Self_Test_Start_Prev THEN
-    IF NOT Self_Test_Running THEN
-        // Check interlocks
-        IF Fan_Contactor_FB AND Fan_Pressure_OK AND Fan_Overload_OK THEN
-            Self_Test_Running := TRUE;
-            Self_Test_Current_Step := 1;
-            Self_Test_Pass_Count := 0;
-            Self_Test_Fail_Count := 0;
-            Self_Test_Complete := FALSE;
-            Self_Test_State := 10;
-            Status_Message := 'Self-test starting...';
-            Fault_Message := '';
-        ELSE
-            Fault_Message := 'Fan must be running with no faults';
-        END_IF;
+    IF Fan_Contactor_FB AND Fan_Pressure_OK AND Fan_Overload_OK THEN
+        Self_Test_State := 10;
+        Self_Test_Running := TRUE;
+        Self_Test_Complete := FALSE;
+        Self_Test_Pass_Count := 0;
+        Self_Test_Fail_Count := 0;
+        Test_Step_Index := 0;
+        Status_Message := 'Self-test starting...';
+    ELSE
+        Status_Message := 'Fan must be running for self-test';
     END_IF;
 END_IF;
 Self_Test_Start_Prev := Self_Test_Start;
 
 // ============================================
-// SELF TEST - STOP COMMAND (rising edge)
+// SELF-TEST STOP (Rising Edge)
 // ============================================
 IF Self_Test_Stop AND NOT Self_Test_Stop_Prev THEN
     IF Self_Test_Running THEN
-        IF Self_Test_Current_Step > 0 AND Self_Test_Current_Step <= Number_Of_Steps THEN
-            Step_Output[Self_Test_Current_Step] := FALSE;
+        // Turn off current test step
+        IF Test_Step_Index > 0 AND Test_Step_Index <= Number_Of_Steps THEN
+            Step_Output[Test_Step_Index] := FALSE;
         END_IF;
-        Self_Test_Running := FALSE;
+        
         Self_Test_State := 0;
+        Self_Test_Running := FALSE;
         Status_Message := 'Self-test stopped';
     END_IF;
 END_IF;
 Self_Test_Stop_Prev := Self_Test_Stop;
 
 // ============================================
-// SELF TEST STATE MACHINE
+// SELF-TEST STATE MACHINE
 // ============================================
 CASE Self_Test_State OF
 
     0: // IDLE
-        ; // Wait for start command
+        Self_Test_Running := FALSE;
+        Self_Test_Timer_Sec := 0;
         
     10: // START NEXT STEP
-        IF Self_Test_Current_Step <= Number_Of_Steps THEN
-            // Skip quarantined steps
-            IF Step_Quarantined[Self_Test_Current_Step] THEN
-                Status_Message := CONCAT('Skipping quarantined step ', UINT_TO_STRING(Self_Test_Current_Step));
-                Self_Test_Current_Step := Self_Test_Current_Step + 1;
-                // Stay in state 10 to check next step
-            ELSE
-                // Start testing this step
-                Step_Output[Self_Test_Current_Step] := TRUE;
-                Self_Test_Timer_Sec := Test_Duration_Sec;
-                Feedback_Wait_Timer := 0;
-                Second_Counter := 0;
-                Response_Time_ms := 0;
-                Feedback_Match := FALSE;
-                Power_Within_Tolerance := TRUE;
-                Status_Message := CONCAT('Testing step ', UINT_TO_STRING(Self_Test_Current_Step));
-                Self_Test_State := 20;
-            END_IF;
-        ELSE
+        Test_Step_Index := Test_Step_Index + 1;
+        
+        // Skip quarantined steps
+        WHILE Test_Step_Index <= Number_Of_Steps AND Step_Quarantined[Test_Step_Index] DO
+            Test_Step_Index := Test_Step_Index + 1;
+        END_WHILE;
+        
+        IF Test_Step_Index > Number_Of_Steps THEN
             // All steps tested
             Self_Test_State := 100;
+        ELSE
+            // Turn on this step
+            Step_Output[Test_Step_Index] := TRUE;
+            Self_Test_Current_Step := Test_Step_Index;
+            Feedback_Timer(IN := FALSE);
+            Feedback_Timer(IN := TRUE, PT := UINT_TO_TIME(Feedback_Timeout_ms));
+            Status_Message := CONCAT('Testing step ', UINT_TO_STRING(Test_Step_Index));
+            Self_Test_State := 20;
         END_IF;
         
     20: // WAIT FOR FEEDBACK
-        Feedback_Wait_Timer := Feedback_Wait_Timer + Cycle_Time_ms;
+        Feedback_Timer(IN := TRUE, PT := UINT_TO_TIME(Feedback_Timeout_ms));
         
-        IF Step_Feedback[Self_Test_Current_Step] THEN
-            // Feedback received - record response time
-            Response_Time_ms := Feedback_Wait_Timer;
-            Feedback_Match := TRUE;
-            Status_Message := CONCAT('Step ', UINT_TO_STRING(Self_Test_Current_Step));
-            Status_Message := CONCAT(Status_Message, ' - Monitoring power');
+        // Check if fan stopped (abort)
+        IF NOT Fan_Contactor_FB OR NOT Fan_Pressure_OK THEN
+            Step_Output[Test_Step_Index] := FALSE;
+            Self_Test_State := 0;
+            Self_Test_Running := FALSE;
+            Status_Message := 'Self-test aborted - fan stopped';
+        ELSIF Step_Feedback[Test_Step_Index] THEN
+            // Got feedback - start monitoring power
+            Test_Duration_Timer(IN := FALSE);
+            Test_Duration_Timer(IN := TRUE, PT := UINT_TO_TIME(Test_Duration_Sec * 1000));
+            Status_Message := CONCAT('Step ', UINT_TO_STRING(Test_Step_Index));
+            Status_Message := CONCAT(Status_Message, ' - monitoring power');
             Self_Test_State := 30;
-        ELSIF Feedback_Wait_Timer > Feedback_Timeout_ms THEN
-            // Timeout - FAIL
-            Feedback_Match := FALSE;
-            Fault_Message := CONCAT('Step ', UINT_TO_STRING(Self_Test_Current_Step));
-            Fault_Message := CONCAT(Fault_Message, ' - FEEDBACK TIMEOUT');
+        ELSIF Feedback_Timer.Q THEN
+            // Timeout - feedback fault
+            Step_Output[Test_Step_Index] := FALSE;
+            Quarantine_Step := Test_Step_Index;
+            Self_Test_Fail_Count := Self_Test_Fail_Count + 1;
+            Status_Message := CONCAT('Step ', UINT_TO_STRING(Test_Step_Index));
+            Status_Message := CONCAT(Status_Message, ' FAILED - no feedback');
+            Delay_Timer(IN := FALSE);
             Self_Test_State := 90;
         END_IF;
         
     30: // MONITOR POWER FOR DURATION
-        // Countdown timer
-        Second_Counter := Second_Counter + Cycle_Time_ms;
-        IF Second_Counter >= 1000 THEN
-            Second_Counter := 0;
-            IF Self_Test_Timer_Sec > 0 THEN
-                Self_Test_Timer_Sec := Self_Test_Timer_Sec - 1;
-            END_IF;
-        END_IF;
+        Test_Duration_Timer(IN := TRUE, PT := UINT_TO_TIME(Test_Duration_Sec * 1000));
+        Self_Test_Timer_Sec := TIME_TO_UINT(Test_Duration_Timer.ET) / 1000;
         
-        // Calculate power error continuously
-        IF Step_Rated_Power[Self_Test_Current_Step] > 0 THEN
-            Calculated_Power_Error := ((Step_Power_kW[Self_Test_Current_Step] - Step_Rated_Power[Self_Test_Current_Step]) 
-                                       / Step_Rated_Power[Self_Test_Current_Step]) * 100.0;
-            Power_Error_Percent := Calculated_Power_Error;
-            Power_Within_Tolerance := ABS(Calculated_Power_Error) <= Power_Tolerance_Percent;
-        END_IF;
-        
-        // Check feedback still present
-        Feedback_Match := Step_Feedback[Self_Test_Current_Step];
-        
-        // Check for failures during test
-        IF NOT Feedback_Match THEN
-            Fault_Message := CONCAT('Step ', UINT_TO_STRING(Self_Test_Current_Step));
-            Fault_Message := CONCAT(Fault_Message, ' - FEEDBACK LOST');
+        // Check if fan stopped (abort)
+        IF NOT Fan_Contactor_FB OR NOT Fan_Pressure_OK THEN
+            Step_Output[Test_Step_Index] := FALSE;
+            Self_Test_State := 0;
+            Self_Test_Running := FALSE;
+            Status_Message := 'Self-test aborted - fan stopped';
+        ELSIF NOT Step_Feedback[Test_Step_Index] THEN
+            // Feedback lost during test
+            Step_Output[Test_Step_Index] := FALSE;
+            Quarantine_Step := Test_Step_Index;
+            Self_Test_Fail_Count := Self_Test_Fail_Count + 1;
+            Status_Message := CONCAT('Step ', UINT_TO_STRING(Test_Step_Index));
+            Status_Message := CONCAT(Status_Message, ' FAILED - feedback lost');
+            Delay_Timer(IN := FALSE);
             Self_Test_State := 90;
-        ELSIF Self_Test_Timer_Sec = 0 THEN
-            // Test duration complete
-            IF Power_Within_Tolerance THEN
-                Self_Test_State := 80; // PASS
-            ELSE
-                Fault_Message := CONCAT('Step ', UINT_TO_STRING(Self_Test_Current_Step));
-                Fault_Message := CONCAT(Fault_Message, ' - POWER OUT OF TOLERANCE');
-                Self_Test_State := 90; // FAIL
+        ELSE
+            // Check power tolerance
+            Expected_Power := Step_Rated_Power[Test_Step_Index];
+            Measured_Power := Step_Power_kW[Test_Step_Index];
+            
+            IF Expected_Power > 0.0 THEN
+                Power_Error_Percent := ABS(Measured_Power - Expected_Power) / Expected_Power * 100.0;
+                
+                IF Power_Error_Percent > Power_Tolerance_Percent THEN
+                    // Power out of tolerance
+                    Step_Output[Test_Step_Index] := FALSE;
+                    Quarantine_Step := Test_Step_Index;
+                    Self_Test_Fail_Count := Self_Test_Fail_Count + 1;
+                    Status_Message := CONCAT('Step ', UINT_TO_STRING(Test_Step_Index));
+                    Status_Message := CONCAT(Status_Message, ' FAILED - power error');
+                    Delay_Timer(IN := FALSE);
+                    Self_Test_State := 90;
+                END_IF;
+            END_IF;
+            
+            // Duration complete?
+            IF Test_Duration_Timer.Q THEN
+                Self_Test_State := 80;
             END_IF;
         END_IF;
         
     80: // STEP PASSED
-        Unquarantine_Step := Self_Test_Current_Step;  // Signal to PRG_Main
+        Step_Output[Test_Step_Index] := FALSE;
         Self_Test_Pass_Count := Self_Test_Pass_Count + 1;
-        Step_Output[Self_Test_Current_Step] := FALSE;
-        Status_Message := CONCAT('Step ', UINT_TO_STRING(Self_Test_Current_Step));
-        Status_Message := CONCAT(Status_Message, ' - PASSED');
-        Delay_Timer := 0;
+        
+        // Unquarantine if it was quarantined
+        IF Step_Quarantined[Test_Step_Index] THEN
+            Unquarantine_Step := Test_Step_Index;
+        END_IF;
+        
+        Status_Message := CONCAT('Step ', UINT_TO_STRING(Test_Step_Index));
+        Status_Message := CONCAT(Status_Message, ' PASSED');
+        
+        Delay_Timer(IN := FALSE);
         Self_Test_State := 85;
         
     85: // DELAY BEFORE NEXT STEP
-        Delay_Timer := Delay_Timer + Cycle_Time_ms;
-        IF Delay_Timer >= Delay_Between_Steps_ms THEN
-            Self_Test_Current_Step := Self_Test_Current_Step + 1;
+        Delay_Timer(IN := TRUE, PT := UINT_TO_TIME(Delay_Between_Steps_ms));
+        
+        IF Delay_Timer.Q THEN
+            Delay_Timer(IN := FALSE);
             Self_Test_State := 10;
         END_IF;
         
     90: // STEP FAILED - QUARANTINE
-        Quarantine_Step := Self_Test_Current_Step;  // Signal to PRG_Main
-        Self_Test_Fail_Count := Self_Test_Fail_Count + 1;
-        Step_Output[Self_Test_Current_Step] := FALSE;
-        Status_Message := CONCAT('Step ', UINT_TO_STRING(Self_Test_Current_Step));
-        Status_Message := CONCAT(Status_Message, ' - FAILED - QUARANTINED');
-        Delay_Timer := 0;
-        Self_Test_State := 85;
+        // Step already turned off and quarantine signal sent
+        Delay_Timer(IN := TRUE, PT := UINT_TO_TIME(Delay_Between_Steps_ms));
+        
+        IF Delay_Timer.Q THEN
+            Delay_Timer(IN := FALSE);
+            Self_Test_State := 10;
+        END_IF;
         
     100: // ALL STEPS COMPLETE
         Self_Test_Running := FALSE;
         Self_Test_Complete := TRUE;
-        Status_Message := CONCAT('Self-test complete: ', UINT_TO_STRING(Self_Test_Pass_Count));
-        Status_Message := CONCAT(Status_Message, ' pass, ');
+        Self_Test_State := 0;
+        Status_Message := CONCAT('Self-test complete. Pass: ', UINT_TO_STRING(Self_Test_Pass_Count));
+        Status_Message := CONCAT(Status_Message, ' Fail: ');
         Status_Message := CONCAT(Status_Message, UINT_TO_STRING(Self_Test_Fail_Count));
-        Status_Message := CONCAT(Status_Message, ' fail');
-        Self_Test_State := 0;
-        
-END_CASE;
 
-// ============================================
-// SAFETY: Turn off step if fan stops during test
-// ============================================
-IF (Test_Active OR Self_Test_Running) AND NOT Fan_Contactor_FB THEN
-    FOR i := 1 TO Number_Of_Steps DO
-        Step_Output[i] := FALSE;
-    END_FOR;
-    Test_Active := FALSE;
-    
-    IF Self_Test_Running THEN
-        Self_Test_Running := FALSE;
-        Self_Test_State := 0;
-        Fault_Message := 'Fan stopped - test aborted';
-    END_IF;
-END_IF;
+END_CASE;
 ]]></ST>
     </Implementation>
   </POU>

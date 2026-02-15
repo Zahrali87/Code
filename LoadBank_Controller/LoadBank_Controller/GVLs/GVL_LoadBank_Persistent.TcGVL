@@ -32,14 +32,14 @@ VAR_GLOBAL PERSISTENT
     // ============================================
     // FAN DEBOUNCE TIMES (ENG Page) - NEW
     // ============================================
-    LB_DEBOUNCE_PRESSURE        : TIME := T#300ms;      // Pressure sensor debounce
-    LB_DEBOUNCE_CONTACTOR       : TIME := T#300ms;      // Contactor feedback debounce
-    LB_DEBOUNCE_OVERLOAD        : TIME := T#100ms;      // Motor overload debounce
+    LB_DEBOUNCE_PRESSURE        : TIME := T#300ms;
+    LB_DEBOUNCE_CONTACTOR       : TIME := T#300ms;
+    LB_DEBOUNCE_OVERLOAD        : TIME := T#100ms;
 
     // ============================================
     // PHASE MONITOR (ENG Page) - NEW
     // ============================================
-    LB_ENABLE_PHASE_MONITOR     : BOOL := FALSE;        // Enable phase monitor check
+    LB_ENABLE_PHASE_MONITOR     : BOOL := FALSE;
 
     // ============================================
     // MAIN CONTACTOR (ENG Page)
@@ -48,14 +48,12 @@ VAR_GLOBAL PERSISTENT
 
     // ============================================
     // CONTROLLED EMERGENCY DUMP (ENG Page)
-    // Fan uses short delay (LB_FAN_POST_DUMP_DELAY) after dump
     // ============================================
     LB_EMG_DUMP_PERCENT         : REAL := 10.0;
     LB_EMG_DUMP_STEP_TIME       : TIME := T#1s;
 
     // ============================================
     // OVER TEMPERATURE DUMP (ENG Page)
-    // Fan uses full cooldown (LB_FAN_COOLDOWN_TIME) after dump
     // ============================================
     LB_TEMP_DUMP_PERCENT        : REAL := 10.0;
     LB_TEMP_DUMP_STEP_TIME      : TIME := T#2s;
@@ -125,8 +123,8 @@ VAR_GLOBAL PERSISTENT
     // ============================================
     LB_Maint_Test_Duration_Sec  : INT := 30;
     Maint_Mode_Power_Tolerance_Percent  : REAL := 10.0;
-    Maint_Mode_Feedback_Timeout_ms      : UINT := 2000;     // Changed to UINT
-    Maint_Mode_Test_Duration_Sec        : UINT := 5;        // Changed to UINT
+    Maint_Mode_Feedback_Timeout_ms      : UINT := 2000;
+    Maint_Mode_Test_Duration_Sec        : UINT := 5;
     
     // ============================================
     // MASTER ENABLE CONFIG (ENG Page)

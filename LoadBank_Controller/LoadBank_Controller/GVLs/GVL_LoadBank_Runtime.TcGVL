@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
   <GVL Name="GVL_LoadBank_Runtime" Id="{36720d95-2034-4e57-b326-1d0b63538014}">
     <Declaration><![CDATA[// ============================================
 // GVL_LoadBank_Runtime
-// UPDATED: Added HMI status text variables
+// UPDATED: Added cooldown status and maintenance status message
 // ============================================
 
 VAR_GLOBAL
@@ -23,6 +23,12 @@ VAR_GLOBAL
     Fan_Start_Command           : BOOL;
     Fan_Start_Blocked           : BOOL;
     Fan_Start_Was_Off           : BOOL;
+
+    // ============================================
+    // FAN COOLDOWN STATUS (for HMI) - NEW
+    // ============================================
+    LB_HMI_Fan_Cooldown_Active      : BOOL;
+    LB_HMI_Fan_Cooldown_Remaining   : TIME;
 
     // ============================================
     // HMI MODE INPUTS
@@ -105,10 +111,10 @@ VAR_GLOBAL
     Status_Dump                 : STRING(100);
 
     // ============================================
-    // HMI STATUS BAR TEXT (NEW)
+    // HMI STATUS BAR TEXT
     // ============================================
-    HMI_System_Status_Text      : STRING(100);      // NEW: Main status message for HMI status bar
-    HMI_Alarm_Detail_Text       : STRING(100);      // NEW: Secondary detail message for HMI
+    HMI_System_Status_Text      : STRING(100);
+    HMI_Alarm_Detail_Text       : STRING(100);
 
     // ============================================
     // MODE CONTROL
@@ -205,53 +211,53 @@ VAR_GLOBAL
     Reverse_Mode_Target_Power   : REAL;
     Reverse_Mode_Status         : STRING(100);
 	
-	// ============================================
+    // ============================================
     // ALARM MANAGER OUTPUTS (from FB_Alarm_Manager)
     // ============================================
-    LB_Alarm_List               : ARRAY[1..20] OF DUT_Alarm;        // Active alarm list for HMI
-    LB_Alarm_List_Count         : UINT;                              // Number of active alarms
-    LB_Alarm_History            : ARRAY[1..50] OF DUT_Alarm_History_Record;  // History buffer
-    LB_Alarm_History_Count      : UINT;                              // Number of history records
+    LB_Alarm_List               : ARRAY[1..20] OF DUT_Alarm;
+    LB_Alarm_List_Count         : UINT;
+    LB_Alarm_History            : ARRAY[1..50] OF DUT_Alarm_History_Record;
+    LB_Alarm_History_Count      : UINT;
     
-    LB_Critical_Alarm_Count     : UINT;                              // Critical alarm count
-    LB_Warning_Count            : UINT;                              // Warning count
-    LB_Total_Alarm_Count        : UINT;                              // Total active count
-    LB_Unacknowledged_Count     : UINT;                              // Unacknowledged count
+    LB_Critical_Alarm_Count     : UINT;
+    LB_Warning_Count            : UINT;
+    LB_Total_Alarm_Count        : UINT;
+    LB_Unacknowledged_Count     : UINT;
     
-    LB_New_Alarm_Trigger        : BOOL;                              // Pulse for new alarm popup
-    LB_Newest_Alarm_ID          : UINT;                              // ID of newest alarm
-    LB_Newest_Alarm_Name        : STRING(30);                        // Name of newest alarm
+    LB_New_Alarm_Trigger        : BOOL;
+    LB_Newest_Alarm_ID          : UINT;
+    LB_Newest_Alarm_Name        : STRING(30);
     
     // ============================================
     // ALARM MANAGER COMMANDS (from HMI)
     // ============================================
-    HMI_Alarm_Acknowledge       : ARRAY[1..20] OF BOOL;              // Acknowledge individual alarm
-    HMI_Alarm_Acknowledge_All   : BOOL;                              // Acknowledge all alarms
-    HMI_Alarm_Clear_History     : BOOL;                              // Clear history buffer
+    HMI_Alarm_Acknowledge       : ARRAY[1..20] OF BOOL;
+    HMI_Alarm_Acknowledge_All   : BOOL;
+    HMI_Alarm_Clear_History     : BOOL;
 	
-	// ============================================
-// MAINTENANCE MODE HMI
-// ============================================
-// Commands (from HMI buttons)
-Maint_Mode_Toggle_Fan               : BOOL;
-Maint_Mode_Toggle_Step              : BOOL;
-Maint_Mode_Reset_Test               : BOOL;
-Maint_Mode_Selected_Step            : INT := 1;
-Maint_Mode_Self_Test_Start          : BOOL;
-Maint_Mode_Self_Test_Stop           : BOOL;
+    // ============================================
+    // MAINTENANCE MODE HMI
+    // ============================================
+    // Commands (from HMI buttons)
+    Maint_Mode_Toggle_Fan               : BOOL;
+    Maint_Mode_Toggle_Step              : BOOL;
+    Maint_Mode_Reset_Test               : BOOL;
+    Maint_Mode_Selected_Step            : UINT := 1;        // Changed to UINT
+    Maint_Mode_Self_Test_Start          : BOOL;
+    Maint_Mode_Self_Test_Stop           : BOOL;
 
-
-// Status (to HMI display)
-Maint_Mode_Feedback_Match           : BOOL;
-Maint_Mode_Response_Time_ms         : INT;
-Maint_Mode_Power_Within_Tolerance   : BOOL;
-Maint_Mode_Self_Test_Running        : BOOL;
-Maint_Mode_Self_Test_Current_Step   : INT;
-Maint_Mode_Self_Test_Pass_Count     : INT;
-Maint_Mode_Self_Test_Fail_Count     : INT;
-Maint_Mode_Self_Test_Complete       : BOOL;
-Maint_Mode_Timeout_Error_Count      : INT;
-Maint_Mode_Self_Test_Timer_Sec      : INT;
+    // Status (to HMI display)
+    Maint_Mode_Feedback_Match           : BOOL;
+    Maint_Mode_Response_Time_ms         : UINT;             // Changed to UINT
+    Maint_Mode_Power_Within_Tolerance   : BOOL;
+    Maint_Mode_Self_Test_Running        : BOOL;
+    Maint_Mode_Self_Test_Current_Step   : UINT;             // Changed to UINT
+    Maint_Mode_Self_Test_Pass_Count     : UINT;             // Changed to UINT
+    Maint_Mode_Self_Test_Fail_Count     : UINT;             // Changed to UINT
+    Maint_Mode_Self_Test_Complete       : BOOL;
+    Maint_Mode_Timeout_Error_Count      : UINT;             // Changed to UINT
+    Maint_Mode_Self_Test_Timer_Sec      : UINT;             // Changed to UINT
+    Maint_Mode_Status_Message           : STRING(100);      // NEW: Status message from FB
 
 END_VAR
 ]]></Declaration>

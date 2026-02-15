@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
   <GVL Name="GVL_LoadBank_Persistent" Id="{ddf76703-cd3a-40a1-a8a8-3d95d44d09c0}">
     <Declaration><![CDATA[// ============================================
 // GVL_LoadBank_Persistent
-// UPDATED: Separate EMG and TEMP dump settings
+// UPDATED: Added debounce times and phase monitor
 // ============================================
 
 VAR_GLOBAL PERSISTENT
@@ -24,10 +24,22 @@ VAR_GLOBAL PERSISTENT
     // FAN CONTROL (ENG Page)
     // ============================================
     LB_FAN_PRESSURIZE_TIME      : TIME := T#5s;
-    LB_FAN_COOLDOWN_TIME        : TIME := T#180s;    // CHANGED: Was T#30s, now 3 min for normal/temp cooldown
+    LB_FAN_COOLDOWN_TIME        : TIME := T#180s;
     LB_FAN_FEEDBACK_TIMEOUT     : TIME := T#3s;
-    LB_FAN_POST_DUMP_DELAY      : TIME := T#5s;      // CHANGED: Was T#3s, delay after EMG dump before fan stops
+    LB_FAN_POST_DUMP_DELAY      : TIME := T#5s;
     LB_ENABLE_PHYSICAL_FAN      : BOOL := FALSE;
+
+    // ============================================
+    // FAN DEBOUNCE TIMES (ENG Page) - NEW
+    // ============================================
+    LB_DEBOUNCE_PRESSURE        : TIME := T#300ms;      // Pressure sensor debounce
+    LB_DEBOUNCE_CONTACTOR       : TIME := T#300ms;      // Contactor feedback debounce
+    LB_DEBOUNCE_OVERLOAD        : TIME := T#100ms;      // Motor overload debounce
+
+    // ============================================
+    // PHASE MONITOR (ENG Page) - NEW
+    // ============================================
+    LB_ENABLE_PHASE_MONITOR     : BOOL := FALSE;        // Enable phase monitor check
 
     // ============================================
     // MAIN CONTACTOR (ENG Page)
@@ -38,20 +50,20 @@ VAR_GLOBAL PERSISTENT
     // CONTROLLED EMERGENCY DUMP (ENG Page)
     // Fan uses short delay (LB_FAN_POST_DUMP_DELAY) after dump
     // ============================================
-    LB_EMG_DUMP_PERCENT         : REAL := 10.0;     // NEW: % per step for EMG
-    LB_EMG_DUMP_STEP_TIME       : TIME := T#1s;     // NEW: Time between steps for EMG
+    LB_EMG_DUMP_PERCENT         : REAL := 10.0;
+    LB_EMG_DUMP_STEP_TIME       : TIME := T#1s;
 
     // ============================================
     // OVER TEMPERATURE DUMP (ENG Page)
     // Fan uses full cooldown (LB_FAN_COOLDOWN_TIME) after dump
     // ============================================
-    LB_TEMP_DUMP_PERCENT        : REAL := 10.0;     // NEW: % per step for temp
-    LB_TEMP_DUMP_STEP_TIME      : TIME := T#2s;     // NEW: Time between steps for temp
+    LB_TEMP_DUMP_PERCENT        : REAL := 10.0;
+    LB_TEMP_DUMP_STEP_TIME      : TIME := T#2s;
 
     // ============================================
     // DUMP TIMEOUT (ENG Page)
     // ============================================
-    LB_DUMP_TIMEOUT             : TIME := T#30s;    // KEPT: Safety timeout for any dump
+    LB_DUMP_TIMEOUT             : TIME := T#30s;
 
     // ============================================
     // LOAD CONTROL
@@ -109,9 +121,12 @@ VAR_GLOBAL PERSISTENT
     LB_HMI_Dark_Mode            : BOOL := FALSE;
 
     // ============================================
-    // MAINTENANCE (Customer Page)
+    // MAINTENANCE MODE CONFIG (ENG Page)
     // ============================================
     LB_Maint_Test_Duration_Sec  : INT := 30;
+    Maint_Mode_Power_Tolerance_Percent  : REAL := 10.0;
+    Maint_Mode_Feedback_Timeout_ms      : UINT := 2000;     // Changed to UINT
+    Maint_Mode_Test_Duration_Sec        : UINT := 5;        // Changed to UINT
     
     // ============================================
     // MASTER ENABLE CONFIG (ENG Page)
@@ -124,11 +139,6 @@ VAR_GLOBAL PERSISTENT
     HMI_Eng_Username        : STRING(20) := 'eng';
     HMI_Eng_Password        : STRING(20) := 'loadbank2025';
     HMI_Eng_Timeout_Min     : INT := 10;
-	
-	// Settings
-	Maint_Mode_Power_Tolerance_Percent  : REAL := 10.0;
-	Maint_Mode_Feedback_Timeout_ms      : INT := 2000;
-	Maint_Mode_Test_Duration_Sec        : INT := 5;
 
 END_VAR
 ]]></Declaration>

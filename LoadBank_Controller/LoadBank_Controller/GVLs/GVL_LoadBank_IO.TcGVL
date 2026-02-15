@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
   <GVL Name="GVL_LoadBank_IO" Id="{f4e606e7-7c28-4a85-806b-14b9ceadedc8}">
     <Declaration><![CDATA[VAR_GLOBAL
@@ -22,6 +22,11 @@
     IO_Fan_Contactor_FB         : BOOL;             // NO: TRUE = contactor closed
     IO_Fan_Motor_Overload_OK    : BOOL;             // NC: TRUE = healthy, FALSE = FAULT
     IO_Fan_Pressure_OK          : BOOL;             // NO: TRUE = pressure OK
+
+    // ============================================
+    // PHASE MONITOR INPUT - NEW
+    // ============================================
+    IO_Phase_Monitor_OK         : BOOL;             // NC: TRUE = voltage & phase sequence OK
 
     // ============================================
     // MAIN CONTACTOR INPUT
@@ -87,7 +92,7 @@
     IO_LED_Warning              : BOOL;             // Yellow LED
     IO_LED_System_Normal        : BOOL;             // Green LED
 	
-	// ============================================
+    // ============================================
     // FAN PHYSICAL CONTROL (Optional)
     // Only used when LB_ENABLE_PHYSICAL_FAN = TRUE
     // ============================================

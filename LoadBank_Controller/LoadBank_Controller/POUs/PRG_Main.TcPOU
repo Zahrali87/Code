@@ -453,8 +453,7 @@ CASE Mode_Manager.Active_Mode OF
             Recipe_Pause := HMI_Recipe_Pause,
             Recipe_Abort := HMI_Recipe_Stop,
             Recipe_Steps := HMI_Recipe_Steps,
-            Number_Of_Steps := HMI_Recipe_Number_Of_Steps,
-            Current_Power_kW := LB_System_Status.Released_Power_kW
+            Number_Of_Steps := HMI_Recipe_Number_Of_Steps
         );
         Mode_Target_Power := Recipe_Controller.Target_Power_kW;
         
@@ -589,6 +588,13 @@ ELSE
     LB_HMI_Released_Percent := 0.0;
     LB_HMI_Available_Percent := 0.0;
 END_IF;
+
+// ============================================================
+// NEW: COPY POWER ERROR OUTPUTS TO GVL FOR HMI (ALL MODES)
+// ============================================================
+LB_HMI_Power_Error_kW := Load_Controller.Measured_Power_Error_kW;
+LB_HMI_Power_Error_Pct := Load_Controller.Measured_Power_Error_Pct;
+LB_HMI_Power_Status := Load_Controller.Power_Status;
 
 // ============================================================
 // IO OUTPUTS - SINGLE POINT OF CONTROL

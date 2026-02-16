@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
   <POU Name="FB_Load_Controller" Id="{0a1ef54d-e86b-4926-97c5-904a2ba9eb9f}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Load_Controller
@@ -9,6 +9,7 @@
 // - Total power monitoring
 // - Step quarantine management
 // - Wear leveling by cycle count
+// - HMI power error display (NEW)
 // ============================================
 
 VAR_INPUT
@@ -79,6 +80,13 @@ VAR_OUTPUT
     
     // Cycle counts (for wear leveling)
     Step_Cycle_Count        : ARRAY[1..LB_NUMBER_OF_STEPS] OF UDINT;
+    
+    // ============================================
+    // NEW: HMI Power Error Display (Target vs Measured)
+    // ============================================
+    Measured_Power_Error_kW : REAL;     // Target - Measured (from meter)
+    Measured_Power_Error_Pct: REAL;     // Error as percentage of target
+    Power_Status            : UINT;     // 0=GREEN (<=5%), 1=YELLOW (<=10%), 2=RED (>10%)
     
     Status_Text             : STRING(100);
 END_VAR
@@ -501,6 +509,33 @@ FOR i := 1 TO Number_Of_Steps DO
         Active_Step_Count := Active_Step_Count + 1;
     END_IF;
 END_FOR;
+
+// ============================================
+// NEW: HMI POWER ERROR CALCULATION
+// Compare Target vs Measured (from power meter)
+// This is for HMI display on ALL mode pages
+// ============================================
+Measured_Power_Error_kW := Target_Power_kW - Measured_Total_Power;
+
+// Calculate error percentage (avoid divide by zero)
+IF Target_Power_kW > 0.0 THEN
+    Measured_Power_Error_Pct := (ABS(Measured_Power_Error_kW) / Target_Power_kW) * 100.0;
+ELSE
+    // No target = no error
+    Measured_Power_Error_Pct := 0.0;
+END_IF;
+
+// Determine Power Status for HMI color coding
+// 0 = GREEN  (within 5% - on target)
+// 1 = YELLOW (within 10% - warning)
+// 2 = RED    (over 10% - error)
+IF Measured_Power_Error_Pct <= 5.0 THEN
+    Power_Status := 0;      // GREEN - On target
+ELSIF Measured_Power_Error_Pct <= 10.0 THEN
+    Power_Status := 1;      // YELLOW - Warning
+ELSE
+    Power_Status := 2;      // RED - Error
+END_IF;
 
 // ============================================
 // STATUS MESSAGE

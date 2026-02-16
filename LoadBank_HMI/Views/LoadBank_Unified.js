@@ -3,11 +3,13 @@
  * =====================================
  * ONE file for ALL pages - Just organized, NO changes to shapes/sizes/colors
  * 
+ * UPDATED: Added Recipe page handler and power status color for ALL mode pages
+ * 
  * Control IDs preserved EXACTLY as in your .view files
  * PLC symbols matched EXACTLY to your GVLs
  * 
  * Usage: Add to each page's CodeBehind, call LoadBank.init('PageName')
- * Pages: Desktop, Auto, Numeric, Reverse, Manual, Maint, Steps, Trends, Alarms
+ * Pages: Desktop, Auto, Numeric, Reverse, Manual, Recipe, Maint, Steps, Trends, Alarms
  */
 
 var LoadBank = (function (TcHmi) {
@@ -42,6 +44,7 @@ var LoadBank = (function (TcHmi) {
         frequency: 'GVL_LoadBank_IO.IO_Frequency',
         powerFactor: 'GVL_LoadBank_IO.IO_Power_Factor',
         externalPower: 'GVL_LoadBank_IO.IO_External_Power_kW',
+        totalPower: 'GVL_LoadBank_IO.IO_Total_Power_kW',       // NEW
 
         // GVL_LoadBank_Runtime - Mode Control
         modeSelect: 'GVL_LoadBank_Runtime.HMI_Mode_Select',
@@ -103,7 +106,14 @@ var LoadBank = (function (TcHmi) {
         recipePause: 'GVL_LoadBank_Runtime.HMI_Recipe_Pause',
 
         // =========================================================================
-        // ALARM MANAGER SYMBOLS (NEW)
+        // NEW: HMI POWER ERROR DISPLAY (ALL MODES)
+        // =========================================================================
+        powerErrorKW: 'GVL_LoadBank_Runtime.LB_HMI_Power_Error_kW',
+        powerErrorPct: 'GVL_LoadBank_Runtime.LB_HMI_Power_Error_Pct',
+        powerStatus: 'GVL_LoadBank_Runtime.LB_HMI_Power_Status',
+
+        // =========================================================================
+        // ALARM MANAGER SYMBOLS
         // =========================================================================
         // Alarm list and history
         alarmList: 'GVL_LoadBank_Runtime.LB_Alarm_List',
@@ -126,6 +136,16 @@ var LoadBank = (function (TcHmi) {
         alarmAck: 'GVL_LoadBank_Runtime.HMI_Alarm_Acknowledge',
         alarmAckAll: 'GVL_LoadBank_Runtime.HMI_Alarm_Acknowledge_All',
         alarmClearHistory: 'GVL_LoadBank_Runtime.HMI_Alarm_Clear_History'
+    };
+
+    // =========================================================================
+    // NEW: POWER STATUS COLORS
+    // 0 = GREEN (<=5%), 1 = YELLOW (<=10%), 2 = RED (>10%)
+    // =========================================================================
+    var POWER_STATUS_COLORS = {
+        0: 'rgba(76, 175, 80, 1)',   // GREEN - On target
+        1: 'rgba(255, 193, 7, 1)',   // YELLOW - Warning
+        2: 'rgba(244, 67, 54, 1)'    // RED - Error
     };
 
     // =========================================================================
@@ -258,6 +278,28 @@ var LoadBank = (function (TcHmi) {
         } else {
             return secs + 's';
         }
+    }
+
+    // =========================================================================
+    // NEW: FORMAT TIME (for Recipe mode - converts TIME ms to MM:SS)
+    // =========================================================================
+    function formatTime(timeMs) {
+        if (!timeMs || timeMs <= 0) return '0:00';
+        var totalSeconds = Math.floor(timeMs / 1000);
+        var minutes = Math.floor(totalSeconds / 60);
+        var seconds = totalSeconds % 60;
+        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+    }
+
+    // =========================================================================
+    // NEW: POWER STATUS COLOR FUNCTION
+    // Updates the text color of an element based on power status (0/1/2)
+    // =========================================================================
+    function updatePowerStatusColor(elementId) {
+        readSymbol(SYMBOLS.powerStatus, function (status) {
+            var color = POWER_STATUS_COLORS[status] || POWER_STATUS_COLORS[0];
+            setTextColor(elementId, color);
+        });
     }
 
     // =========================================================================
@@ -453,10 +495,11 @@ var LoadBank = (function (TcHmi) {
         },
 
         poll: function () {
-            // Power
+            // Power with status color
             readSymbol(SYMBOLS.releasedPower, function (v) {
                 setText('ReleasedValue', formatPower(v) + ' kW');
                 updateProgressBar('PowerBarFill', 'PowerBarText', v, 305);
+                updatePowerStatusColor('ReleasedValue');  // NEW: Color based on power status
             });
             readSymbol(SYMBOLS.availablePower, function (v) {
                 setText('AvailableValue', formatPower(v) + ' kW');
@@ -511,7 +554,7 @@ var LoadBank = (function (TcHmi) {
                     1: { text: '● STARTING', color: 'rgba(33, 150, 243, 1)' },
                     2: { text: '● PRESSURIZING', color: 'rgba(255, 193, 7, 1)' },
                     3: { text: '● RUNNING', color: 'rgba(76, 175, 80, 1)' },
-                    4: { text: '● STOPPING', color: 'rgba(255, 152, 0, 1)' },
+                    4: { text: '● COOLING', color: 'rgba(255, 152, 0, 1)' },
                     5: { text: '● FAULT', color: 'rgba(244, 67, 54, 1)' }
                 };
                 var status = fanMap[v] || fanMap[0];
@@ -637,6 +680,7 @@ var LoadBank = (function (TcHmi) {
             readSymbol(SYMBOLS.releasedPower, function (v) {
                 setText('releasedPower_2', formatNumber(v, 1));
                 updateProgressBar('progressBar_2', 'progressPercent_2', v, 350);
+                updatePowerStatusColor('releasedPower_2');  // NEW: Power status color
             });
 
             readSymbol(SYMBOLS.tempOutletMax, function (v) { setText('outletTemp_2', formatTemp(v)); });
@@ -786,6 +830,7 @@ var LoadBank = (function (TcHmi) {
             readSymbol(SYMBOLS.releasedPower, function (v) {
                 setText('releasedPower_4', formatNumber(v, 1));
                 updateProgressBar('progressBar_4', 'progressPercent_4', v, 350);
+                updatePowerStatusColor('releasedPower_4');  // NEW: Power status color
             });
 
             readSymbol(SYMBOLS.tempOutletMax, function (v) { setText('outletTemp_4', formatTemp(v)); });
@@ -934,6 +979,7 @@ var LoadBank = (function (TcHmi) {
             readSymbol(SYMBOLS.releasedPower, function (v) {
                 setText('releasedPower_3', formatNumber(v, 1));
                 updateProgressBar('progressBar_3', 'progressPercent_3', v, 350);
+                updatePowerStatusColor('releasedPower_3');  // NEW: Power status color
             });
 
             readSymbol(SYMBOLS.tempOutletMax, function (v) { setText('outletTemp_3', formatTemp(v)); });
@@ -1050,6 +1096,7 @@ var LoadBank = (function (TcHmi) {
             readSymbol(SYMBOLS.releasedPower, function (v) {
                 setText('releasedPower_5', formatNumber(v, 1));
                 updateProgressBar('progressBar_5', null, v, 350);
+                updatePowerStatusColor('releasedPower_5');  // NEW: Power status color
             });
 
             readSymbol(SYMBOLS.manualSelectedKW, function (v) { setText('selectedPower_5', formatNumber(v, 0) + ' kW'); });
@@ -1087,6 +1134,155 @@ var LoadBank = (function (TcHmi) {
                 active: 'StepsBarActive_5',
                 quarantine: 'StepsBarQuarantine_5',
                 inactive: 'StepsBarInactive_5'
+            }, 345);
+        }
+    };
+
+    // =========================================================================
+    // NEW: RECIPE MODE PAGE - IDs use suffix _8, _7
+    // =========================================================================
+    var Recipe = {
+        init: function () {
+            console.log('LoadBank: Initializing Recipe Mode');
+            writeSymbol(SYMBOLS.modeSelect, 5);  // LB_MODE_RECIPE = 5
+            loadConfig(function () {
+                Recipe.setupTCVisibility();
+                Recipe.setupControls();
+                Recipe.setupFooter();
+                Recipe.startPolling();
+            });
+        },
+
+        setupTCVisibility: function () {
+            updateTCVisibility({
+                tc3Box: 'TC3Box_8', tc3Label: 'TC3Label_8', tc3Value: 'TC3Value_8',
+                tc4Box: 'TC4Box_8', tc4Label: 'TC4Label_8', tc4Value: 'TC4Value_8'
+            }, {
+                box: 'InletBox_7', label: 'InletLabel_8', value: 'InletValue_7'
+            });
+        },
+
+        setupControls: function () {
+            // Master Enable button
+            attachClick('btnMasterEnable_8', function () {
+                readSymbol(SYMBOLS.masterEnable, function (v) {
+                    writeSymbol(SYMBOLS.masterEnable, !v);
+                });
+            });
+
+            // Recipe control buttons
+            attachClick('btnRecipeStart', function () {
+                writeSymbol(SYMBOLS.recipeStart, true);
+                setTimeout(function () { writeSymbol(SYMBOLS.recipeStart, false); }, 200);
+            });
+
+            attachClick('btnRecipePause', function () {
+                writeSymbol(SYMBOLS.recipePause, true);
+                setTimeout(function () { writeSymbol(SYMBOLS.recipePause, false); }, 200);
+            });
+
+            attachClick('btnRecipeAbort', function () {
+                writeSymbol(SYMBOLS.recipeStop, true);
+                setTimeout(function () { writeSymbol(SYMBOLS.recipeStop, false); }, 200);
+            });
+        },
+
+        setupFooter: function () {
+            attachClick('btnBack_8', function () { navigate('Desktop'); });
+            attachClick('btnEStop_8', function () {
+                writeSymbol(SYMBOLS.modeSelect, 0);
+                writeSymbol(SYMBOLS.masterEnable, false);
+            });
+            attachClick('btnReset_8', function () {
+                writeSymbol(SYMBOLS.resetCmd, true);
+                setTimeout(function () { writeSymbol(SYMBOLS.resetCmd, false); }, 500);
+            });
+            attachClick('btnSteps_8', function () { navigate('Steps'); });
+            attachClick('btnTrends_8', function () { navigate('Trends'); });
+            attachClick('btnAlarms_8', function () { navigate('Alarms'); });
+            attachClick('btnSetup_8', function () { navigate('Setup'); });
+        },
+
+        startPolling: function () {
+            state.pollTimer = setInterval(Recipe.poll, CONFIG.pollInterval);
+            Recipe.poll();
+        },
+
+        poll: function () {
+            // Read recipe status struct
+            readSymbol(SYMBOLS.recipeStatus, function (status) {
+                if (status) {
+                    // Current step info
+                    setText('CurrentStepName', 'Step ' + status.Current_Step + ': ' + status.Current_Step_Name);
+                    setText('TargetPower', formatNumber(status.Current_Target_kW, 0) + ' kW Target');
+
+                    // Progress bar
+                    var progressPercent = status.Recipe_Progress_Pct || 0;
+                    var barWidth = (progressPercent / 100) * 280;
+                    setWidth('ProgressBarFill', barWidth);
+                    setText('ProgressPercent_7', progressPercent + '%');
+
+                    // Time displays
+                    setText('ElapsedTime', formatTime(status.Total_Elapsed_Time));
+                    setText('RemainingTime', formatTime(status.Total_Remaining_Time));
+
+                    // Status text
+                    setText('statusText_7', status.Status_Message || 'Ready');
+
+                    // Update button states based on recipe status
+                    if (status.Recipe_Running) {
+                        setBackgroundColor('btnRecipeStart', 'rgba(100, 100, 100, 1)');
+                        setBackgroundColor('btnRecipePause', 'rgba(255, 152, 0, 1)');
+                    } else if (status.Recipe_Paused) {
+                        setBackgroundColor('btnRecipeStart', 'rgba(76, 175, 80, 1)');
+                        setBackgroundColor('btnRecipePause', 'rgba(100, 100, 100, 1)');
+                    } else {
+                        setBackgroundColor('btnRecipeStart', 'rgba(76, 175, 80, 1)');
+                        setBackgroundColor('btnRecipePause', 'rgba(100, 100, 100, 1)');
+                    }
+                }
+            });
+
+            // Current readings with power status color
+            readSymbol(SYMBOLS.releasedPower, function (v) {
+                setText('releasedPower_7', formatNumber(v, 1));
+                updatePowerStatusColor('releasedPower_7');
+            });
+
+            readSymbol(SYMBOLS.tempOutletMax, function (v) { setText('outletTemp_7', formatTemp(v)); });
+            readSymbol(SYMBOLS.tempTC + '[1]', function (v) { setText('TC1Value_8', formatTemp(v)); });
+            readSymbol(SYMBOLS.tempTC + '[2]', function (v) { setText('TC2Value_8', formatTemp(v)); });
+            if (state.tcCount >= 3) {
+                readSymbol(SYMBOLS.tempTC + '[3]', function (v) { setText('TC3Value_8', formatTemp(v)); });
+            }
+            if (state.tcCount >= 4) {
+                readSymbol(SYMBOLS.tempTC + '[4]', function (v) { setText('TC4Value_8', formatTemp(v)); });
+            }
+
+            readSymbol(SYMBOLS.voltageL12, function (v) { setText('voltageL12_7', formatNumber(v, 0)); });
+            readSymbol(SYMBOLS.currentI1, function (v) { setText('currentL1_7', formatNumber(v, 1)); });
+
+            // Master enable button state
+            readSymbol(SYMBOLS.masterEnable, function (v) {
+                state.masterEnabled = v;
+                var btn = TcHmi.Controls.get('btnMasterEnable_8');
+                if (btn) {
+                    btn.setText(v ? 'ENABLED' : 'DISABLED');
+                    setBackgroundColor('btnMasterEnable_8', v ? 'rgba(76, 175, 80, 1)' : 'rgba(100, 100, 100, 1)');
+                }
+            });
+
+            // Alarm count
+            readSymbol(SYMBOLS.totalAlarmCount, function (v) {
+                setText('ActiveAlarms_7', v || 0);
+                setTextColor('ActiveAlarms_7', v > 0 ? 'rgba(244, 67, 54, 1)' : 'rgba(76, 175, 80, 1)');
+            });
+
+            // Steps bar - 3 segments
+            update3SegmentStepsBar({
+                active: 'StepsBarActive_7',
+                quarantine: 'StepsBarQuarantine_7',
+                inactive: 'StepsBarInactive_7'
             }, 345);
         }
     };
@@ -1282,7 +1478,7 @@ var LoadBank = (function (TcHmi) {
     };
 
     // =========================================================================
-    // ALARMS PAGE (NEW)
+    // ALARMS PAGE
     // =========================================================================
     var Alarms = {
         CONFIG: {
@@ -1316,21 +1512,17 @@ var LoadBank = (function (TcHmi) {
         },
 
         setupButtons: function () {
-            // Header buttons
             attachClick('btnBack', function () { navigate('Desktop'); });
             attachClick('btnAckAll', function () { Alarms.acknowledgeAll(); });
             attachClick('btnReset', function () { Alarms.resetAlarms(); });
             attachClick('btnClearHistory', function () { Alarms.showClearDialog(); });
 
-            // Tab buttons
             attachClick('btnTabActive', function () { Alarms.switchTab('active'); });
             attachClick('btnTabHistory', function () { Alarms.switchTab('history'); });
 
-            // Dialog buttons
             attachClick('btnDialogCancel', function () { Alarms.hideDialog(); });
             attachClick('btnDialogConfirm', function () { Alarms.confirmClearHistory(); });
 
-            // Individual acknowledge buttons (rows 1-10)
             for (var i = 1; i <= Alarms.CONFIG.maxActiveRows; i++) {
                 (function (rowNum) {
                     attachClick('alarmRow' + rowNum + '_btnAck', function () {
@@ -1381,13 +1573,11 @@ var LoadBank = (function (TcHmi) {
         },
 
         poll: function () {
-            // Update counts
             readSymbol(SYMBOLS.criticalCount, function (v) { setText('txtCriticalCount', v || 0); });
             readSymbol(SYMBOLS.warningCount, function (v) { setText('txtWarningCount', v || 0); });
             readSymbol(SYMBOLS.unackCount, function (v) { setText('txtUnackCount', v || 0); });
             readSymbol(SYMBOLS.totalAlarmCount, function (v) { setText('txtTotalCount', v || 0); });
 
-            // Load active alarms
             readSymbol(SYMBOLS.alarmListCount, function (count) {
                 count = count || 0;
                 if (count > 0) {
@@ -1398,7 +1588,6 @@ var LoadBank = (function (TcHmi) {
                 }
             });
 
-            // Load history if on history tab
             if (state.currentAlarmTab === 'history') {
                 readSymbol(SYMBOLS.alarmHistoryCount, function (count) {
                     count = count || 0;
@@ -1426,7 +1615,6 @@ var LoadBank = (function (TcHmi) {
                         }
                         loaded++;
                         if (loaded >= toLoad) {
-                            // Sort by severity then ID
                             alarms.sort(function (a, b) {
                                 if (a.Severity !== b.Severity) return a.Severity - b.Severity;
                                 return a.ID - b.ID;
@@ -1444,7 +1632,6 @@ var LoadBank = (function (TcHmi) {
             var loaded = 0;
             var toLoad = Math.min(count, Alarms.CONFIG.maxHistoryRows);
 
-            // Load newest first
             for (var i = count; i > Math.max(0, count - toLoad) ; i--) {
                 (function (index) {
                     readSymbol(SYMBOLS.alarmHistory + '[' + index + ']', function (data) {
@@ -1486,22 +1673,18 @@ var LoadBank = (function (TcHmi) {
         updateAlarmRow: function (rowNum, alarm) {
             var prefix = 'alarmRow' + rowNum;
 
-            // Show row
             setVisible(prefix + '_bg', true);
 
-            // Severity icon
             var isCritical = alarm.Severity === 1;
             setBackgroundColor(prefix + '_sevIcon', isCritical ? Alarms.COLORS.critical : Alarms.COLORS.warning);
             setText(prefix + '_sevIcon', isCritical ? '!' : '⚠');
             setTextColor(prefix + '_sevIcon', isCritical ? '#fff' : '#000');
 
-            // Alarm info
             setText(prefix + '_id', '#' + alarm.ID);
             setText(prefix + '_time', alarm.Timestamp_Occurred || '--:--:--');
             setText(prefix + '_name', alarm.Name || '');
             setText(prefix + '_desc', alarm.Description || '');
 
-            // Acknowledge button
             if (alarm.Acknowledged) {
                 setText(prefix + '_btnAck', '✓ ACK');
                 setBackgroundColor(prefix + '_btnAck', Alarms.COLORS.normal);
@@ -1516,7 +1699,6 @@ var LoadBank = (function (TcHmi) {
                 setEnabled(prefix + '_btnAck', true);
             }
 
-            // Store for blinking
             var ctrl = TcHmi.Controls.get(prefix + '_bg');
             if (ctrl) ctrl.__alarmData = alarm;
         },
@@ -1660,6 +1842,7 @@ var LoadBank = (function (TcHmi) {
                 case 'Numeric': Numeric.init(); break;
                 case 'Reverse': Reverse.init(); break;
                 case 'Manual': Manual.init(); break;
+                case 'Recipe': Recipe.init(); break;
                 case 'Maint':
                 case 'Maintenance': Maint.init(); break;
                 case 'Steps': Steps.init(); break;
@@ -1672,12 +1855,14 @@ var LoadBank = (function (TcHmi) {
 
         cleanup: cleanup,
         navigate: navigate,
+        updatePowerStatusColor: updatePowerStatusColor,
 
         Desktop: Desktop,
         Auto: Auto,
         Numeric: Numeric,
         Reverse: Reverse,
         Manual: Manual,
+        Recipe: Recipe,
         Maint: Maint,
         Steps: Steps,
         Trends: Trends,
@@ -1700,6 +1885,7 @@ var LoadBank = (function (TcHmi) {
                 'Numeric': 'Numeric',
                 'Reverse': 'Reverse',
                 'Manual': 'Manual',
+                'Recipe': 'Recipe',
                 'Maintenance': 'Maintenance',
                 'Steps': 'Steps',
                 'Trends': 'Trends',

@@ -1,7 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.16">
   <POU Name="FB_Recipe_Controller" Id="{6476d75f-56d0-4b42-8163-d178f05efa0a}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Recipe_Controller
+// ============================================
+// RECIPE CONTROLLER
+// Runs timed recipe steps with power targets
+// 
+// FIXES APPLIED:
+// - BUG 1: Time accumulation now uses TON timer (not scan-based)
+// - BUG 2: Pause preserves step progress (saves elapsed time)
+// - BUG 3: Bounds check on Number_Of_Steps
+// - BUG 4: Progress clamped to 100% max
+// - BUG 5: Remaining time clamped to 0 min
+// - BUG 6: Removed unused Current_Power_kW input
+// ============================================
+
 VAR_INPUT
     Recipe_Enable           : BOOL;
     Recipe_Start            : BOOL;
@@ -11,8 +24,10 @@ VAR_INPUT
     Recipe_Steps            : ARRAY[1..20] OF DUT_Recipe_Step;
     Number_Of_Steps         : UINT := 5;
     
-    Current_Power_kW        : REAL;
+    // BUG 6 FIX: Removed unused Current_Power_kW input
+    // Power error is now handled centrally in FB_Load_Controller
 END_VAR
+
 VAR_OUTPUT
     Recipe_Running          : BOOL;
     Recipe_Paused           : BOOL;
@@ -34,6 +49,7 @@ VAR_OUTPUT
     
     Status_Message          : STRING(100);
 END_VAR
+
 VAR
     State                   : UINT;
     Step_Timer              : TON;
@@ -44,26 +60,55 @@ VAR
     Recipe_Abort_Prev       : BOOL;
     
     i                       : UINT;
+    
+    // BUG 1 FIX: Add timer for accurate 100ms elapsed time tracking
+    Elapsed_Pulse_Timer     : TON;
+    
+    // BUG 2 FIX: Save step elapsed time when pausing
+    Saved_Step_Elapsed      : TIME;
+    Step_Duration_Remaining : TIME;
+    Was_Paused              : BOOL;
+    
+    // BUG 3 FIX: Validated step count
+    Validated_Step_Count    : UINT;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
-
+      <ST><![CDATA[// ============================================
+// NOT ENABLED - RESET ALL
+// ============================================
 IF NOT Recipe_Enable THEN
     State := 0;
     Recipe_Running := FALSE;
     Recipe_Paused := FALSE;
     Target_Power_kW := 0.0;
+    Elapsed_Pulse_Timer(IN := FALSE);
     RETURN;
 END_IF;
 
-// Calculate total recipe time
+// ============================================
+// BUG 3 FIX: BOUNDS CHECK ON NUMBER_OF_STEPS
+// ============================================
+IF Number_Of_Steps > 20 THEN
+    Validated_Step_Count := 20;
+ELSIF Number_Of_Steps < 1 THEN
+    Validated_Step_Count := 1;
+ELSE
+    Validated_Step_Count := Number_Of_Steps;
+END_IF;
+
+// ============================================
+// CALCULATE TOTAL RECIPE TIME
+// ============================================
 Total_Recipe_Time := T#0s;
-FOR i := 1 TO Number_Of_Steps DO
+FOR i := 1 TO Validated_Step_Count DO
     IF Recipe_Steps[i].Enabled THEN
         Total_Recipe_Time := Total_Recipe_Time + Recipe_Steps[i].Duration;
     END_IF;
 END_FOR;
 
+// ============================================
+// STATE MACHINE
+// ============================================
 CASE State OF
     0: // IDLE
         Recipe_Running := FALSE;
@@ -79,12 +124,18 @@ CASE State OF
         Total_Elapsed_Time := T#0s;
         Elapsed_Total := T#0s;
         
+        // Reset pause tracking
+        Saved_Step_Elapsed := T#0s;
+        Was_Paused := FALSE;
+        
         Status_Message := 'Recipe idle - press START';
         
         Step_Timer(IN := FALSE);
+        Elapsed_Pulse_Timer(IN := FALSE);
         
         IF Recipe_Start AND NOT Recipe_Start_Prev THEN
             Current_Step_Number := 1;
+            Step_Duration_Remaining := T#0s;
             State := 10;
         END_IF;
     
@@ -94,30 +145,68 @@ CASE State OF
         Recipe_Complete := FALSE;
         Recipe_Aborted := FALSE;
         
-        IF Current_Step_Number > Number_Of_Steps OR Current_Step_Number = 0 THEN
+        // Check if all steps complete
+        IF Current_Step_Number > Validated_Step_Count OR Current_Step_Number = 0 THEN
             State := 90;
             RETURN;
         END_IF;
         
+        // Skip disabled steps
         IF NOT Recipe_Steps[Current_Step_Number].Enabled THEN
             Current_Step_Number := Current_Step_Number + 1;
+            Was_Paused := FALSE;
+            Saved_Step_Elapsed := T#0s;
             RETURN;
         END_IF;
         
         Current_Step_Name := Recipe_Steps[Current_Step_Number].Step_Name;
         Target_Power_kW := Recipe_Steps[Current_Step_Number].Target_Power_kW;
         
-        Step_Timer(IN := TRUE, PT := Recipe_Steps[Current_Step_Number].Duration);
+        // ============================================
+        // BUG 2 FIX: Handle resume from pause
+        // ============================================
+        IF Was_Paused THEN
+            // Resume: Use remaining duration from when we paused
+            Step_Timer(IN := TRUE, PT := Step_Duration_Remaining);
+            // Calculate elapsed as original duration minus remaining
+            Step_Elapsed_Time := Recipe_Steps[Current_Step_Number].Duration - Step_Duration_Remaining + Step_Timer.ET;
+        ELSE
+            // Normal: Start fresh timer
+            Step_Timer(IN := TRUE, PT := Recipe_Steps[Current_Step_Number].Duration);
+            Step_Elapsed_Time := Step_Timer.ET;
+        END_IF;
         
-        Step_Elapsed_Time := Step_Timer.ET;
-        Step_Remaining_Time := Recipe_Steps[Current_Step_Number].Duration - Step_Timer.ET;
+        Step_Remaining_Time := Recipe_Steps[Current_Step_Number].Duration - Step_Elapsed_Time;
         
-        Elapsed_Total := Elapsed_Total + T#100ms;
+        // ============================================
+        // BUG 1 FIX: Accurate elapsed time tracking
+        // Use TON timer for 100ms pulses instead of assuming scan time
+        // ============================================
+        Elapsed_Pulse_Timer(IN := TRUE, PT := T#100ms);
+        IF Elapsed_Pulse_Timer.Q THEN
+            Elapsed_Total := Elapsed_Total + T#100ms;
+            Elapsed_Pulse_Timer(IN := FALSE);  // Reset for next pulse
+        END_IF;
+        
         Total_Elapsed_Time := Elapsed_Total;
-        Total_Remaining_Time := Total_Recipe_Time - Elapsed_Total;
         
+        // ============================================
+        // BUG 5 FIX: Clamp remaining time to 0 minimum
+        // ============================================
+        IF Elapsed_Total >= Total_Recipe_Time THEN
+            Total_Remaining_Time := T#0s;
+        ELSE
+            Total_Remaining_Time := Total_Recipe_Time - Elapsed_Total;
+        END_IF;
+        
+        // ============================================
+        // BUG 4 FIX: Clamp progress to 100% maximum
+        // ============================================
         IF Total_Recipe_Time > T#0s THEN
             Recipe_Progress_Percent := DINT_TO_UINT((TIME_TO_DINT(Elapsed_Total) * 100) / TIME_TO_DINT(Total_Recipe_Time));
+            IF Recipe_Progress_Percent > 100 THEN
+                Recipe_Progress_Percent := 100;
+            END_IF;
         ELSE
             Recipe_Progress_Percent := 0;
         END_IF;
@@ -126,19 +215,28 @@ CASE State OF
         Status_Message := CONCAT(Status_Message, ': ');
         Status_Message := CONCAT(Status_Message, Current_Step_Name);
         
+        // Handle pause command
         IF Recipe_Pause AND NOT Recipe_Pause_Prev THEN
+            // BUG 2 FIX: Save current step progress before pausing
+            Saved_Step_Elapsed := Step_Elapsed_Time;
+            Step_Duration_Remaining := Recipe_Steps[Current_Step_Number].Duration - Step_Elapsed_Time;
+            Was_Paused := TRUE;
             State := 20;
         END_IF;
         
+        // Handle abort command
         IF Recipe_Abort AND NOT Recipe_Abort_Prev THEN
             State := 99;
         END_IF;
         
+        // Step complete - move to next
         IF Step_Timer.Q THEN
             Current_Step_Number := Current_Step_Number + 1;
             Step_Timer(IN := FALSE);
+            Was_Paused := FALSE;
+            Saved_Step_Elapsed := T#0s;
             
-            IF Current_Step_Number > Number_Of_Steps THEN
+            IF Current_Step_Number > Validated_Step_Count THEN
                 State := 90;
             END_IF;
         END_IF;
@@ -147,14 +245,22 @@ CASE State OF
         Recipe_Running := FALSE;
         Recipe_Paused := TRUE;
         
+        // Stop timers but DON'T reset elapsed values
         Step_Timer(IN := FALSE);
+        Elapsed_Pulse_Timer(IN := FALSE);
         
-        Status_Message := 'Recipe PAUSED';
+        // Keep displaying current step info
+        Step_Elapsed_Time := Saved_Step_Elapsed;
+        Step_Remaining_Time := Step_Duration_Remaining;
         
+        Status_Message := 'Recipe PAUSED - press START to resume';
+        
+        // Resume
         IF Recipe_Start AND NOT Recipe_Start_Prev THEN
             State := 10;
         END_IF;
         
+        // Abort from pause
         IF Recipe_Abort AND NOT Recipe_Abort_Prev THEN
             State := 99;
         END_IF;
@@ -166,11 +272,14 @@ CASE State OF
         Recipe_Aborted := FALSE;
         
         Target_Power_kW := 0.0;
+        Recipe_Progress_Percent := 100;
         
         Status_Message := 'Recipe COMPLETE';
         
         Step_Timer(IN := FALSE);
+        Elapsed_Pulse_Timer(IN := FALSE);
         
+        // Reset to start new recipe
         IF Recipe_Start AND NOT Recipe_Start_Prev THEN
             State := 0;
         END_IF;
@@ -186,13 +295,16 @@ CASE State OF
         Status_Message := 'Recipe ABORTED by operator';
         
         Step_Timer(IN := FALSE);
+        Elapsed_Pulse_Timer(IN := FALSE);
         
+        // Reset to start new recipe
         IF Recipe_Start AND NOT Recipe_Start_Prev THEN
             State := 0;
         END_IF;
         
 END_CASE;
 
+// Update edge detection
 Recipe_Start_Prev := Recipe_Start;
 Recipe_Pause_Prev := Recipe_Pause;
 Recipe_Abort_Prev := Recipe_Abort;]]></ST>

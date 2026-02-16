@@ -3,7 +3,7 @@
   <GVL Name="GVL_LoadBank_Runtime" Id="{36720d95-2034-4e57-b326-1d0b63538014}">
     <Declaration><![CDATA[// ============================================
 // GVL_LoadBank_Runtime
-// UPDATED: Added cooldown status and maintenance status
+// UPDATED: Added cooldown status, maintenance status, and power error display
 // ============================================
 
 VAR_GLOBAL
@@ -25,7 +25,7 @@ VAR_GLOBAL
     Fan_Start_Was_Off           : BOOL;
 
     // ============================================
-    // FAN COOLDOWN STATUS (for HMI) - NEW
+    // FAN COOLDOWN STATUS (for HMI)
     // ============================================
     LB_HMI_Fan_Cooldown_Active      : BOOL;
     LB_HMI_Fan_Cooldown_Remaining   : TIME;
@@ -192,6 +192,14 @@ VAR_GLOBAL
     LB_HMI_Emergency_Text       : STRING(30);
     
     // ============================================
+    // NEW: HMI POWER ERROR DISPLAY (ALL MODES)
+    // Target vs Measured power comparison
+    // ============================================
+    LB_HMI_Power_Error_kW       : REAL;     // Target - Measured (from meter)
+    LB_HMI_Power_Error_Pct      : REAL;     // Error as percentage of target
+    LB_HMI_Power_Status         : UINT;     // 0=GREEN (<=5%), 1=YELLOW (<=10%), 2=RED (>10%)
+    
+    // ============================================
     // MANUAL MODE HMI (8 Switches)
     // ============================================
     HMI_Manual_Switch           : ARRAY[1..8] OF BOOL;
@@ -257,7 +265,14 @@ VAR_GLOBAL
     Maint_Mode_Self_Test_Complete       : BOOL;
     Maint_Mode_Timeout_Error_Count      : UINT;
     Maint_Mode_Self_Test_Timer_Sec      : UINT;
-    Maint_Mode_Status_Message           : STRING(100);      // NEW
+    Maint_Mode_Status_Message           : STRING(100);
+    
+    // ============================================
+    // MAINTENANCE MODE CONFIGURATION (from ENG page)
+    // ============================================
+    Maint_Mode_Power_Tolerance_Percent  : REAL := 5.0;
+    Maint_Mode_Feedback_Timeout_ms      : UINT := 3000;
+    Maint_Mode_Test_Duration_Sec        : UINT := 5;
 
 END_VAR
 ]]></Declaration>
